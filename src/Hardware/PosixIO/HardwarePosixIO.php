@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Flat3\RevPi\Hardware\DeviceIO;
+namespace Flat3\RevPi\Hardware\PosixIO;
 
 use FFI;
 
-class HardwareDeviceIO implements DeviceIO
+class HardwarePosixIO implements PosixIO
 {
     protected FFI $ffi;
 

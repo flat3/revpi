@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Flat3\RevPi\Tests\Integration;
 
 use Flat3\RevPi\Contracts\BaseModule;
-use Flat3\RevPi\Hardware\Connect5;
 use Flat3\RevPi\Hardware\Led\LedColour;
 use Flat3\RevPi\Hardware\Led\LedPosition;
 use Flat3\RevPi\Monitors\DigitalTrigger;

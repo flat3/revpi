@@ -25,9 +25,7 @@ use Illuminate\Support\Collection;
 
 class ProcessImage implements ProcessImageContract
 {
-    public function __construct(protected PiControl $device, protected string $devicePath = '/dev/piControl0')
-    {
-    }
+    public function __construct(protected PiControl $device, protected string $devicePath = '/dev/piControl0') {}
 
     protected function open(): int
     {
@@ -238,7 +236,7 @@ class ProcessImage implements ProcessImageContract
 
         return $deviceMessages
             ->take($count)
-            ->map(fn(SDeviceInfoMessage $message): Device => Device::fromMessage($message));
+            ->map(fn (SDeviceInfoMessage $message): Device => Device::fromMessage($message));
     }
 
     public function reset(): void

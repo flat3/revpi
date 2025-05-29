@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Flat3\RevPi\Hardware\DeviceIO;
+namespace Flat3\RevPi\Hardware\PosixIO;
 
-interface DeviceIO
+interface PosixIO
 {
     public function open(string $pathname, int $flags): int;
 

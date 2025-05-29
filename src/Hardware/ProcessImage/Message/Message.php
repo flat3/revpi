@@ -16,21 +16,6 @@ abstract class Message implements MessageInterface
         return strlen($this->pack());
     }
 
-    protected function format(): string
-    {
-        $format = [];
-
-        foreach ($this->definition() as $field => $type) {
-            if (is_numeric($field)) {
-                $format[] = $type;
-            } else {
-                $format[] = $type.$field;
-            }
-        }
-
-        return implode('/', $format);
-    }
-
     public function pack(): string
     {
         $format = '';

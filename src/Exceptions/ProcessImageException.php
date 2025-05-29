@@ -4,4 +4,4 @@ declare(strict_types=1);
 
 namespace Flat3\RevPi\Exceptions;
 
-class ProcessImageException extends BaseException { }
+class ProcessImageException extends BaseException {}

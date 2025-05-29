@@ -4,4 +4,4 @@ declare(strict_types=1);
 
 namespace Flat3\RevPi\Exceptions;
 
-class UnderflowException extends ProcessImageException { }
+class UnderflowException extends ProcessImageException {}

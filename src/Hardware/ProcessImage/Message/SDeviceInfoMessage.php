@@ -68,9 +68,4 @@ class SDeviceInfoMessage extends Message
             'x2',
         ];
     }
-
-    public function isActive(): bool
-    {
-        return $this->active === 1;
-    }
 }

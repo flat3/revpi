@@ -16,7 +16,7 @@ class IO
 
     public bool $exported;
 
-    public string $displayorder;
+    public string $displayOrder;
 
     public ?string $comment;
 
@@ -42,7 +42,7 @@ class IO
         };
 
         $io->exported = (bool) $definition[4];
-        $io->displayorder = (string) $definition[5];
+        $io->displayOrder = (string) $definition[5];
         $io->comment = $definition[6] === null ? null : (string) $definition[6];
 
         return $io;

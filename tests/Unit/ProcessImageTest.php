@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Flat3\RevPi\Tests\Unit;
 
 use Flat3\RevPi\Contracts\ProcessImage;
+use Flat3\RevPi\Exceptions\OverflowException;
+use Flat3\RevPi\Exceptions\UnderflowException;
 use Flat3\RevPi\Exceptions\VariableNotFoundException;
 use Flat3\RevPi\Hardware\ProcessImage\DataType;
 use Flat3\RevPi\Hardware\ProcessImage\Device;
@@ -12,8 +14,6 @@ use Flat3\RevPi\Hardware\ProcessImage\ModuleType;
 use Flat3\RevPi\Hardware\ProcessImage\Variable;
 use Flat3\RevPi\Hardware\ProcessImage\VirtualPiControl;
 use Flat3\RevPi\Hardware\Virtual;
-use OverflowException;
-use UnderflowException;
 
 class ProcessImageTest extends UnitTestCase
 {

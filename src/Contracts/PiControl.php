@@ -4,6 +4,6 @@ declare(strict_types=1);
 
 namespace Flat3\RevPi\Contracts;
 
-use Flat3\RevPi\Hardware\DeviceIO\DeviceIO;
+use Flat3\RevPi\Hardware\PosixIO\PosixIO;
 
-interface PiControl extends DeviceIO {}
+interface PiControl extends PosixIO {}

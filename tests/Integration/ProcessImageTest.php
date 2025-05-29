@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Flat3\RevPi\Tests\Integration;
 
 use Flat3\RevPi\Contracts\BaseModule;
+use Flat3\RevPi\Exceptions\OverflowException;
+use Flat3\RevPi\Exceptions\UnderflowException;
 use Flat3\RevPi\Tests\TestCase;
-use OverflowException;
-use UnderflowException;
 
 class ProcessImageTest extends TestCase
 {
