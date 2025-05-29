@@ -11,7 +11,10 @@ use Flat3\RevPi\Contracts\PiControl;
 use Flat3\RevPi\Contracts\ProcessImage as ProcessImageContract;
 use Flat3\RevPi\Contracts\Virtual;
 use Flat3\RevPi\Exceptions\NotImplementedException;
+use Flat3\RevPi\Exceptions\OverflowException;
+use Flat3\RevPi\Exceptions\PiControlException;
 use Flat3\RevPi\Exceptions\ProcessImageException;
+use Flat3\RevPi\Exceptions\UnderflowException;
 use Flat3\RevPi\Exceptions\VariableNotFoundException;
 use Flat3\RevPi\Hardware\ProcessImage\Message\MessageArray;
 use Flat3\RevPi\Hardware\ProcessImage\Message\MessageInterface;
@@ -19,20 +22,19 @@ use Flat3\RevPi\Hardware\ProcessImage\Message\SDeviceInfoMessage;
 use Flat3\RevPi\Hardware\ProcessImage\Message\ValueMessage;
 use Flat3\RevPi\Hardware\ProcessImage\Message\VariableMessage;
 use Illuminate\Support\Collection;
-use OutOfRangeException;
-use OverflowException;
-use UnderflowException;
 
 class ProcessImage implements ProcessImageContract
 {
-    public function __construct(protected PiControl $device, protected string $devicePath = '/dev/piControl0') {}
+    public function __construct(protected PiControl $device, protected string $devicePath = '/dev/piControl0')
+    {
+    }
 
     protected function open(): int
     {
         $descriptor = $this->device->open($this->devicePath, 2);
 
         if ($descriptor < 0) {
-            throw new ProcessImageException;
+            throw new PiControlException('open failed');
         }
 
         return $descriptor;
@@ -52,7 +54,7 @@ class ProcessImage implements ProcessImageContract
                 $ret = $this->device->ioctl($descriptor, $command->value);
 
                 if ($ret < 0) {
-                    throw new ProcessImageException('ioctl failed');
+                    throw new PiControlException('ioctl failed');
                 }
 
                 return $ret;
@@ -62,7 +64,7 @@ class ProcessImage implements ProcessImageContract
             $ret = $this->device->ioctl($descriptor, $command->value, $buf);
 
             if ($ret < 0) {
-                throw new ProcessImageException('ioctl failed');
+                throw new PiControlException('ioctl failed');
             }
 
             assert(is_string($buf));
@@ -107,7 +109,7 @@ class ProcessImage implements ProcessImageContract
             $ret = $this->device->lseek($descriptor, $variable->address, 0);
 
             if ($ret < 0) {
-                throw new ProcessImageException('lseek failed');
+                throw new PiControlException('lseek failed');
             }
 
             $length = (int) ($variable->length / 8);
@@ -116,13 +118,13 @@ class ProcessImage implements ProcessImageContract
                 1 => 'C',
                 2 => 'v',
                 4 => 'V',
-                default => throw new OutOfRangeException,
+                default => throw new ProcessImageException('Invalid data size'),
             }, $value);
 
             $written = $this->device->write($descriptor, $buffer, $length);
 
             if ($written !== $length) {
-                throw new ProcessImageException('write failed');
+                throw new PiControlException('write failed');
             }
         } finally {
             $this->close($descriptor);
@@ -150,7 +152,7 @@ class ProcessImage implements ProcessImageContract
             $ret = $this->device->lseek($descriptor, $variable->address, 0);
 
             if ($ret < 0) {
-                throw new ProcessImageException('lseek failed');
+                throw new PiControlException('lseek failed');
             }
 
             $length = (int) ($variable->length / 8);
@@ -160,7 +162,7 @@ class ProcessImage implements ProcessImageContract
             $read = $this->device->read($descriptor, $buffer, $length);
 
             if ($read !== $length) {
-                throw new ProcessImageException('read failed');
+                throw new PiControlException('read failed');
             }
 
             $data = unpack(
@@ -168,7 +170,7 @@ class ProcessImage implements ProcessImageContract
                     1 => 'C',
                     2 => 'v',
                     4 => 'V',
-                    default => throw new OutOfRangeException,
+                    default => throw new ProcessImageException('Invalid data size'),
                 },
                 string: $buffer
             );
@@ -210,7 +212,7 @@ class ProcessImage implements ProcessImageContract
 
         try {
             $this->command(Command::FindVariable, $message);
-        } catch (ProcessImageException) {
+        } catch (PiControlException) {
             throw new VariableNotFoundException($variable);
         }
 
@@ -236,7 +238,7 @@ class ProcessImage implements ProcessImageContract
 
         return $deviceMessages
             ->take($count)
-            ->map(fn (SDeviceInfoMessage $message): Device => Device::fromMessage($message));
+            ->map(fn(SDeviceInfoMessage $message): Device => Device::fromMessage($message));
     }
 
     public function reset(): void

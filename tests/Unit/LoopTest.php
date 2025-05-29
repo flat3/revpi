@@ -17,6 +17,6 @@ class LoopTest extends UnitTestCase
         });
 
         $this->loop(3);
-        $this->assertEquals(3, $counter);
+        self::assertEquals(3, $counter);
     }
 }

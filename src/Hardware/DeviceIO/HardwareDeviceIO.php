@@ -34,7 +34,7 @@ EOF, 'libc.so.6');
 
     public function read(int $fd, string &$buffer, int $count): int
     {
-        $buf = $this->ffi->new("char[$count]");
+        $buf = $this->ffi->new("char[$count]"); // @phpstan-ignore staticMethod.dynamicCall
         $read = $this->ffi->read($fd, $buf, $count); // @phpstan-ignore method.notFound
 
         if ($read !== $count) {
@@ -50,7 +50,7 @@ EOF, 'libc.so.6');
 
     public function write(int $fd, string $buffer, int $count): int
     {
-        $buf = $this->ffi->new("char[$count]");
+        $buf = $this->ffi->new("char[$count]"); // @phpstan-ignore staticMethod.dynamicCall
         assert($buf instanceof FFI\CData);
         FFI::memcpy($buf, $buffer, $count);
 
@@ -64,11 +64,11 @@ EOF, 'libc.so.6');
 
     public function ioctl(int $fd, int $request, ?string &$argp = null): int
     {
-        if (! $argp) {
+        if ($argp === null) {
             return $this->ffi->ioctl($fd, $request, null); // @phpstan-ignore method.notFound
         }
 
-        $buf = $this->ffi->new(sprintf('char[%d]', strlen($argp)));
+        $buf = $this->ffi->new(sprintf('char[%d]', strlen($argp))); // @phpstan-ignore staticMethod.dynamicCall
         assert($buf instanceof FFI\CData);
         FFI::memcpy($buf, $argp, strlen($argp));
 

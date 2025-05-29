@@ -112,7 +112,7 @@ class VirtualPiControl extends VirtualDeviceIO implements PiControl
             $byte = $this->memory[$valueMessage->address];
             $ord = ord($byte);
 
-            if ($valueMessage->value) {
+            if ($valueMessage->value !== 0) {
                 $ord |= (1 << $valueMessage->bit);
             } else {
                 $ord &= ~(1 << $valueMessage->bit);

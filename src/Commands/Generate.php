@@ -20,7 +20,7 @@ class Generate extends Command
         $input = $this->argument('pictory');
 
         /** @var string $className */
-        $className = $this->argument('class') ?: 'Pi';
+        $className = $this->argument('class') ?? 'Pi';
 
         $configuration = json_decode((string) file_get_contents($input));
         assert($configuration instanceof stdClass);

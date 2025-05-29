@@ -38,7 +38,7 @@ abstract class Message implements MessageInterface
 
         foreach ($this->definition() as $field => $type) {
             if (! is_numeric($field)) {
-                $data[] = $this->{$field};
+                $data[] = $this->{$field}; // @phpstan-ignore property.dynamicName
             }
 
             $format .= $type;
@@ -66,7 +66,7 @@ abstract class Message implements MessageInterface
         assert($data !== false);
 
         foreach ($data as $field => $value) {
-            $this->{$field} = $value;
+            $this->{$field} = $value;  // @phpstan-ignore property.dynamicName
         }
     }
 }

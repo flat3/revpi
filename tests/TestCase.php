@@ -15,7 +15,7 @@ class TestCase extends BaseTestCase
     /**
      * @var Application
      */
-    protected $app;
+    protected $app; // @phpstan-ignore property.phpDocType
 
     protected function getPackageProviders($app): array
     {

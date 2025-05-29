@@ -45,12 +45,12 @@ trait RevolutionPi
 
     public function __get(string $name): int|bool
     {
-        return $this->{$name}()->get();
+        return $this->{$name}()->get(); // @phpstan-ignore method.dynamicName
     }
 
     public function __set(string $name, int|bool $value): void
     {
-        $this->{$name}()->set($value);
+        $this->{$name}()->set($value); // @phpstan-ignore method.dynamicName
     }
 
     /**

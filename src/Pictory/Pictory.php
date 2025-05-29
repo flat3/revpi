@@ -58,85 +58,70 @@ class Pictory
         $class = $namespace->addClass($className);
         $class->addTrait(RevolutionPi::class);
 
-        $split = fn ($tag) => [
-            'name' => $tag[0],
-            'default' => match ($tag[2]) {
-                'null' => null,
-                '1' => (bool) $tag[1],
-                default => (int) $tag[1],
-            },
-            'unit' => match ($tag[2]) {
-                'null' => null,
-                '1' => 'bool',
-                default => 'int'
-            },
-            'offset' => $tag[3],
-            'exported' => $tag[4],
-            'displayorder' => $tag[5],
-            'comment' => $tag[6],
-        ];
-
         foreach ($this->configuration->Devices as $device) {
             foreach ($device->inp as $tag) {
-                $tag = $split($tag);
-                if (! $tag['unit']) {
+                $io = IO::fromPictory($tag);
+
+                if ($io->unit === null) {
                     continue;
                 }
-                $class->addComment(sprintf('@method InputIO %s()', $tag['name']));
-                $class->addAttribute(
-                    Input::class,
-                    array_filter(['name' => $tag['name'], 'default' => $tag['default']])
-                );
+
+                $class->addComment(sprintf('@method InputIO %s()', $io->name));
+                $class->addAttribute(Input::class, $io->attributeArgs());
             }
 
             foreach ($device->out as $tag) {
-                $tag = $split($tag);
-                if (! $tag['unit']) {
+                $io = IO::fromPictory($tag);
+
+                if ($io->unit === null) {
                     continue;
                 }
-                $class->addComment(sprintf('@method OutputIO %s()', $tag['name']));
-                $class->addAttribute(
-                    Output::class,
-                    array_filter(['name' => $tag['name'], 'default' => $tag['default']])
-                );
+
+                $class->addComment(sprintf('@method OutputIO %s()', $io->name));
+                $class->addAttribute(Output::class, $io->attributeArgs());
             }
 
             foreach ($device->mem as $tag) {
-                $tag = $split($tag);
-                if (! $tag['unit']) {
+                $io = IO::fromPictory($tag);
+
+                if ($io->unit === null) {
                     continue;
                 }
-                $class->addComment(sprintf('@method MemoryIO %s()', $tag['name']));
-                $class->addAttribute(
-                    Memory::class,
-                    array_filter(['name' => $tag['name'], 'default' => $tag['default']])
-                );
+
+                $class->addComment(sprintf('@method MemoryIO %s()', $io->name));
+                $class->addAttribute(Memory::class, $io->attributeArgs());
             }
         }
 
         foreach ($this->configuration->Devices as $device) {
             foreach ($device->inp as $tag) {
-                $tag = $split($tag);
-                if (! $tag['unit']) {
+                $io = IO::fromPictory($tag);
+
+                if ($io->unit === null) {
                     continue;
                 }
-                $class->addComment(sprintf('@property-read %s %s %s', $tag['unit'], $tag['name'], $tag['comment']));
+
+                $class->addComment(sprintf('@property-read %s %s %s', $io->unit, $io->name, $io->comment));
             }
 
             foreach ($device->out as $tag) {
-                $tag = $split($tag);
-                if (! $tag['unit']) {
+                $io = IO::fromPictory($tag);
+
+                if ($io->unit === null) {
                     continue;
                 }
-                $class->addComment(sprintf('@property %s %s %s', $tag['unit'], $tag['name'], $tag['comment']));
+
+                $class->addComment(sprintf('@property %s %s %s', $io->unit, $io->name, $io->comment));
             }
 
             foreach ($device->mem as $tag) {
-                $tag = $split($tag);
-                if (! $tag['unit']) {
+                $io = IO::fromPictory($tag);
+
+                if ($io->unit === null) {
                     continue;
                 }
-                $class->addComment(sprintf('@property %s %s %s', $tag['unit'], $tag['name'], $tag['comment']));
+
+                $class->addComment(sprintf('@property %s %s %s', $io->unit, $io->name, $io->comment));
             }
         }
 

@@ -23,6 +23,6 @@ class LedTest extends UnitTestCase
     {
         $led = app(BaseModule::class)->led(LedPosition::A3);
         $led->set(LedColour::Blue);
-        $this->assertEquals(LedColour::Blue, $led->get());
+        self::assertEquals(LedColour::Blue, $led->get());
     }
 }

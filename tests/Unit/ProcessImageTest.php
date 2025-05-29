@@ -21,26 +21,26 @@ class ProcessImageTest extends UnitTestCase
     {
         $info = app(ProcessImage::class)->getDeviceInfo();
 
-        $this->assertEquals(999999, $info->serialNumber);
-        $this->assertEquals(ModuleType::VIRTUAL, $info->moduleType);
-        $this->assertEquals(0, $info->address);
+        self::assertEquals(999999, $info->serialNumber);
+        self::assertEquals(ModuleType::VIRTUAL, $info->moduleType);
+        self::assertEquals(0, $info->address);
     }
 
     public function test_device_info_list(): void
     {
         $info = app(ProcessImage::class)->getDeviceInfoList();
 
-        $this->assertEquals(20, $info->count());
+        self::assertEquals(20, $info->count());
         $device = $info->first();
-        $this->assertInstanceOf(Device::class, $device);
-        $this->assertEquals(999999, $device->serialNumber);
+        self::assertInstanceOf(Device::class, $device);
+        self::assertEquals(999999, $device->serialNumber);
     }
 
     public function test_read_variable(): void
     {
         $image = app(ProcessImage::class);
         app(VirtualPiControl::class)->createVariable(new Variable('Test_0', DataType::Word));
-        $this->assertEquals(0, $image->readVariable('Test_0'));
+        self::assertEquals(0, $image->readVariable('Test_0'));
     }
 
     public function test_write_variable_exists(): void
@@ -48,7 +48,7 @@ class ProcessImageTest extends UnitTestCase
         $image = app(ProcessImage::class);
         app(VirtualPiControl::class)->createVariable(new Variable('Test_0', DataType::Word));
         $image->writeVariable('Test_0', 456);
-        $this->assertEquals(456, $image->readVariable('Test_0'));
+        self::assertEquals(456, $image->readVariable('Test_0'));
     }
 
     public function test_write_variable_not_found(): void
@@ -69,13 +69,13 @@ class ProcessImageTest extends UnitTestCase
     {
         $image = app(ProcessImage::class);
         $image->dumpImage();
-        $this->assertEquals(4096, strlen($image->dumpImage()));
+        self::assertEquals(4096, strlen($image->dumpImage()));
     }
 
     public function test_get_module(): void
     {
         $image = app(ProcessImage::class);
-        $this->assertInstanceOf(Virtual::class, $image->getModule());
+        self::assertInstanceOf(Virtual::class, $image->getModule());
     }
 
     public function test_overflow(): void
@@ -106,7 +106,7 @@ class ProcessImageTest extends UnitTestCase
 
             foreach ([false, true] as $value) {
                 $image->writeVariable($name, $value);
-                $this->assertEquals($value, $image->readVariable($name));
+                self::assertEquals($value, $image->readVariable($name));
             }
 
             $image->writeVariable($name, false);
@@ -118,7 +118,7 @@ class ProcessImageTest extends UnitTestCase
 
             foreach ([0, 1, pow(2, 8) - 1] as $value) {
                 $image->writeVariable($name, $value);
-                $this->assertEquals($value, $image->readVariable($name));
+                self::assertEquals($value, $image->readVariable($name));
             }
 
             $image->writeVariable($name, 0);
@@ -130,7 +130,7 @@ class ProcessImageTest extends UnitTestCase
 
             foreach ([0, 1, pow(2, 8) - 1, pow(2, 16) - 1] as $value) {
                 $image->writeVariable($name, $value);
-                $this->assertEquals($value, $image->readVariable($name));
+                self::assertEquals($value, $image->readVariable($name));
             }
 
             $image->writeVariable($name, 0);
@@ -142,7 +142,7 @@ class ProcessImageTest extends UnitTestCase
 
             foreach ([0, 1, pow(2, 8) - 1, pow(2, 16) - 1, pow(2, 32) - 1] as $value) {
                 $image->writeVariable($name, $value);
-                $this->assertEquals($value, $image->readVariable($name));
+                self::assertEquals($value, $image->readVariable($name));
             }
 
             $image->writeVariable($name, 0);

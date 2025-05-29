@@ -13,7 +13,7 @@ class ProcessImageTest extends TestCase
 {
     public function test_overflow(): void
     {
-        $this->expectException(OverflowException::class);
+        self::expectException(OverflowException::class);
 
         $module = app(BaseModule::class);
         $image = $module->image();
@@ -22,7 +22,7 @@ class ProcessImageTest extends TestCase
 
     public function test_underflow(): void
     {
-        $this->expectException(UnderflowException::class);
+        self::expectException(UnderflowException::class);
 
         $module = app(BaseModule::class);
         $image = $module->image();
@@ -37,7 +37,7 @@ class ProcessImageTest extends TestCase
         foreach (range(1, 48) as $position) {
             foreach ([false, true] as $value) {
                 $image->writeVariable('OutBit_'.$position, $value);
-                $this->assertEquals($value, $image->readVariable('OutBit_'.$position));
+                self::assertEquals($value, $image->readVariable('OutBit_'.$position));
             }
 
             $image->writeVariable('OutBit_'.$position, false);
@@ -46,7 +46,7 @@ class ProcessImageTest extends TestCase
         foreach (range(1, 10) as $position) {
             foreach ([0, 1, pow(2, 8) - 1] as $value) {
                 $image->writeVariable('OutByte_'.$position, $value);
-                $this->assertEquals($value, $image->readVariable('OutByte_'.$position));
+                self::assertEquals($value, $image->readVariable('OutByte_'.$position));
             }
 
             $image->writeVariable('OutByte_'.$position, 0);
@@ -55,7 +55,7 @@ class ProcessImageTest extends TestCase
         foreach (range(1, 4) as $position) {
             foreach ([0, 1, pow(2, 8) - 1, pow(2, 16) - 1] as $value) {
                 $image->writeVariable('OutWord_'.$position, $value);
-                $this->assertEquals($value, $image->readVariable('OutWord_'.$position));
+                self::assertEquals($value, $image->readVariable('OutWord_'.$position));
             }
 
             $image->writeVariable('OutWord_'.$position, 0);
@@ -64,7 +64,7 @@ class ProcessImageTest extends TestCase
         foreach (range(1, 2) as $position) {
             foreach ([0, 1, pow(2, 8) - 1, pow(2, 16) - 1, pow(2, 32) - 1] as $value) {
                 $image->writeVariable('OutDWord_'.$position, $value);
-                $this->assertEquals($value, $image->readVariable('OutDWord_'.$position));
+                self::assertEquals($value, $image->readVariable('OutDWord_'.$position));
             }
 
             $image->writeVariable('OutDWord_'.$position, 0);

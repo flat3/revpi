@@ -15,24 +15,24 @@ class ContainerTest extends UnitTestCase
     public function test_get_connect5_implementation(): void
     {
         $base = app(Connect5::class);
-        $this->assertInstanceOf(Hardware\Connect5::class, $base);
+        self::assertInstanceOf(Hardware\Connect5::class, $base);
     }
 
     public function test_get_compact_implementation(): void
     {
         $base = app(Compact::class);
-        $this->assertInstanceOf(Hardware\Compact::class, $base);
+        self::assertInstanceOf(Hardware\Compact::class, $base);
     }
 
     public function test_get_any_implementation(): void
     {
         $base = app(BaseModule::class);
-        $this->assertInstanceOf(Hardware\Virtual::class, $base);
+        self::assertInstanceOf(Hardware\Virtual::class, $base);
     }
 
     public function test_get_process_image(): void
     {
         $base = app(ProcessImage::class);
-        $this->assertInstanceOf(Hardware\ProcessImage\ProcessImage::class, $base);
+        self::assertInstanceOf(Hardware\ProcessImage\ProcessImage::class, $base);
     }
 }
