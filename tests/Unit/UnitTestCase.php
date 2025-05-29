@@ -6,8 +6,8 @@ namespace Flat3\RevPi\Tests\Unit;
 
 use Flat3\RevPi\Contracts\PiControl;
 use Flat3\RevPi\Hardware\BaseModule;
+use Flat3\RevPi\Hardware\ProcessImage\VirtualPiControl;
 use Flat3\RevPi\Hardware\Virtual;
-use Flat3\RevPi\Hardware\Virtual\VirtualPiControl;
 use Flat3\RevPi\Tests\TestCase;
 
 abstract class UnitTestCase extends TestCase

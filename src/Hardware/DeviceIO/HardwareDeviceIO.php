@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Flat3\RevPi\Hardware\Support;
+namespace Flat3\RevPi\Hardware\DeviceIO;
 
 use FFI;
 
-class DeviceFileDescriptor implements FileDescriptor
+class HardwareDeviceIO implements DeviceIO
 {
     protected FFI $ffi;
 

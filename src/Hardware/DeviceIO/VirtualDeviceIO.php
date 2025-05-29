@@ -2,12 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Flat3\RevPi\Hardware\Virtual;
+namespace Flat3\RevPi\Hardware\DeviceIO;
 
 use Flat3\RevPi\Exceptions\NotImplementedException;
-use Flat3\RevPi\Hardware\Support\FileDescriptor;
 
-abstract class VirtualFileDescriptor implements FileDescriptor
+abstract class VirtualDeviceIO implements DeviceIO
 {
     protected string $memory;
 

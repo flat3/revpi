@@ -8,7 +8,7 @@ use Flat3\RevPi\Contracts\BaseModule;
 use Flat3\RevPi\Contracts\Compact;
 use Flat3\RevPi\Contracts\Connect5;
 use Flat3\RevPi\Contracts\PiControl;
-use Flat3\RevPi\Contracts\ProcessImage;
+use Flat3\RevPi\Contracts\ProcessImage as ProcessImageContract;
 use Flat3\RevPi\Contracts\Virtual;
 use Flat3\RevPi\Exceptions\NotImplementedException;
 use Flat3\RevPi\Exceptions\ProcessImageException;
@@ -23,7 +23,7 @@ use OutOfRangeException;
 use OverflowException;
 use UnderflowException;
 
-class PiProcessImage implements ProcessImage
+class ProcessImage implements ProcessImageContract
 {
     public function __construct(protected PiControl $device, protected string $devicePath = '/dev/piControl0') {}
 

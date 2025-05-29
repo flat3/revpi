@@ -10,8 +10,8 @@ use Flat3\RevPi\Hardware\ProcessImage\DataType;
 use Flat3\RevPi\Hardware\ProcessImage\Device;
 use Flat3\RevPi\Hardware\ProcessImage\ModuleType;
 use Flat3\RevPi\Hardware\ProcessImage\Variable;
+use Flat3\RevPi\Hardware\ProcessImage\VirtualPiControl;
 use Flat3\RevPi\Hardware\Virtual;
-use Flat3\RevPi\Hardware\Virtual\VirtualPiControl;
 use OverflowException;
 use UnderflowException;
 

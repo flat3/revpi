@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Flat3\RevPi\Hardware\Support;
+namespace Flat3\RevPi\Hardware\DeviceIO;
 
-interface FileDescriptor
+interface DeviceIO
 {
     public function open(string $pathname, int $flags): int;
 

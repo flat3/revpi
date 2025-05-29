@@ -16,7 +16,6 @@ use Flat3\RevPi\Contracts\Connect5;
 use Flat3\RevPi\Contracts\PiControl;
 use Flat3\RevPi\Contracts\ProcessImage;
 use Flat3\RevPi\Contracts\Virtual;
-use Flat3\RevPi\Hardware\ProcessImage\PiProcessImage;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 
 class ServiceProvider extends BaseServiceProvider
@@ -24,7 +23,7 @@ class ServiceProvider extends BaseServiceProvider
     public function register(): void
     {
         $this->app->singleton(PiControl::class, Hardware\ProcessImage\PiControl::class);
-        $this->app->singleton(ProcessImage::class, PiProcessImage::class);
+        $this->app->singleton(ProcessImage::class, Hardware\ProcessImage\ProcessImage::class);
         $this->app->singleton(BaseModule::class, fn () => app(ProcessImage::class)->getModule());
 
         $this->app->bind(Connect5::class, Hardware\Connect5::class);

@@ -2,21 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Flat3\RevPi\Hardware\Virtual;
+namespace Flat3\RevPi\Hardware\ProcessImage;
 
 use Flat3\RevPi\Contracts\PiControl;
-use Flat3\RevPi\Hardware\ProcessImage\Command;
-use Flat3\RevPi\Hardware\ProcessImage\DataType;
-use Flat3\RevPi\Hardware\ProcessImage\Device;
+use Flat3\RevPi\Hardware\DeviceIO\VirtualDeviceIO;
 use Flat3\RevPi\Hardware\ProcessImage\Message\MessageArray;
 use Flat3\RevPi\Hardware\ProcessImage\Message\SDeviceInfoMessage;
 use Flat3\RevPi\Hardware\ProcessImage\Message\ValueMessage;
 use Flat3\RevPi\Hardware\ProcessImage\Message\VariableMessage;
-use Flat3\RevPi\Hardware\ProcessImage\ModuleType;
-use Flat3\RevPi\Hardware\ProcessImage\Variable;
 use Illuminate\Support\Collection;
 
-class VirtualPiControl extends VirtualFileDescriptor implements PiControl
+class VirtualPiControl extends VirtualDeviceIO implements PiControl
 {
     /** @var Collection<int, Device> */
     protected Collection $devices;
