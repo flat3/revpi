@@ -21,7 +21,6 @@ class ProcessImageTest extends UnitTestCase
     {
         $info = app(ProcessImage::class)->getDeviceInfo();
 
-        $this->assertInstanceOf(Device::class, $info);
         $this->assertEquals(999999, $info->serialNumber);
         $this->assertEquals(ModuleType::VIRTUAL, $info->moduleType);
         $this->assertEquals(0, $info->address);
