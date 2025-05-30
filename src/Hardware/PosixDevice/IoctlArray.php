@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
-namespace Flat3\RevPi\Hardware\ProcessImage\Message;
+namespace Flat3\RevPi\Hardware\PosixDevice;
 
 use ArrayAccess;
 
 /**
- * @implements ArrayAccess<int, MessageInterface>
+ * @implements ArrayAccess<int, IoctlInterface>
  */
-class MessageArray implements ArrayAccess, MessageInterface
+class IoctlArray implements ArrayAccess, IoctlInterface
 {
     /**
-     * @var array<MessageInterface>
+     * @var array<IoctlInterface>
      */
     protected array $messages = [];
 
     /**
-     * @param  class-string<MessageInterface>  $source
+     * @param  class-string<IoctlInterface>  $source
      */
     public function __construct(protected string $source, int $count)
     {
@@ -28,7 +28,7 @@ class MessageArray implements ArrayAccess, MessageInterface
 
     public function pack(): string
     {
-        return implode('', array_map(fn (MessageInterface $message) => $message->pack(), $this->messages));
+        return implode('', array_map(fn (IoctlInterface $message) => $message->pack(), $this->messages));
     }
 
     public function unpack(string $buffer): void
@@ -46,7 +46,7 @@ class MessageArray implements ArrayAccess, MessageInterface
     }
 
     /**
-     * @return MessageInterface[]
+     * @return IoctlInterface[]
      */
     public function messages(): array
     {

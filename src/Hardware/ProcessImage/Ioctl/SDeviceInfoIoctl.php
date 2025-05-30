@@ -2,9 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Flat3\RevPi\Hardware\ProcessImage\Message;
+namespace Flat3\RevPi\Hardware\ProcessImage\Ioctl;
 
-class SDeviceInfoMessage extends Message
+use Flat3\RevPi\Hardware\PosixDevice\Ioctl;
+
+class SDeviceInfoIoctl extends Ioctl
 {
     public int $address = 0;
 

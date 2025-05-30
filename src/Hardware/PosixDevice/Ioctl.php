@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Flat3\RevPi\Hardware\ProcessImage\Message;
+namespace Flat3\RevPi\Hardware\PosixDevice;
 
-abstract class Message implements MessageInterface
+abstract class Ioctl implements IoctlInterface
 {
     /**
      * @return array<int|string,string>
@@ -22,8 +22,10 @@ abstract class Message implements MessageInterface
         $data = [];
 
         foreach ($this->definition() as $field => $type) {
-            if (! is_numeric($field)) {
-                $data[] = $this->{$field}; // @phpstan-ignore property.dynamicName
+            if (!is_numeric($field)) {
+                $d = $this->{$field}; // @phpstan-ignore property.dynamicName
+                $d = is_array($d) ? $d : [$d];
+                $data = array_merge($data, $d);
             }
 
             $format .= $type;
@@ -47,10 +49,29 @@ abstract class Message implements MessageInterface
         $format = implode('/', $format);
 
         $data = unpack($format, $buffer);
-
         assert($data !== false);
 
-        foreach ($data as $field => $value) {
+        $groups = [];
+
+        foreach ($data as $key => $value) {
+            if (preg_match('/^(.*?)(\d+)$/', $key, $m) > 0) {
+                /** @var array<int, string> $m */
+                $base = $m[1];
+                $idx = (int) $m[2] - 1;
+                $groups[$base][$idx] = $value;
+            } else {
+                $groups[$key] = $value;
+            }
+        }
+
+        foreach ($groups as &$arr) {
+            if (is_array($arr)) {
+                ksort($arr);
+                $arr = array_values($arr);
+            }
+        }
+
+        foreach ($groups as $field => $value) {
             $this->{$field} = $value;  // @phpstan-ignore property.dynamicName
         }
     }

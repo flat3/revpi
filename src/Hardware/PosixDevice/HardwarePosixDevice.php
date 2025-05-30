@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Flat3\RevPi\Hardware\PosixIO;
+namespace Flat3\RevPi\Hardware\PosixDevice;
 
 use FFI;
 
-class HardwarePosixIO implements PosixIO
+class HardwarePosixDevice implements PosixDevice
 {
     protected FFI $ffi;
 
@@ -36,10 +36,6 @@ EOF, 'libc.so.6');
     {
         $buf = $this->ffi->new("char[$count]"); // @phpstan-ignore staticMethod.dynamicCall
         $read = $this->ffi->read($fd, $buf, $count); // @phpstan-ignore method.notFound
-
-        if ($read !== $count) {
-            return $read;
-        }
 
         assert($buf instanceof FFI\CData);
 

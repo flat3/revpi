@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Flat3\RevPi\Hardware\PosixIO;
+namespace Flat3\RevPi\Hardware\PosixDevice;
 
 use Flat3\RevPi\Exceptions\NotImplementedException;
 
-abstract class VirtualPosixIO implements PosixIO
+abstract class VirtualPosixDevice implements PosixDevice
 {
     protected string $memory;
 

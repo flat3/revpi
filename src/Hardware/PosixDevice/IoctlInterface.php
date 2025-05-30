@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Flat3\RevPi\Hardware\ProcessImage\Message;
+namespace Flat3\RevPi\Hardware\PosixDevice;
 
-interface MessageInterface
+interface IoctlInterface
 {
     public function pack(): string;
 

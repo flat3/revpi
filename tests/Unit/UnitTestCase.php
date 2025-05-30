@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Flat3\RevPi\Tests\Unit;
 
 use Flat3\RevPi\Contracts\PiControl;
+use Flat3\RevPi\Contracts\TerminalDevice;
 use Flat3\RevPi\Hardware\BaseModule;
 use Flat3\RevPi\Hardware\ProcessImage\VirtualPiControl;
+use Flat3\RevPi\Hardware\SerialPort\VirtualTerminalDevice;
 use Flat3\RevPi\Hardware\Virtual;
 use Flat3\RevPi\Tests\TestCase;
 
@@ -18,6 +20,8 @@ abstract class UnitTestCase extends TestCase
 
         $this->app->singleton(BaseModule::class, Virtual::class);
         $this->app->singleton(VirtualPiControl::class);
+        $this->app->singleton(VirtualTerminalDevice::class);
         $this->app->singleton(PiControl::class, VirtualPiControl::class);
+        $this->app->singleton(TerminalDevice::class, VirtualTerminalDevice::class);
     }
 }

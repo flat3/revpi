@@ -6,4 +6,4 @@ namespace Flat3\RevPi\Contracts;
 
 use Flat3\RevPi\Hardware\PosixDevice\PosixDevice;
 
-interface PiControl extends PosixDevice {}
+interface TerminalDevice extends PosixDevice {}

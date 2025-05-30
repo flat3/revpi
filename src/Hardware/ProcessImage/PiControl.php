@@ -5,6 +5,6 @@ declare(strict_types=1);
 namespace Flat3\RevPi\Hardware\ProcessImage;
 
 use Flat3\RevPi\Contracts\PiControl as PiControlContract;
-use Flat3\RevPi\Hardware\PosixIO\HardwarePosixIO;
+use Flat3\RevPi\Hardware\PosixDevice\HardwarePosixDevice;
 
-class PiControl extends HardwarePosixIO implements PiControlContract {}
+class PiControl extends HardwarePosixDevice implements PiControlContract {}

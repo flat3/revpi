@@ -16,11 +16,11 @@ use Flat3\RevPi\Exceptions\PiControlException;
 use Flat3\RevPi\Exceptions\ProcessImageException;
 use Flat3\RevPi\Exceptions\UnderflowException;
 use Flat3\RevPi\Exceptions\VariableNotFoundException;
-use Flat3\RevPi\Hardware\ProcessImage\Message\MessageArray;
-use Flat3\RevPi\Hardware\ProcessImage\Message\MessageInterface;
-use Flat3\RevPi\Hardware\ProcessImage\Message\SDeviceInfoMessage;
-use Flat3\RevPi\Hardware\ProcessImage\Message\ValueMessage;
-use Flat3\RevPi\Hardware\ProcessImage\Message\VariableMessage;
+use Flat3\RevPi\Hardware\PosixDevice\IoctlArray;
+use Flat3\RevPi\Hardware\PosixDevice\IoctlInterface;
+use Flat3\RevPi\Hardware\ProcessImage\Ioctl\SDeviceInfoIoctl;
+use Flat3\RevPi\Hardware\ProcessImage\Ioctl\ValueIoctl;
+use Flat3\RevPi\Hardware\ProcessImage\Ioctl\VariableIoctl;
 use Illuminate\Support\Collection;
 
 class ProcessImage implements ProcessImageContract
@@ -43,7 +43,7 @@ class ProcessImage implements ProcessImageContract
         $this->device->close($descriptor);
     }
 
-    protected function command(Command $command, ?MessageInterface $message = null): int
+    protected function command(Command $command, ?IoctlInterface $message = null): int
     {
         $descriptor = $this->open();
 
@@ -93,7 +93,7 @@ class ProcessImage implements ProcessImageContract
             }
 
             if ($variable->length === 1) {
-                $valueMessage = new ValueMessage;
+                $valueMessage = new ValueIoctl;
                 $valueMessage->address = $variable->address;
                 $valueMessage->bit = $variable->bit;
                 $valueMessage->value = $value;
@@ -137,7 +137,7 @@ class ProcessImage implements ProcessImageContract
             $variable = $this->findVariable($variable);
 
             if ($variable->length === 1) {
-                $valueMessage = new ValueMessage;
+                $valueMessage = new ValueIoctl;
                 $valueMessage->address = $variable->address;
                 $valueMessage->bit = $variable->bit;
                 $valueMessage->address += intdiv($valueMessage->bit, 8);
@@ -203,9 +203,9 @@ class ProcessImage implements ProcessImageContract
         return $buffer;
     }
 
-    protected function findVariable(string $variable): VariableMessage
+    protected function findVariable(string $variable): VariableIoctl
     {
-        $message = new VariableMessage;
+        $message = new VariableIoctl;
         $message->varName = $variable;
 
         try {
@@ -219,7 +219,7 @@ class ProcessImage implements ProcessImageContract
 
     public function getDeviceInfo(): Device
     {
-        $message = new SDeviceInfoMessage;
+        $message = new SDeviceInfoIoctl;
 
         $this->command(Command::GetDeviceInfo, $message);
 
@@ -228,15 +228,15 @@ class ProcessImage implements ProcessImageContract
 
     public function getDeviceInfoList(): Collection
     {
-        $messageArray = new MessageArray(SDeviceInfoMessage::class, 20);
+        $messageArray = new IoctlArray(SDeviceInfoIoctl::class, 20);
         $count = $this->command(Command::GetDeviceInfoList, $messageArray);
 
-        /** @var Collection<int, SDeviceInfoMessage> $deviceMessages */
+        /** @var Collection<int, SDeviceInfoIoctl> $deviceMessages */
         $deviceMessages = collect($messageArray->messages());
 
         return $deviceMessages
             ->take($count)
-            ->map(fn (SDeviceInfoMessage $message): Device => Device::fromMessage($message));
+            ->map(fn (SDeviceInfoIoctl $message): Device => Device::fromMessage($message));
     }
 
     public function reset(): void

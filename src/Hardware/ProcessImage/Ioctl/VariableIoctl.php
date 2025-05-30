@@ -2,9 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Flat3\RevPi\Hardware\ProcessImage\Message;
+namespace Flat3\RevPi\Hardware\ProcessImage\Ioctl;
 
-class VariableMessage extends Message
+use Flat3\RevPi\Hardware\PosixDevice\Ioctl;
+
+class VariableIoctl extends Ioctl
 {
     public string $varName = '';
 
