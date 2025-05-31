@@ -48,7 +48,6 @@
     },
     "scripts": {
         "test": "phpunit",
-        "unit": "phpunit --testsuite Unit",
         "analyze": "phpstan",
         "lint": "pint"
     },

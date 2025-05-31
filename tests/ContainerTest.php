@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Flat3\RevPi\Tests\Unit;
+namespace Flat3\RevPi\Tests;
 
 use Flat3\RevPi\Contracts\BaseModule;
 use Flat3\RevPi\Contracts\Compact;
@@ -10,7 +10,7 @@ use Flat3\RevPi\Contracts\Connect5;
 use Flat3\RevPi\Contracts\ProcessImage;
 use Flat3\RevPi\Hardware;
 
-class ContainerTest extends UnitTestCase
+class ContainerTest extends TestCase implements UsesVirtualEnvironment
 {
     public function test_get_connect5_implementation(): void
     {

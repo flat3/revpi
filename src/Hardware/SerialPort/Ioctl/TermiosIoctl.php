@@ -25,6 +25,18 @@ class TermiosIoctl extends Ioctl
 
     public int $ospeed = 0;
 
+    public const CS5 = 0000000;
+
+    public const CS6 = 0000020;
+
+    public const CS7 = 0000040;
+
+    public const CS8 = 0000060;
+
+    public const CSIZE = 0000060;
+
+    public const CSTOPB = 0000100;
+
     public const PARENB = 0000400;
 
     public const PARODD = 0001000;

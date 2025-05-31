@@ -2,16 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Flat3\RevPi\Tests\Unit\Commands;
+namespace Flat3\RevPi\Tests\Commands;
 
 use Flat3\RevPi\Contracts\BaseModule;
 use Flat3\RevPi\Hardware\Led\LedColour;
 use Flat3\RevPi\Hardware\Led\LedPosition;
-use Flat3\RevPi\Tests\Unit\UnitTestCase;
+use Flat3\RevPi\Tests\TestCase;
+use Flat3\RevPi\Tests\UsesVirtualEnvironment;
 use Illuminate\Testing\PendingCommand;
 use Symfony\Component\Console\Exception\InvalidArgumentException;
 
-class SetLedTest extends UnitTestCase
+class SetLedTest extends TestCase implements UsesVirtualEnvironment
 {
     public function test_set(): void
     {

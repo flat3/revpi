@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Flat3\RevPi\Hardware\ProcessImage;
 
 use Flat3\RevPi\Contracts\PiControl;
+use Flat3\RevPi\Exceptions\IoctlFailedException;
 use Flat3\RevPi\Hardware\PosixDevice\IoctlArray;
 use Flat3\RevPi\Hardware\PosixDevice\VirtualPosixDevice;
 use Flat3\RevPi\Hardware\ProcessImage\Ioctl\SDeviceInfoIoctl;
@@ -55,6 +56,8 @@ class VirtualPiControl extends VirtualPosixDevice implements PiControl
             $deviceInfo->serialNumber = $device->serialNumber;
             $deviceInfo->moduleType = $device->moduleType->value;
             $argp = $deviceInfo->pack();
+
+            return 0;
         }
 
         if ($command === Command::GetDeviceInfoList) {
@@ -89,6 +92,8 @@ class VirtualPiControl extends VirtualPosixDevice implements PiControl
             $variableInfo->address = $this->variables[$variableInfo->varName]->address;
             $variableInfo->length = $this->variables[$variableInfo->varName]->type->value;
             $argp = $variableInfo->pack();
+
+            return 0;
         }
 
         if ($command === Command::SetValue) {
@@ -119,6 +124,8 @@ class VirtualPiControl extends VirtualPosixDevice implements PiControl
             }
 
             $this->memory[$valueMessage->address] = chr($ord);
+
+            return 0;
         }
 
         if ($command === Command::GetValue) {
@@ -131,13 +138,17 @@ class VirtualPiControl extends VirtualPosixDevice implements PiControl
             $ord = ord($byte);
             $valueMessage->value = ($ord >> $valueMessage->bit) & 1;
             $argp = $valueMessage->pack();
+
+            return 0;
         }
 
-        if ($command === Command::Reset) {
+        if ($command === Command::Reset) { // @phpstan-ignore identical.alwaysTrue
             $this->reset();
+
+            return 0;
         }
 
-        return 0;
+        throw new IoctlFailedException; // @phpstan-ignore deadCode.unreachable
     }
 
     protected function reset(): void

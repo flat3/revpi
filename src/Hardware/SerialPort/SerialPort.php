@@ -7,6 +7,7 @@ namespace Flat3\RevPi\Hardware\SerialPort;
 use Flat3\RevPi\Constants;
 use Flat3\RevPi\Contracts\SerialPort as SerialPortContract;
 use Flat3\RevPi\Contracts\TerminalDevice as TerminalContract;
+use Flat3\RevPi\Exceptions\NotImplementedException;
 use Flat3\RevPi\Hardware\PosixDevice\HasIoctl;
 use Flat3\RevPi\Hardware\SerialPort\Ioctl\SerialRS485;
 use Flat3\RevPi\Hardware\SerialPort\Ioctl\TermiosIoctl;
@@ -96,5 +97,58 @@ class SerialPort implements SerialPortContract
         }
 
         return Parity::Even;
+    }
+
+    public function setDataBits(DataBits $bits): void
+    {
+        $message = new TermiosIoctl;
+        $this->ioctl(Command::TCGETS, $message);
+
+        $message->cflag &= ~TermiosIoctl::CSIZE;
+
+        $message->cflag |= match ($bits) {
+            DataBits::CS5 => TermiosIoctl::CS5,
+            DataBits::CS6 => TermiosIoctl::CS6,
+            DataBits::CS7 => TermiosIoctl::CS7,
+            DataBits::CS8 => TermiosIoctl::CS8,
+        };
+
+        $this->ioctl(Command::TCSETS, $message);
+    }
+
+    public function getDataBits(): DataBits
+    {
+        $message = new TermiosIoctl;
+        $this->ioctl(Command::TCGETS, $message);
+
+        return match ($message->cflag & TermiosIoctl::CSIZE) {
+            TermiosIoctl::CS5 => DataBits::CS5,
+            TermiosIoctl::CS6 => DataBits::CS6,
+            TermiosIoctl::CS7 => DataBits::CS7,
+            TermiosIoctl::CS8 => DataBits::CS8,
+            default => throw new NotImplementedException,
+        };
+    }
+
+    public function setStopBits(StopBits $bits): void
+    {
+        $message = new TermiosIoctl;
+        $this->ioctl(Command::TCGETS, $message);
+
+        if ($bits === StopBits::Two) {
+            $message->cflag |= TermiosIoctl::CSTOPB;
+        } else {
+            $message->cflag &= ~TermiosIoctl::CSTOPB;
+        }
+
+        $this->ioctl(Command::TCSETS, $message);
+    }
+
+    public function getStopBits(): StopBits
+    {
+        $message = new TermiosIoctl;
+        $this->ioctl(Command::TCGETS, $message);
+
+        return (($message->cflag & TermiosIoctl::CSTOPB) !== 0) ? StopBits::Two : StopBits::One;
     }
 }
