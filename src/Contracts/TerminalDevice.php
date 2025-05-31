@@ -15,4 +15,9 @@ interface TerminalDevice extends PosixDevice
     public function cfsetispeed(string &$buffer, int $speed): int;
 
     public function cfsetospeed(string &$buffer, int $speed): int;
+
+    /**
+     * @return resource
+     */
+    public function stream_open(int $fd): mixed;
 }

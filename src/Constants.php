@@ -17,4 +17,8 @@ final class Constants
     public const f60Hz = 1 / 60;
 
     public const O_RDWR = 2;
+
+    public const O_NONBLOCK = 2048;
+
+    public const O_NOCTTY = 256;
 }

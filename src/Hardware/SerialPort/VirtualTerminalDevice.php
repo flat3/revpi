@@ -88,4 +88,13 @@ class VirtualTerminalDevice extends VirtualPosixDevice implements TerminalDevice
 
         return $message->ospeed;
     }
+
+    public function stream_open(int $fd): mixed
+    {
+        $sockets = stream_socket_pair(STREAM_PF_UNIX, STREAM_SOCK_STREAM, STREAM_IPPROTO_IP);
+
+        assert($sockets !== false);
+
+        return $sockets[0];
+    }
 }

@@ -8,9 +8,11 @@ use Flat3\RevPi\Constants;
 use Flat3\RevPi\Contracts\SerialPort as SerialPortContract;
 use Flat3\RevPi\Contracts\TerminalDevice as TerminalContract;
 use Flat3\RevPi\Exceptions\NotImplementedException;
+use Flat3\RevPi\Exceptions\PosixDeviceException;
 use Flat3\RevPi\Hardware\PosixDevice\HasIoctl;
 use Flat3\RevPi\Hardware\SerialPort\Ioctl\SerialRS485;
 use Flat3\RevPi\Hardware\SerialPort\Ioctl\TermiosIoctl;
+use Revolt\EventLoop;
 
 class SerialPort implements SerialPortContract
 {
@@ -18,12 +20,35 @@ class SerialPort implements SerialPortContract
 
     protected int $fd;
 
+    /** @var resource */
+    protected mixed $stream;
+
     public function __construct(protected TerminalContract $device, protected string $devicePath = '/dev/ttyRS485-0')
     {
-        $this->fd = $device->open($this->devicePath, Constants::O_RDWR);
+        $fd = $device->open($this->devicePath, Constants::O_RDWR | Constants::O_NONBLOCK | Constants::O_NOCTTY);
+
+        if ($fd < 0) {
+            throw new PosixDeviceException('open failed');
+        }
+
+        $this->fd = $fd;
+        $this->stream = $device->stream_open($fd);
     }
 
-    public function setSpeed(BaudRate $rate): void
+    public function __destruct()
+    {
+        fclose($this->stream);
+        $this->device->close($this->fd);
+    }
+
+    public function onReadable(callable $callback): static
+    {
+        EventLoop::onReadable($this->stream, fn () => $callback(fread($this->stream, 1024)));
+
+        return $this;
+    }
+
+    public function setSpeed(BaudRate $rate): static
     {
         $message = new TermiosIoctl;
         $this->ioctl(Command::TCGETS, $message);
@@ -32,6 +57,8 @@ class SerialPort implements SerialPortContract
         $this->device->cfsetospeed($buffer, $rate->value);
         $message->unpack($buffer);
         $this->ioctl(Command::TCSETS, $message);
+
+        return $this;
     }
 
     public function getSpeed(): BaudRate
@@ -44,7 +71,7 @@ class SerialPort implements SerialPortContract
         return BaudRate::from($speed);
     }
 
-    public function setTermination(bool $enabled): void
+    public function setTermination(bool $enabled): static
     {
         $rs485Conf = new SerialRS485;
         $this->ioctl(Command::TIOCGRS485, $rs485Conf);
@@ -56,6 +83,8 @@ class SerialPort implements SerialPortContract
         }
 
         $this->ioctl(Command::TIOCSRS485, $rs485Conf);
+
+        return $this;
     }
 
     public function getTermination(): bool
@@ -66,7 +95,7 @@ class SerialPort implements SerialPortContract
         return (bool) ($rs485Conf->flags & SerialRS485::SER_RS485_TERMINATE_BUS);
     }
 
-    public function setParity(Parity $parity): void
+    public function setParity(Parity $parity): static
     {
         $message = new TermiosIoctl;
         $this->ioctl(Command::TCGETS, $message);
@@ -81,6 +110,8 @@ class SerialPort implements SerialPortContract
         }
 
         $this->ioctl(Command::TCSETS, $message);
+
+        return $this;
     }
 
     public function getParity(): Parity
@@ -99,7 +130,7 @@ class SerialPort implements SerialPortContract
         return Parity::Even;
     }
 
-    public function setDataBits(DataBits $bits): void
+    public function setDataBits(DataBits $bits): static
     {
         $message = new TermiosIoctl;
         $this->ioctl(Command::TCGETS, $message);
@@ -114,6 +145,8 @@ class SerialPort implements SerialPortContract
         };
 
         $this->ioctl(Command::TCSETS, $message);
+
+        return $this;
     }
 
     public function getDataBits(): DataBits
@@ -130,7 +163,7 @@ class SerialPort implements SerialPortContract
         };
     }
 
-    public function setStopBits(StopBits $bits): void
+    public function setStopBits(StopBits $bits): static
     {
         $message = new TermiosIoctl;
         $this->ioctl(Command::TCGETS, $message);
@@ -142,6 +175,8 @@ class SerialPort implements SerialPortContract
         }
 
         $this->ioctl(Command::TCSETS, $message);
+
+        return $this;
     }
 
     public function getStopBits(): StopBits
