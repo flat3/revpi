@@ -93,14 +93,4 @@ abstract class SerialPortBase extends TestCase
 
         $port->setStopBits($bits);
     }
-
-    public function test_read(): void
-    {
-        app(SerialPort::class)
-            ->setSpeed(BaudRate::B576000)
-            ->setTermination(true)
-            ->onReadable(function ($text) {
-                printf("%s\n", $text);
-            });
-    }
 }

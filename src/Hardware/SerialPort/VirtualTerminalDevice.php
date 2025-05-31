@@ -6,15 +6,19 @@ namespace Flat3\RevPi\Hardware\SerialPort;
 
 use Flat3\RevPi\Contracts\TerminalDevice;
 use Flat3\RevPi\Exceptions\IoctlFailedException;
-use Flat3\RevPi\Hardware\PosixDevice\VirtualPosixDevice;
+use Flat3\RevPi\Exceptions\NotSupportedException;
+use Flat3\RevPi\Exceptions\PosixDeviceException;
 use Flat3\RevPi\Hardware\SerialPort\Ioctl\SerialRS485;
 use Flat3\RevPi\Hardware\SerialPort\Ioctl\TermiosIoctl;
 
-class VirtualTerminalDevice extends VirtualPosixDevice implements TerminalDevice
+class VirtualTerminalDevice implements TerminalDevice
 {
     protected TermiosIoctl $termios;
 
     protected SerialRS485 $serialRS485;
+
+    /** @var resource */
+    protected mixed $socket;
 
     public function __construct()
     {
@@ -95,6 +99,64 @@ class VirtualTerminalDevice extends VirtualPosixDevice implements TerminalDevice
 
         assert($sockets !== false);
 
-        return $sockets[0];
+        $this->socket = $sockets[0];
+
+        return $sockets[1];
+    }
+
+    public function open(string $pathname, int $flags): int
+    {
+        return 0;
+    }
+
+    public function close(int $fd): int
+    {
+        return 0;
+    }
+
+    public function read(int $fd, string &$buffer, int $count): int
+    {
+        if ($count === 0) {
+            $buffer = '';
+
+            return 0;
+        }
+
+        assert($count > 0);
+        $result = fread($this->socket, $count);
+
+        if ($result === false) {
+            throw new PosixDeviceException;
+        }
+
+        $buffer = $result;
+
+        return strlen($buffer);
+    }
+
+    public function write(int $fd, string $buffer, int $count): int
+    {
+        assert($count > 0);
+
+        $result = fwrite($this->socket, $buffer, $count);
+
+        if ($result === false) {
+            throw new PosixDeviceException;
+        }
+
+        return $result;
+    }
+
+    public function lseek(int $fd, int $offset, int $whence): int
+    {
+        throw new NotSupportedException;
+    }
+
+    /**
+     * @return resource
+     */
+    public function getSocket(): mixed
+    {
+        return $this->socket;
     }
 }
