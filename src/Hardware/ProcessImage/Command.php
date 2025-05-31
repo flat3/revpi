@@ -4,16 +4,18 @@ declare(strict_types=1);
 
 namespace Flat3\RevPi\Hardware\ProcessImage;
 
-enum Command: int
+use Flat3\RevPi\Hardware\PosixDevice\IoctlCommand;
+
+enum Command: int implements IoctlCommand
 {
     public const Magic = 75 << 8;
 
-    case Reset = Command::Magic | 12;
-    case GetDeviceInfoList = Command::Magic | 13;
+    case Reset = self::Magic | 12;
+    case GetDeviceInfoList = self::Magic | 13;
 
-    case GetDeviceInfo = Command::Magic | 14;
-    case GetValue = Command::Magic | 15;
-    case SetValue = Command::Magic | 16;
+    case GetDeviceInfo = self::Magic | 14;
+    case GetValue = self::Magic | 15;
+    case SetValue = self::Magic | 16;
 
-    case FindVariable = Command::Magic | 17;
+    case FindVariable = self::Magic | 17;
 }

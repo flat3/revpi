@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Flat3\RevPi\Hardware\PosixDevice;
 
-abstract class Ioctl implements IoctlInterface
+abstract class Ioctl implements IoctlContract
 {
     /**
      * @return array<int|string,string>
@@ -22,7 +22,7 @@ abstract class Ioctl implements IoctlInterface
         $data = [];
 
         foreach ($this->definition() as $field => $type) {
-            if (!is_numeric($field)) {
+            if (! is_numeric($field)) {
                 $d = $this->{$field}; // @phpstan-ignore property.dynamicName
                 $d = is_array($d) ? $d : [$d];
                 $data = array_merge($data, $d);

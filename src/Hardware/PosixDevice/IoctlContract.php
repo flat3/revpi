@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Flat3\RevPi\Hardware\PosixDevice;
 
-interface IoctlInterface
+interface IoctlContract
 {
     public function pack(): string;
 

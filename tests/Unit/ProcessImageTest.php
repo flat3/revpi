@@ -68,7 +68,6 @@ class ProcessImageTest extends UnitTestCase
     public function test_dump_image(): void
     {
         $image = app(ProcessImage::class);
-        $image->dumpImage();
         self::assertEquals(4096, strlen($image->dumpImage()));
     }
 

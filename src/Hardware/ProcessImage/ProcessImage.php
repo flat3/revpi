@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Flat3\RevPi\Hardware\ProcessImage;
 
+use Flat3\RevPi\Constants;
 use Flat3\RevPi\Contracts\BaseModule;
 use Flat3\RevPi\Contracts\Compact;
 use Flat3\RevPi\Contracts\Connect5;
@@ -12,12 +13,12 @@ use Flat3\RevPi\Contracts\ProcessImage as ProcessImageContract;
 use Flat3\RevPi\Contracts\Virtual;
 use Flat3\RevPi\Exceptions\NotImplementedException;
 use Flat3\RevPi\Exceptions\OverflowException;
-use Flat3\RevPi\Exceptions\PiControlException;
+use Flat3\RevPi\Exceptions\PosixDeviceException;
 use Flat3\RevPi\Exceptions\ProcessImageException;
 use Flat3\RevPi\Exceptions\UnderflowException;
 use Flat3\RevPi\Exceptions\VariableNotFoundException;
+use Flat3\RevPi\Hardware\PosixDevice\HasIoctl;
 use Flat3\RevPi\Hardware\PosixDevice\IoctlArray;
-use Flat3\RevPi\Hardware\PosixDevice\IoctlInterface;
 use Flat3\RevPi\Hardware\ProcessImage\Ioctl\SDeviceInfoIoctl;
 use Flat3\RevPi\Hardware\ProcessImage\Ioctl\ValueIoctl;
 use Flat3\RevPi\Hardware\ProcessImage\Ioctl\VariableIoctl;
@@ -25,180 +26,136 @@ use Illuminate\Support\Collection;
 
 class ProcessImage implements ProcessImageContract
 {
-    public function __construct(protected PiControl $device, protected string $devicePath = '/dev/piControl0') {}
+    use HasIoctl;
 
-    protected function open(): int
+    protected int $fd;
+
+    public function __construct(protected PiControl $device, protected string $devicePath = '/dev/piControl0')
     {
-        $descriptor = $this->device->open($this->devicePath, 2);
+        $fd = $this->device->open($this->devicePath, Constants::O_RDWR);
 
-        if ($descriptor < 0) {
-            throw new PiControlException('open failed');
+        if ($fd < 0) {
+            throw new PosixDeviceException('open failed');
         }
 
-        return $descriptor;
+        $this->fd = $fd;
     }
 
-    protected function close(int $descriptor): void
+    public function __destruct()
     {
-        $this->device->close($descriptor);
-    }
-
-    protected function command(Command $command, ?IoctlInterface $message = null): int
-    {
-        $descriptor = $this->open();
-
-        try {
-            if ($message === null) {
-                $ret = $this->device->ioctl($descriptor, $command->value);
-
-                if ($ret < 0) {
-                    throw new PiControlException('ioctl failed');
-                }
-
-                return $ret;
-            }
-
-            $buf = $message->pack();
-            $ret = $this->device->ioctl($descriptor, $command->value, $buf);
-
-            if ($ret < 0) {
-                throw new PiControlException('ioctl failed');
-            }
-
-            assert(is_string($buf));
-
-            $message->unpack($buf);
-        } finally {
-            $this->close($descriptor);
-        }
-
-        return $ret;
+        $this->device->close($this->fd);
     }
 
     public function writeVariable(string $variable, int|bool $value): void
     {
-        $descriptor = $this->open();
-
         $value = (int) $value;
 
-        try {
-            $variable = $this->findVariable($variable);
+        $variable = $this->findVariable($variable);
 
-            if ($value < 0) {
-                throw new UnderflowException;
-            }
+        if ($value < 0) {
+            throw new UnderflowException;
+        }
 
-            if ($value > pow(2, $variable->length) - 1) {
-                throw new OverflowException;
-            }
+        if ($value > pow(2, $variable->length) - 1) {
+            throw new OverflowException;
+        }
 
-            if ($variable->length === 1) {
-                $valueMessage = new ValueIoctl;
-                $valueMessage->address = $variable->address;
-                $valueMessage->bit = $variable->bit;
-                $valueMessage->value = $value;
-                $valueMessage->address += intdiv($valueMessage->bit, 8);
-                $valueMessage->bit %= 8;
-                $this->command(Command::SetValue, $valueMessage);
+        if ($variable->length === 1) {
+            $valueMessage = new ValueIoctl;
+            $valueMessage->address = $variable->address;
+            $valueMessage->bit = $variable->bit;
+            $valueMessage->value = $value;
+            $valueMessage->address += intdiv($valueMessage->bit, 8);
+            $valueMessage->bit %= 8;
+            $this->ioctl(Command::SetValue, $valueMessage);
 
-                return;
-            }
+            return;
+        }
 
-            $ret = $this->device->lseek($descriptor, $variable->address, 0);
+        $ret = $this->device->lseek($this->fd, $variable->address, 0);
 
-            if ($ret < 0) {
-                throw new PiControlException('lseek failed');
-            }
+        if ($ret < 0) {
+            throw new PosixDeviceException('lseek failed');
+        }
 
-            $length = (int) ($variable->length / 8);
+        $length = (int) ($variable->length / 8);
 
-            $buffer = pack(match ($length) {
-                1 => 'C',
-                2 => 'v',
-                4 => 'V',
-                default => throw new ProcessImageException('Invalid data size'),
-            }, $value);
+        $buffer = pack(match ($length) {
+            1 => 'C',
+            2 => 'v',
+            4 => 'V',
+            default => throw new ProcessImageException('Invalid data size'),
+        }, $value);
 
-            $written = $this->device->write($descriptor, $buffer, $length);
+        $written = $this->device->write($this->fd, $buffer, $length);
 
-            if ($written !== $length) {
-                throw new PiControlException('write failed');
-            }
-        } finally {
-            $this->close($descriptor);
+        if ($written !== $length) {
+            throw new PosixDeviceException('write failed');
         }
     }
 
     public function readVariable(string $variable): bool|int
     {
-        $descriptor = $this->open();
+        $variable = $this->findVariable($variable);
 
-        try {
-            $variable = $this->findVariable($variable);
+        if ($variable->length === 1) {
+            $valueMessage = new ValueIoctl;
+            $valueMessage->address = $variable->address;
+            $valueMessage->bit = $variable->bit;
+            $valueMessage->address += intdiv($valueMessage->bit, 8);
+            $valueMessage->bit %= 8;
+            $this->ioctl(Command::GetValue, $valueMessage);
 
-            if ($variable->length === 1) {
-                $valueMessage = new ValueIoctl;
-                $valueMessage->address = $variable->address;
-                $valueMessage->bit = $variable->bit;
-                $valueMessage->address += intdiv($valueMessage->bit, 8);
-                $valueMessage->bit %= 8;
-                $this->command(Command::GetValue, $valueMessage);
-
-                return (bool) $valueMessage->value;
-            }
-
-            $ret = $this->device->lseek($descriptor, $variable->address, 0);
-
-            if ($ret < 0) {
-                throw new PiControlException('lseek failed');
-            }
-
-            $length = (int) ($variable->length / 8);
-
-            $buffer = '';
-
-            $read = $this->device->read($descriptor, $buffer, $length);
-
-            if ($read !== $length) {
-                throw new PiControlException('read failed');
-            }
-
-            $data = unpack(
-                format: match ($length) {
-                    1 => 'C',
-                    2 => 'v',
-                    4 => 'V',
-                    default => throw new ProcessImageException('Invalid data size'),
-                },
-                string: $buffer
-            );
-
-            assert($data !== false);
-
-            return $data[1];
-        } finally {
-            $this->close($descriptor);
+            return (bool) $valueMessage->value;
         }
+
+        $ret = $this->device->lseek($this->fd, $variable->address, 0);
+
+        if ($ret < 0) {
+            throw new PosixDeviceException('lseek failed');
+        }
+
+        $length = (int) ($variable->length / 8);
+
+        $buffer = '';
+
+        $read = $this->device->read($this->fd, $buffer, $length);
+
+        if ($read !== $length) {
+            throw new PosixDeviceException('read failed');
+        }
+
+        $data = unpack(
+            format: match ($length) {
+                1 => 'C',
+                2 => 'v',
+                4 => 'V',
+                default => throw new ProcessImageException('Invalid data size'),
+            },
+            string: $buffer
+        );
+
+        assert($data !== false);
+
+        return $data[1];
     }
 
     public function dumpImage(): string
     {
-        $descriptor = $this->open();
-
         $buffer = '';
         $length = 512;
 
+        $this->device->lseek($this->fd, 0, SEEK_SET);
+
         while (true) {
             $buf = '';
-            $read = $this->device->read($descriptor, $buf, $length);
+            $read = $this->device->read($this->fd, $buf, $length);
             $buffer .= $buf;
 
             if ($read !== $length) {
                 break;
             }
         }
-
-        $this->close($descriptor);
 
         return $buffer;
     }
@@ -209,8 +166,8 @@ class ProcessImage implements ProcessImageContract
         $message->varName = $variable;
 
         try {
-            $this->command(Command::FindVariable, $message);
-        } catch (PiControlException) {
+            $this->ioctl(Command::FindVariable, $message);
+        } catch (PosixDeviceException) {
             throw new VariableNotFoundException($variable);
         }
 
@@ -221,7 +178,7 @@ class ProcessImage implements ProcessImageContract
     {
         $message = new SDeviceInfoIoctl;
 
-        $this->command(Command::GetDeviceInfo, $message);
+        $this->ioctl(Command::GetDeviceInfo, $message);
 
         return Device::fromMessage($message);
     }
@@ -229,7 +186,7 @@ class ProcessImage implements ProcessImageContract
     public function getDeviceInfoList(): Collection
     {
         $messageArray = new IoctlArray(SDeviceInfoIoctl::class, 20);
-        $count = $this->command(Command::GetDeviceInfoList, $messageArray);
+        $count = $this->ioctl(Command::GetDeviceInfoList, $messageArray);
 
         /** @var Collection<int, SDeviceInfoIoctl> $deviceMessages */
         $deviceMessages = collect($messageArray->messages());
@@ -241,7 +198,7 @@ class ProcessImage implements ProcessImageContract
 
     public function reset(): void
     {
-        $this->command(Command::Reset);
+        $this->ioctl(Command::Reset);
     }
 
     public function getModule(): BaseModule

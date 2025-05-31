@@ -18,6 +18,10 @@ int open(const char *pathname, int flags);
 off_t lseek(int fd, off_t offset, int whence);
 ssize_t read(int fd, void *buf, size_t count);
 ssize_t write(int fd, const void *buf, size_t count);
+int cfgetispeed(void* argp);
+int cfgetospeed(void* argp);
+int cfsetispeed(void* argp, unsigned int speed);
+int cfsetospeed(void* argp, unsigned int speed);
 int close(int fd);
 EOF, 'libc.so.6');
     }
@@ -36,9 +40,7 @@ EOF, 'libc.so.6');
     {
         $buf = $this->ffi->new("char[$count]"); // @phpstan-ignore staticMethod.dynamicCall
         $read = $this->ffi->read($fd, $buf, $count); // @phpstan-ignore method.notFound
-
         assert($buf instanceof FFI\CData);
-
         $buffer = FFI::string($buf, $read);
 
         return $read;
@@ -67,7 +69,6 @@ EOF, 'libc.so.6');
         $buf = $this->ffi->new(sprintf('char[%d]', strlen($argp))); // @phpstan-ignore staticMethod.dynamicCall
         assert($buf instanceof FFI\CData);
         FFI::memcpy($buf, $argp, strlen($argp));
-
         $ret = $this->ffi->ioctl($fd, $request, $buf); // @phpstan-ignore method.notFound
         $argp = FFI::string($buf, strlen($argp));
 

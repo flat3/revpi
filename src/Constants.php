@@ -15,4 +15,6 @@ final class Constants
     public const f50Hz = 1 / 50;
 
     public const f60Hz = 1 / 60;
+
+    public const O_RDWR = 2;
 }

@@ -25,6 +25,10 @@ class TermiosIoctl extends Ioctl
 
     public int $ospeed = 0;
 
+    public const PARENB = 0000400;
+
+    public const PARODD = 0001000;
+
     public function definition(): array
     {
         return [

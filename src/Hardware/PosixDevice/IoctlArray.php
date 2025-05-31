@@ -7,17 +7,17 @@ namespace Flat3\RevPi\Hardware\PosixDevice;
 use ArrayAccess;
 
 /**
- * @implements ArrayAccess<int, IoctlInterface>
+ * @implements ArrayAccess<int, IoctlContract>
  */
-class IoctlArray implements ArrayAccess, IoctlInterface
+class IoctlArray implements ArrayAccess, IoctlContract
 {
     /**
-     * @var array<IoctlInterface>
+     * @var array<IoctlContract>
      */
     protected array $messages = [];
 
     /**
-     * @param  class-string<IoctlInterface>  $source
+     * @param  class-string<IoctlContract>  $source
      */
     public function __construct(protected string $source, int $count)
     {
@@ -28,7 +28,7 @@ class IoctlArray implements ArrayAccess, IoctlInterface
 
     public function pack(): string
     {
-        return implode('', array_map(fn (IoctlInterface $message) => $message->pack(), $this->messages));
+        return implode('', array_map(fn (IoctlContract $message) => $message->pack(), $this->messages));
     }
 
     public function unpack(string $buffer): void
@@ -46,7 +46,7 @@ class IoctlArray implements ArrayAccess, IoctlInterface
     }
 
     /**
-     * @return IoctlInterface[]
+     * @return IoctlContract[]
      */
     public function messages(): array
     {

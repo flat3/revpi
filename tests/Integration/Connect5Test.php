@@ -50,6 +50,8 @@ class Connect5Test extends TestCase
     public function test_analog_voltage(): void
     {
         $module = app(BaseModule::class);
+        $module->image()->writeVariable('AnalogOutput_3', 100);
+        $this->loop(1, 100);
         $module->image()->writeVariable('AnalogOutput_3', 0);
         $this->loop(1, 100);
         self::assertEquals(0, $module->image()->readVariable('AnalogOutput_3'));
