@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Flat3\RevPi\Contracts;
 
-use Flat3\RevPi\Hardware\PosixDevice\PosixDevice;
+use Flat3\RevPi\Hardware\Interfaces\DeviceIoctlInterface;
+use Flat3\RevPi\Hardware\Interfaces\DeviceStreamInterface;
+use Flat3\RevPi\Hardware\Interfaces\PosixDeviceInterface;
 
-interface TerminalDevice extends PosixDevice
+interface TerminalDeviceInterface extends DeviceIoctlInterface, DeviceStreamInterface, PosixDeviceInterface
 {
     public function cfgetispeed(string &$buffer): int;
 

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Flat3\RevPi\Hardware\SerialPort;
 
-use Flat3\RevPi\Hardware\PosixDevice\IoctlCommand;
+use Flat3\RevPi\Hardware\Interfaces\IoctlCommand;
 
 enum Command: int implements IoctlCommand
 {

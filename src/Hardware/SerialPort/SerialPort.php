@@ -6,40 +6,38 @@ namespace Flat3\RevPi\Hardware\SerialPort;
 
 use Flat3\RevPi\Constants;
 use Flat3\RevPi\Contracts\SerialPort as SerialPortContract;
-use Flat3\RevPi\Contracts\TerminalDevice as TerminalContract;
+use Flat3\RevPi\Contracts\TerminalDeviceInterface as TerminalContract;
 use Flat3\RevPi\Exceptions\NotImplementedException;
-use Flat3\RevPi\Hardware\PosixDevice\HasIoctl;
+use Flat3\RevPi\Hardware\PosixDevice\HasDeviceIoctl;
 use Flat3\RevPi\Hardware\SerialPort\Ioctl\SerialRS485;
-use Flat3\RevPi\Hardware\SerialPort\Ioctl\TermiosIoctl;
+use Flat3\RevPi\Hardware\SerialPort\Ioctl\Termios;
 use Revolt\EventLoop;
 
 class SerialPort implements SerialPortContract
 {
-    use HasIoctl;
-
-    protected int $fd;
+    use HasDeviceIoctl;
 
     public function __construct(protected TerminalContract $device, protected string $devicePath = '/dev/ttyRS485-0')
     {
-        $this->fd = $device->open($this->devicePath, Constants::O_RDWR | Constants::O_NONBLOCK | Constants::O_NOCTTY);
+        $device->open($this->devicePath, Constants::O_RDWR | Constants::O_NONBLOCK | Constants::O_NOCTTY);
     }
 
     public function __destruct()
     {
-        $this->device->close($this->fd);
+        $this->device->close();
     }
 
     public function onReadable(callable $callback): static
     {
-        $stream = $this->device->stream($this->fd);
-        EventLoop::onReadable($stream, fn() => $callback(fread($stream, 1024)));
+        $stream = $this->device->fdopen();
+        EventLoop::onReadable($stream, fn () => $callback(fread($stream, 1024)));
 
         return $this;
     }
 
     public function setSpeed(BaudRate $rate): static
     {
-        $message = new TermiosIoctl;
+        $message = new Termios;
         $this->ioctl(Command::TCGETS, $message);
         $buffer = $message->pack();
         $this->device->cfsetispeed($buffer, $rate->value);
@@ -52,7 +50,7 @@ class SerialPort implements SerialPortContract
 
     public function getSpeed(): BaudRate
     {
-        $message = new TermiosIoctl;
+        $message = new Termios;
         $this->ioctl(Command::TCGETS, $message);
         $buffer = $message->pack();
         $speed = $this->device->cfgetispeed($buffer);
@@ -86,16 +84,16 @@ class SerialPort implements SerialPortContract
 
     public function setParity(Parity $parity): static
     {
-        $message = new TermiosIoctl;
+        $message = new Termios;
         $this->ioctl(Command::TCGETS, $message);
-        $message->cflag &= ~(TermiosIoctl::PARENB | TermiosIoctl::PARODD);
+        $message->cflag &= ~(Termios::PARENB | Termios::PARODD);
 
         if ($parity === Parity::Odd) {
-            $message->cflag |= TermiosIoctl::PARODD | TermiosIoctl::PARENB;
+            $message->cflag |= Termios::PARODD | Termios::PARENB;
         }
 
         if ($parity === Parity::Even) {
-            $message->cflag |= TermiosIoctl::PARENB;
+            $message->cflag |= Termios::PARENB;
         }
 
         $this->ioctl(Command::TCSETS, $message);
@@ -105,14 +103,14 @@ class SerialPort implements SerialPortContract
 
     public function getParity(): Parity
     {
-        $message = new TermiosIoctl;
+        $message = new Termios;
         $this->ioctl(Command::TCGETS, $message);
 
-        if (($message->cflag & TermiosIoctl::PARENB) === 0) {
+        if (($message->cflag & Termios::PARENB) === 0) {
             return Parity::None;
         }
 
-        if (($message->cflag & TermiosIoctl::PARODD) !== 0) {
+        if (($message->cflag & Termios::PARODD) !== 0) {
             return Parity::Odd;
         }
 
@@ -121,16 +119,16 @@ class SerialPort implements SerialPortContract
 
     public function setDataBits(DataBits $bits): static
     {
-        $message = new TermiosIoctl;
+        $message = new Termios;
         $this->ioctl(Command::TCGETS, $message);
 
-        $message->cflag &= ~TermiosIoctl::CSIZE;
+        $message->cflag &= ~Termios::CSIZE;
 
         $message->cflag |= match ($bits) {
-            DataBits::CS5 => TermiosIoctl::CS5,
-            DataBits::CS6 => TermiosIoctl::CS6,
-            DataBits::CS7 => TermiosIoctl::CS7,
-            DataBits::CS8 => TermiosIoctl::CS8,
+            DataBits::CS5 => Termios::CS5,
+            DataBits::CS6 => Termios::CS6,
+            DataBits::CS7 => Termios::CS7,
+            DataBits::CS8 => Termios::CS8,
         };
 
         $this->ioctl(Command::TCSETS, $message);
@@ -140,27 +138,27 @@ class SerialPort implements SerialPortContract
 
     public function getDataBits(): DataBits
     {
-        $message = new TermiosIoctl;
+        $message = new Termios;
         $this->ioctl(Command::TCGETS, $message);
 
-        return match ($message->cflag & TermiosIoctl::CSIZE) {
-            TermiosIoctl::CS5 => DataBits::CS5,
-            TermiosIoctl::CS6 => DataBits::CS6,
-            TermiosIoctl::CS7 => DataBits::CS7,
-            TermiosIoctl::CS8 => DataBits::CS8,
+        return match ($message->cflag & Termios::CSIZE) {
+            Termios::CS5 => DataBits::CS5,
+            Termios::CS6 => DataBits::CS6,
+            Termios::CS7 => DataBits::CS7,
+            Termios::CS8 => DataBits::CS8,
             default => throw new NotImplementedException,
         };
     }
 
     public function setStopBits(StopBits $bits): static
     {
-        $message = new TermiosIoctl;
+        $message = new Termios;
         $this->ioctl(Command::TCGETS, $message);
 
         if ($bits === StopBits::Two) {
-            $message->cflag |= TermiosIoctl::CSTOPB;
+            $message->cflag |= Termios::CSTOPB;
         } else {
-            $message->cflag &= ~TermiosIoctl::CSTOPB;
+            $message->cflag &= ~Termios::CSTOPB;
         }
 
         $this->ioctl(Command::TCSETS, $message);
@@ -170,9 +168,9 @@ class SerialPort implements SerialPortContract
 
     public function getStopBits(): StopBits
     {
-        $message = new TermiosIoctl;
+        $message = new Termios;
         $this->ioctl(Command::TCGETS, $message);
 
-        return (($message->cflag & TermiosIoctl::CSTOPB) !== 0) ? StopBits::Two : StopBits::One;
+        return (($message->cflag & Termios::CSTOPB) !== 0) ? StopBits::Two : StopBits::One;
     }
 }

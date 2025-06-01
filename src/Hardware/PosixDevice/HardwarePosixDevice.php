@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace Flat3\RevPi\Hardware\PosixDevice;
 
 use FFI;
+use Flat3\RevPi\Hardware\Interfaces\PosixDeviceInterface;
 
-class HardwarePosixDevice implements PosixDevice
+class HardwarePosixDevice implements PosixDeviceInterface
 {
     protected FFI $ffi;
+
+    protected int $fd;
 
     public function __construct()
     {
@@ -28,56 +31,58 @@ EOF, 'libc.so.6');
 
     public function open(string $pathname, int $flags): int
     {
-        return $this->ffi->open($pathname, $flags); // @phpstan-ignore method.notFound
+        $this->fd = $this->ffi->open($pathname, $flags); // @phpstan-ignore method.notFound
+
+        return 0;
     }
 
-    public function close(int $fd): int
+    public function close(): int
     {
-        return $this->ffi->close($fd); // @phpstan-ignore method.notFound
+        return $this->ffi->close($this->fd); // @phpstan-ignore method.notFound
     }
 
-    public function read(int $fd, string &$buffer, int $count): int
+    public function read(string &$buffer, int $count): int
     {
         $buf = $this->ffi->new("char[$count]"); // @phpstan-ignore staticMethod.dynamicCall
-        $read = $this->ffi->read($fd, $buf, $count); // @phpstan-ignore method.notFound
+        $read = $this->ffi->read($this->fd, $buf, $count); // @phpstan-ignore method.notFound
         assert($buf instanceof FFI\CData);
         $buffer = FFI::string($buf, $read);
 
         return $read;
     }
 
-    public function write(int $fd, string $buffer, int $count): int
+    public function write(string $buffer, int $count): int
     {
         $buf = $this->ffi->new("char[$count]"); // @phpstan-ignore staticMethod.dynamicCall
         assert($buf instanceof FFI\CData);
         FFI::memcpy($buf, $buffer, $count);
 
-        return $this->ffi->write($fd, $buf, $count); // @phpstan-ignore method.notFound
+        return $this->ffi->write($this->fd, $buf, $count); // @phpstan-ignore method.notFound
     }
 
-    public function lseek(int $fd, int $offset, int $whence): int
+    public function lseek(int $offset, int $whence): int
     {
-        return $this->ffi->lseek($fd, $offset, $whence); // @phpstan-ignore method.notFound
+        return $this->ffi->lseek($this->fd, $offset, $whence); // @phpstan-ignore method.notFound
     }
 
-    public function ioctl(int $fd, int $request, ?string &$argp = null): int
+    public function ioctl(int $request, ?string &$argp = null): int
     {
         if ($argp === null) {
-            return $this->ffi->ioctl($fd, $request, null); // @phpstan-ignore method.notFound
+            return $this->ffi->ioctl($this->fd, $request, null); // @phpstan-ignore method.notFound
         }
 
         $buf = $this->ffi->new(sprintf('char[%d]', strlen($argp))); // @phpstan-ignore staticMethod.dynamicCall
         assert($buf instanceof FFI\CData);
         FFI::memcpy($buf, $argp, strlen($argp));
-        $ret = $this->ffi->ioctl($fd, $request, $buf); // @phpstan-ignore method.notFound
+        $ret = $this->ffi->ioctl($this->fd, $request, $buf); // @phpstan-ignore method.notFound
         $argp = FFI::string($buf, strlen($argp));
 
         return $ret;
     }
 
-    public function stream(int $fd): mixed
+    public function fdopen(): mixed
     {
-        $stream = fopen("php://fd/{$fd}", 'r+b');
+        $stream = fopen("php://fd/{$this->fd}", 'r+b');
         assert($stream !== false);
         stream_set_blocking($stream, false);
 

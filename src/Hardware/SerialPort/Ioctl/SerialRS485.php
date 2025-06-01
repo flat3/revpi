@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Flat3\RevPi\Hardware\SerialPort\Ioctl;
 
-use Flat3\RevPi\Hardware\PosixDevice\Ioctl;
+use Flat3\RevPi\Hardware\Interop\Struct;
 
-class SerialRS485 extends Ioctl
+class SerialRS485 extends Struct
 {
     public int $flags = 0;
 

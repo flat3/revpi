@@ -17,27 +17,25 @@ use Flat3\RevPi\Exceptions\PosixDeviceException;
 use Flat3\RevPi\Exceptions\ProcessImageException;
 use Flat3\RevPi\Exceptions\UnderflowException;
 use Flat3\RevPi\Exceptions\VariableNotFoundException;
-use Flat3\RevPi\Hardware\PosixDevice\HasIoctl;
-use Flat3\RevPi\Hardware\PosixDevice\IoctlArray;
-use Flat3\RevPi\Hardware\ProcessImage\Ioctl\SDeviceInfoIoctl;
-use Flat3\RevPi\Hardware\ProcessImage\Ioctl\ValueIoctl;
-use Flat3\RevPi\Hardware\ProcessImage\Ioctl\VariableIoctl;
+use Flat3\RevPi\Hardware\Interop\StructArray;
+use Flat3\RevPi\Hardware\PosixDevice\HasDeviceIoctl;
+use Flat3\RevPi\Hardware\ProcessImage\Ioctl\DeviceInfoStruct;
+use Flat3\RevPi\Hardware\ProcessImage\Ioctl\ValueStruct;
+use Flat3\RevPi\Hardware\ProcessImage\Ioctl\VariableStruct;
 use Illuminate\Support\Collection;
 
 class ProcessImage implements ProcessImageContract
 {
-    use HasIoctl;
-
-    protected int $fd;
+    use HasDeviceIoctl;
 
     public function __construct(protected PiControl $device, protected string $devicePath = '/dev/piControl0')
     {
-        $this->fd = $this->device->open($this->devicePath, Constants::O_RDWR);
+        $this->device->open($this->devicePath, Constants::O_RDWR);
     }
 
     public function __destruct()
     {
-        $this->device->close($this->fd);
+        $this->device->close();
     }
 
     public function writeVariable(string $variable, int|bool $value): void
@@ -55,7 +53,7 @@ class ProcessImage implements ProcessImageContract
         }
 
         if ($variable->length === 1) {
-            $valueMessage = new ValueIoctl;
+            $valueMessage = new ValueStruct;
             $valueMessage->address = $variable->address;
             $valueMessage->bit = $variable->bit;
             $valueMessage->value = $value;
@@ -66,7 +64,7 @@ class ProcessImage implements ProcessImageContract
             return;
         }
 
-        $ret = $this->device->lseek($this->fd, $variable->address, 0);
+        $ret = $this->device->lseek($variable->address, 0);
 
         if ($ret < 0) {
             throw new PosixDeviceException('lseek failed');
@@ -81,7 +79,7 @@ class ProcessImage implements ProcessImageContract
             default => throw new ProcessImageException('Invalid data size'),
         }, $value);
 
-        $written = $this->device->write($this->fd, $buffer, $length);
+        $written = $this->device->write($buffer, $length);
 
         if ($written !== $length) {
             throw new PosixDeviceException('write failed');
@@ -93,7 +91,7 @@ class ProcessImage implements ProcessImageContract
         $variable = $this->findVariable($variable);
 
         if ($variable->length === 1) {
-            $valueMessage = new ValueIoctl;
+            $valueMessage = new ValueStruct;
             $valueMessage->address = $variable->address;
             $valueMessage->bit = $variable->bit;
             $valueMessage->address += intdiv($valueMessage->bit, 8);
@@ -103,7 +101,7 @@ class ProcessImage implements ProcessImageContract
             return (bool) $valueMessage->value;
         }
 
-        $ret = $this->device->lseek($this->fd, $variable->address, 0);
+        $ret = $this->device->lseek($variable->address, 0);
 
         if ($ret < 0) {
             throw new PosixDeviceException('lseek failed');
@@ -113,7 +111,7 @@ class ProcessImage implements ProcessImageContract
 
         $buffer = '';
 
-        $read = $this->device->read($this->fd, $buffer, $length);
+        $read = $this->device->read($buffer, $length);
 
         if ($read !== $length) {
             throw new PosixDeviceException('read failed');
@@ -139,11 +137,11 @@ class ProcessImage implements ProcessImageContract
         $buffer = '';
         $length = 512;
 
-        $this->device->lseek($this->fd, 0, SEEK_SET);
+        $this->device->lseek(0, SEEK_SET);
 
         while (true) {
             $buf = '';
-            $read = $this->device->read($this->fd, $buf, $length);
+            $read = $this->device->read($buf, $length);
             $buffer .= $buf;
 
             if ($read !== $length) {
@@ -154,9 +152,9 @@ class ProcessImage implements ProcessImageContract
         return $buffer;
     }
 
-    protected function findVariable(string $variable): VariableIoctl
+    protected function findVariable(string $variable): VariableStruct
     {
-        $message = new VariableIoctl;
+        $message = new VariableStruct;
         $message->varName = $variable;
 
         try {
@@ -170,7 +168,7 @@ class ProcessImage implements ProcessImageContract
 
     public function getDeviceInfo(): Device
     {
-        $message = new SDeviceInfoIoctl;
+        $message = new DeviceInfoStruct;
 
         $this->ioctl(Command::GetDeviceInfo, $message);
 
@@ -179,15 +177,15 @@ class ProcessImage implements ProcessImageContract
 
     public function getDeviceInfoList(): Collection
     {
-        $messageArray = new IoctlArray(SDeviceInfoIoctl::class, 20);
+        $messageArray = new StructArray(DeviceInfoStruct::class, 20);
         $count = $this->ioctl(Command::GetDeviceInfoList, $messageArray);
 
-        /** @var Collection<int, SDeviceInfoIoctl> $deviceMessages */
+        /** @var Collection<int, DeviceInfoStruct> $deviceMessages */
         $deviceMessages = collect($messageArray->messages());
 
         return $deviceMessages
             ->take($count)
-            ->map(fn(SDeviceInfoIoctl $message): Device => Device::fromMessage($message));
+            ->map(fn (DeviceInfoStruct $message): Device => Device::fromMessage($message));
     }
 
     public function reset(): void

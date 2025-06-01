@@ -2,18 +2,22 @@
 
 declare(strict_types=1);
 
-namespace Flat3\RevPi\Hardware\ProcessImage;
+namespace Flat3\RevPi\Hardware\Virtual;
 
 use Flat3\RevPi\Contracts\PiControl;
 use Flat3\RevPi\Exceptions\IoctlFailedException;
-use Flat3\RevPi\Hardware\PosixDevice\IoctlArray;
-use Flat3\RevPi\Hardware\PosixDevice\VirtualPosixDevice;
-use Flat3\RevPi\Hardware\ProcessImage\Ioctl\SDeviceInfoIoctl;
-use Flat3\RevPi\Hardware\ProcessImage\Ioctl\ValueIoctl;
-use Flat3\RevPi\Hardware\ProcessImage\Ioctl\VariableIoctl;
+use Flat3\RevPi\Hardware\Interop\StructArray;
+use Flat3\RevPi\Hardware\ProcessImage\Command;
+use Flat3\RevPi\Hardware\ProcessImage\DataType;
+use Flat3\RevPi\Hardware\ProcessImage\Device;
+use Flat3\RevPi\Hardware\ProcessImage\Ioctl\DeviceInfoStruct;
+use Flat3\RevPi\Hardware\ProcessImage\Ioctl\ValueStruct;
+use Flat3\RevPi\Hardware\ProcessImage\Ioctl\VariableStruct;
+use Flat3\RevPi\Hardware\ProcessImage\ModuleType;
+use Flat3\RevPi\Hardware\ProcessImage\Variable;
 use Illuminate\Support\Collection;
 
-class VirtualPiControl extends VirtualPosixDevice implements PiControl
+class VirtualPiControl extends VirtualBlockDevice implements PiControl
 {
     /** @var Collection<int, Device> */
     protected Collection $devices;
@@ -41,7 +45,7 @@ class VirtualPiControl extends VirtualPosixDevice implements PiControl
         $this->devices[$device->address] = $device;
     }
 
-    public function ioctl(int $fd, int $request, ?string &$argp = null): int
+    public function ioctl(int $request, ?string &$argp = null): int
     {
         $command = Command::tryFrom($request);
 
@@ -51,7 +55,7 @@ class VirtualPiControl extends VirtualPosixDevice implements PiControl
 
         if ($command === Command::GetDeviceInfo) {
             $device = $this->devices[0];
-            $deviceInfo = new SDeviceInfoIoctl;
+            $deviceInfo = new DeviceInfoStruct;
             $deviceInfo->address = $device->address;
             $deviceInfo->serialNumber = $device->serialNumber;
             $deviceInfo->moduleType = $device->moduleType->value;
@@ -63,11 +67,11 @@ class VirtualPiControl extends VirtualPosixDevice implements PiControl
         if ($command === Command::GetDeviceInfoList) {
             assert($argp !== null);
 
-            $deviceInfoList = new IoctlArray(SDeviceInfoIoctl::class, 20);
+            $deviceInfoList = new StructArray(DeviceInfoStruct::class, 20);
             $deviceInfoList->unpack($argp);
 
             foreach ($this->devices->values() as $index => $device) {
-                $deviceInfo = new SDeviceInfoIoctl;
+                $deviceInfo = new DeviceInfoStruct;
                 $deviceInfo->serialNumber = $device->serialNumber;
                 $deviceInfo->moduleType = $device->moduleType->value;
                 $deviceInfo->address = $device->address;
@@ -82,7 +86,7 @@ class VirtualPiControl extends VirtualPosixDevice implements PiControl
         if ($command === Command::FindVariable) {
             assert($argp !== null);
 
-            $variableInfo = new VariableIoctl;
+            $variableInfo = new VariableStruct;
             $variableInfo->unpack($argp);
 
             if (! $this->variables->has($variableInfo->varName)) {
@@ -99,7 +103,7 @@ class VirtualPiControl extends VirtualPosixDevice implements PiControl
         if ($command === Command::SetValue) {
             assert($argp !== null);
 
-            $valueMessage = new ValueIoctl;
+            $valueMessage = new ValueStruct;
             $valueMessage->unpack($argp);
 
             if ($valueMessage->address < 0 || $valueMessage->address >= strlen($this->memory)) {
@@ -131,7 +135,7 @@ class VirtualPiControl extends VirtualPosixDevice implements PiControl
         if ($command === Command::GetValue) {
             assert($argp !== null);
 
-            $valueMessage = new ValueIoctl;
+            $valueMessage = new ValueStruct;
             $valueMessage->unpack($argp);
 
             $byte = $this->memory[$valueMessage->address];

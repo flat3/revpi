@@ -6,7 +6,7 @@ namespace Flat3\RevPi\Tests\Virtual;
 
 use Flat3\RevPi\Contracts\SerialPort;
 use Flat3\RevPi\Hardware\SerialPort\BaudRate;
-use Flat3\RevPi\Hardware\SerialPort\VirtualTerminalDevice;
+use Flat3\RevPi\Hardware\Virtual\VirtualTerminalDevice;
 use Flat3\RevPi\Tests\Base\SerialPortBase;
 use Flat3\RevPi\Tests\UsesVirtualEnvironment;
 

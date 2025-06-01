@@ -2,22 +2,23 @@
 
 declare(strict_types=1);
 
-namespace Flat3\RevPi\Hardware\PosixDevice;
+namespace Flat3\RevPi\Hardware\Interop;
 
 use ArrayAccess;
+use Flat3\RevPi\Hardware\Interfaces\StructInterface;
 
 /**
- * @implements ArrayAccess<int, IoctlContract>
+ * @implements ArrayAccess<int, StructInterface>
  */
-class IoctlArray implements ArrayAccess, IoctlContract
+class StructArray implements ArrayAccess, StructInterface
 {
     /**
-     * @var array<IoctlContract>
+     * @var array<StructInterface>
      */
     protected array $messages = [];
 
     /**
-     * @param  class-string<IoctlContract>  $source
+     * @param  class-string<StructInterface>  $source
      */
     public function __construct(protected string $source, int $count)
     {
@@ -28,7 +29,7 @@ class IoctlArray implements ArrayAccess, IoctlContract
 
     public function pack(): string
     {
-        return implode('', array_map(fn (IoctlContract $message) => $message->pack(), $this->messages));
+        return implode('', array_map(fn (StructInterface $message) => $message->pack(), $this->messages));
     }
 
     public function unpack(string $buffer): void
@@ -46,7 +47,7 @@ class IoctlArray implements ArrayAccess, IoctlContract
     }
 
     /**
-     * @return IoctlContract[]
+     * @return StructInterface[]
      */
     public function messages(): array
     {

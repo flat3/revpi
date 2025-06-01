@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Flat3\RevPi\Hardware\ProcessImage;
 
-use Flat3\RevPi\Hardware\ProcessImage\Ioctl\SDeviceInfoIoctl;
+use Flat3\RevPi\Hardware\ProcessImage\Ioctl\DeviceInfoStruct;
 
 final class Device
 {
@@ -44,7 +44,7 @@ final class Device
 
     public bool $active;
 
-    public static function fromMessage(SDeviceInfoIoctl $message): self
+    public static function fromMessage(DeviceInfoStruct $message): self
     {
         $info = new self;
 

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Flat3\RevPi\Hardware\ProcessImage\Ioctl;
 
-use Flat3\RevPi\Hardware\PosixDevice\Ioctl;
+use Flat3\RevPi\Hardware\Interop\Struct;
 
-class SDeviceInfoIoctl extends Ioctl
+class DeviceInfoStruct extends Struct
 {
     public int $address = 0;
 

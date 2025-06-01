@@ -2,9 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Flat3\RevPi\Hardware\PosixDevice;
+namespace Flat3\RevPi\Hardware\Interop;
 
-abstract class Ioctl implements IoctlContract
+use Flat3\RevPi\Hardware\Interfaces\StructInterface;
+
+abstract class Struct implements StructInterface
 {
     /**
      * @return array<int|string,string>

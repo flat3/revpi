@@ -2,45 +2,33 @@
 
 declare(strict_types=1);
 
-namespace Flat3\RevPi\Hardware\PosixDevice;
+namespace Flat3\RevPi\Hardware\Virtual;
 
 use Flat3\RevPi\Exceptions\NotImplementedException;
+use Flat3\RevPi\Hardware\Interfaces\DeviceSeekInterface;
+use Flat3\RevPi\Hardware\Interfaces\PosixDeviceInterface;
 
-abstract class VirtualPosixDevice implements PosixDevice
+abstract class VirtualBlockDevice implements DeviceSeekInterface, PosixDeviceInterface
 {
-    protected string $memory;
+    protected string $memory = '';
 
-    /**
-     * @var array<int, int>
-     */
-    protected array $handles = [];
+    protected int $pos;
 
     public function open(string $pathname, int $flags): int
     {
-        $fd = count($this->handles) + 1;
-        $this->handles[$fd] = 0;
-
-        return $fd;
-    }
-
-    public function close(int $fd): int
-    {
-        if (!array_key_exists($fd, $this->handles)) {
-            return -1;
-        }
-
-        unset($this->handles[$fd]);
+        $this->pos = 0;
 
         return 0;
     }
 
-    public function read(int $fd, string &$buffer, int $count): int
+    public function close(): int
     {
-        if (!array_key_exists($fd, $this->handles)) {
-            return -1;
-        }
+        return 0;
+    }
 
-        $offset = $this->handles[$fd];
+    public function read(string &$buffer, int $count): int
+    {
+        $offset = $this->pos;
         $memorySize = strlen($this->memory);
 
         if ($offset >= $memorySize) {
@@ -51,18 +39,14 @@ abstract class VirtualPosixDevice implements PosixDevice
 
         $toRead = min($count, $memorySize - $offset);
         $buffer = substr($this->memory, $offset, $toRead);
-        $this->handles[$fd] += $toRead;
+        $this->pos += $toRead;
 
         return strlen($buffer);
     }
 
-    public function write(int $fd, string $buffer, int $count): int
+    public function write(string $buffer, int $count): int
     {
-        if (!array_key_exists($fd, $this->handles)) {
-            return -1;
-        }
-
-        $offset = $this->handles[$fd];
+        $offset = $this->pos;
         $memorySize = strlen($this->memory);
 
         $remaining = $memorySize - $offset;
@@ -83,19 +67,15 @@ abstract class VirtualPosixDevice implements PosixDevice
         $after = substr($this->memory, $offset + $actualWrite);
 
         $this->memory = $before.$toWrite.$after;
-        $this->handles[$fd] += $actualWrite;
+        $this->pos += $actualWrite;
 
         return $actualWrite;
     }
 
-    public function lseek(int $fd, int $offset, int $whence): int
+    public function lseek(int $offset, int $whence): int
     {
-        if (!array_key_exists($fd, $this->handles)) {
-            return -1;
-        }
-
         $memLen = strlen($this->memory);
-        $curPos = $this->handles[$fd];
+        $curPos = $this->pos;
 
         $newPos = match ($whence) {
             SEEK_SET => $offset,
@@ -108,18 +88,8 @@ abstract class VirtualPosixDevice implements PosixDevice
             return -1;
         }
 
-        $this->handles[$fd] = $newPos;
+        $this->pos = $newPos;
 
         return $newPos;
-    }
-
-    public function stream(int $fd): mixed
-    {
-        $stream = fopen('php://memory', 'r+');
-
-        fwrite($stream, $this->memory);
-        rewind($stream);
-
-        return $stream;
     }
 }

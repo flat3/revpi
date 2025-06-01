@@ -1,6 +1,6 @@
 <?php
 
-namespace Flat3\RevPi\Hardware\PosixDevice;
+namespace Flat3\RevPi\Hardware\Interfaces;
 
 use BackedEnum;
 
