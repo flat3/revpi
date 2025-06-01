@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Flat3\RevPi\Tests\Integration;
 
-use Flat3\RevPi\Contracts\Connect5;
-use Flat3\RevPi\Contracts\ProcessImage;
-use Flat3\RevPi\Hardware\ProcessImage\Device;
-use Flat3\RevPi\Hardware\ProcessImage\ModuleType;
+use Flat3\RevPi\Interfaces\Modules\Connect5;
+use Flat3\RevPi\Interfaces\ProcessImage;
+use Flat3\RevPi\ProcessImage\Device;
+use Flat3\RevPi\ProcessImage\ModuleType;
 use Flat3\RevPi\Tests\Base\ProcessImageBase;
 
 class ProcessImageTest extends ProcessImageBase

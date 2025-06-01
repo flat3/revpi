@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Flat3\RevPi\Commands;
 
-use Flat3\RevPi\Contracts\BaseModule;
+use Flat3\RevPi\Interfaces\Module;
 use Illuminate\Console\Command;
 use Revolt\EventLoop;
 
@@ -16,7 +16,7 @@ class Run extends Command
 
     public function handle(): void
     {
-        app(BaseModule::class)->resume();
+        app(Module::class)->resume();
         EventLoop::run();
     }
 }

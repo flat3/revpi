@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Flat3\RevPi\Tests\Base;
 
-use Flat3\RevPi\Contracts\SerialPort;
-use Flat3\RevPi\Hardware\SerialPort\BaudRate;
-use Flat3\RevPi\Hardware\SerialPort\DataBits;
-use Flat3\RevPi\Hardware\SerialPort\Parity;
-use Flat3\RevPi\Hardware\SerialPort\StopBits;
+use Flat3\RevPi\Interfaces\SerialPort;
+use Flat3\RevPi\SerialPort\BaudRate;
+use Flat3\RevPi\SerialPort\DataBits;
+use Flat3\RevPi\SerialPort\Parity;
+use Flat3\RevPi\SerialPort\StopBits;
 use Flat3\RevPi\Tests\TestCase;
 
 abstract class SerialPortBase extends TestCase

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Flat3\RevPi\Tests\Virtual;
 
-use Flat3\RevPi\Contracts\ProcessImage;
-use Flat3\RevPi\Hardware\ProcessImage\Device;
-use Flat3\RevPi\Hardware\ProcessImage\ModuleType;
-use Flat3\RevPi\Hardware\Virtual;
+use Flat3\RevPi\Interfaces\ProcessImage;
+use Flat3\RevPi\Modules\Virtual;
+use Flat3\RevPi\ProcessImage\Device;
+use Flat3\RevPi\ProcessImage\ModuleType;
 use Flat3\RevPi\Tests\Base\ProcessImageBase;
 use Flat3\RevPi\Tests\UsesVirtualEnvironment;
 

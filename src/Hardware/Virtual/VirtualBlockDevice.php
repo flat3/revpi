@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace Flat3\RevPi\Hardware\Virtual;
 
 use Flat3\RevPi\Exceptions\NotImplementedException;
-use Flat3\RevPi\Hardware\Interfaces\DeviceSeekInterface;
-use Flat3\RevPi\Hardware\Interfaces\PosixDeviceInterface;
+use Flat3\RevPi\Hardware\Interfaces\DeviceInterface;
+use Flat3\RevPi\Hardware\Interfaces\PosixSeekInterface;
 
-abstract class VirtualBlockDevice implements DeviceSeekInterface, PosixDeviceInterface
+abstract class VirtualBlockDevice implements DeviceInterface, PosixSeekInterface
 {
     protected string $memory = '';
 
-    protected int $pos;
+    protected int $pos = 0;
 
     public function open(string $pathname, int $flags): int
     {

@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Flat3\RevPi\Tests\Base;
 
-use Flat3\RevPi\Contracts\BaseModule;
-use Flat3\RevPi\Contracts\ProcessImage;
 use Flat3\RevPi\Exceptions\OverflowException;
 use Flat3\RevPi\Exceptions\UnderflowException;
 use Flat3\RevPi\Exceptions\VariableNotFoundException;
+use Flat3\RevPi\Interfaces\Module;
+use Flat3\RevPi\Interfaces\ProcessImage;
 use Flat3\RevPi\Tests\TestCase;
 
 abstract class ProcessImageBase extends TestCase
@@ -61,7 +61,7 @@ abstract class ProcessImageBase extends TestCase
 
     public function test_sizes(): void
     {
-        $module = app(BaseModule::class);
+        $module = app(Module::class);
         $image = $module->image();
 
         foreach (range(1, 48) as $position) {

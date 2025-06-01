@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Flat3\RevPi;
 
 use Flat3\RevPi\Attributes\Tag;
-use Flat3\RevPi\Contracts\BaseModule;
-use Flat3\RevPi\Contracts\Led;
 use Flat3\RevPi\Exceptions\AttributeNotFoundException;
-use Flat3\RevPi\Hardware\IO\IO;
-use Flat3\RevPi\Hardware\Led\LedPosition;
+use Flat3\RevPi\Interfaces\Led;
+use Flat3\RevPi\Interfaces\Module;
+use Flat3\RevPi\IO\IO;
+use Flat3\RevPi\Led\LedPosition;
 use Illuminate\Support\Facades\App;
 use ReflectionAttribute;
 use ReflectionClass;
@@ -19,9 +19,9 @@ trait RevolutionPi
 {
     protected ?string $address = null;
 
-    public function module(): BaseModule
+    public function module(): Module
     {
-        return app(BaseModule::class);
+        return app(Module::class);
     }
 
     public function address(string $address): static

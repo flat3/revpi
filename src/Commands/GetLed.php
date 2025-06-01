@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Flat3\RevPi\Commands;
 
-use Flat3\RevPi\Contracts\BaseModule;
-use Flat3\RevPi\Hardware\Led\LedPosition;
+use Flat3\RevPi\Interfaces\Module;
+use Flat3\RevPi\Led\LedPosition;
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Exception\InvalidArgumentException;
 
@@ -18,7 +18,7 @@ class GetLed extends Command
     public function handle(): void
     {
         $this->info(
-            app(BaseModule::class)
+            app(Module::class)
                 ->led(match ($this->argument('position')) {
                     'a1' => LedPosition::A1,
                     'a2' => LedPosition::A2,

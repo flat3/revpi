@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Flat3\RevPi\Hardware\Virtual;
 
 use Flat3\RevPi\Exceptions\PosixDeviceException;
-use Flat3\RevPi\Hardware\Interfaces\DeviceIoctlInterface;
-use Flat3\RevPi\Hardware\Interfaces\DeviceStreamInterface;
-use Flat3\RevPi\Hardware\Interfaces\PosixDeviceInterface;
+use Flat3\RevPi\Hardware\Interfaces\DeviceInterface;
+use Flat3\RevPi\Hardware\Interfaces\IoctlInterface;
+use Flat3\RevPi\Hardware\Interfaces\StreamInterface;
 
-abstract class VirtualCharacterDevice implements DeviceIoctlInterface, DeviceStreamInterface, PosixDeviceInterface
+abstract class VirtualCharacterDevice implements DeviceInterface, IoctlInterface, StreamInterface
 {
     /** @var resource */
     protected mixed $local;

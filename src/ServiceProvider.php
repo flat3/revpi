@@ -10,29 +10,23 @@ use Flat3\RevPi\Commands\GetLed;
 use Flat3\RevPi\Commands\Info;
 use Flat3\RevPi\Commands\Run;
 use Flat3\RevPi\Commands\SetLed;
-use Flat3\RevPi\Contracts\BaseModule;
-use Flat3\RevPi\Contracts\Compact;
-use Flat3\RevPi\Contracts\Connect5;
-use Flat3\RevPi\Contracts\PiControl;
-use Flat3\RevPi\Contracts\ProcessImage;
-use Flat3\RevPi\Contracts\SerialPort;
-use Flat3\RevPi\Contracts\TerminalDeviceInterface;
-use Flat3\RevPi\Contracts\Virtual;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 
 class ServiceProvider extends BaseServiceProvider
 {
     public function register(): void
     {
-        $this->app->singleton(PiControl::class, Hardware\ProcessImage\PiControl::class);
-        $this->app->singleton(TerminalDeviceInterface::class, Hardware\SerialPort\TerminalDevice::class);
-        $this->app->singleton(ProcessImage::class, Hardware\ProcessImage\ProcessImage::class);
-        $this->app->singleton(SerialPort::class, Hardware\SerialPort\SerialPort::class);
-        $this->app->singleton(BaseModule::class, fn () => app(ProcessImage::class)->getModule());
+        $this->app->bind(Hardware\Interfaces\PiControlInterface::class, Hardware\Local\LocalPiControlDevice::class);
+        $this->app->bind(Hardware\Interfaces\TerminalInterface::class, Hardware\Local\LocalTerminalDevice::class);
 
-        $this->app->bind(Connect5::class, Hardware\Connect5::class);
-        $this->app->bind(Compact::class, Hardware\Compact::class);
-        $this->app->bind(Virtual::class, Hardware\Virtual::class);
+        $this->app->bind(Flat3\RevPi\Interfaces\ProcessImage::class, ProcessImage\ProcessImage::class);
+        $this->app->bind(Flat3\RevPi\Interfaces\SerialPort::class, SerialPort\SerialPort::class);
+
+        $this->app->bind(Flat3\RevPi\Interfaces\Modules\Connect5::class, Modules\Connect5::class);
+        $this->app->bind(Flat3\RevPi\Interfaces\Modules\Compact::class, Modules\Compact::class);
+        $this->app->bind(Flat3\RevPi\Interfaces\Modules\Virtual::class, Modules\Virtual::class);
+
+        $this->app->singleton(Flat3\RevPi\Interfaces\Module::class, fn () => app(Flat3\RevPi\Interfaces\ProcessImage::class)->getModule());
     }
 
     public function boot(): void

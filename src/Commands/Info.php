@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Flat3\RevPi\Commands;
 
-use Flat3\RevPi\Contracts\BaseModule;
-use Flat3\RevPi\Hardware\ProcessImage\Device;
+use Flat3\RevPi\Interfaces\Module;
+use Flat3\RevPi\ProcessImage\Device;
 use Illuminate\Console\Command;
 
 class Info extends Command
@@ -16,7 +16,7 @@ class Info extends Command
 
     public function handle(): void
     {
-        $devices = app(BaseModule::class)->image()->getDeviceInfoList();
+        $devices = app(Module::class)->image()->getDeviceInfoList();
 
         $this->table(['Index', 'Type', 'Address', 'Serial number', 'Version', 'Active', 'State'],
             $devices->map(fn (Device $device, int $index) => [

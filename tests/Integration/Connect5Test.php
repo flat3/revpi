@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Flat3\RevPi\Tests\Integration;
 
-use Flat3\RevPi\Contracts\BaseModule;
-use Flat3\RevPi\Hardware\Led\LedColour;
-use Flat3\RevPi\Hardware\Led\LedPosition;
+use Flat3\RevPi\Interfaces\Module;
+use Flat3\RevPi\Led\LedColour;
+use Flat3\RevPi\Led\LedPosition;
 use Flat3\RevPi\Monitors\DigitalTrigger;
 use Flat3\RevPi\Tests\TestCase;
 
@@ -16,7 +16,7 @@ class Connect5Test extends TestCase
 
     public function test_led_get_set(): void
     {
-        $module = app(BaseModule::class);
+        $module = app(Module::class);
 
         foreach (LedPosition::cases() as $position) {
             foreach (LedColour::cases() as $colour) {
@@ -30,7 +30,7 @@ class Connect5Test extends TestCase
 
     public function test_analog_watch_high_low(): void
     {
-        $module = app(BaseModule::class);
+        $module = app(Module::class);
         $module->image()->writeVariable('AnalogOutputLogicLevel_1', false);
         $this->loop(2);
 
@@ -49,7 +49,7 @@ class Connect5Test extends TestCase
 
     public function test_analog_voltage(): void
     {
-        $module = app(BaseModule::class);
+        $module = app(Module::class);
         $module->image()->writeVariable('AnalogOutput_3', 100);
         $this->loop(1, 100);
         $module->image()->writeVariable('AnalogOutput_3', 0);
@@ -63,7 +63,7 @@ class Connect5Test extends TestCase
 
     public function test_digital_watch_high_low(): void
     {
-        $module = app(BaseModule::class);
+        $module = app(Module::class);
         $module->image()->writeVariable('DigitalOutput_3', false);
         self::assertFalse($module->image()->readVariable('DigitalOutput_3'));
 

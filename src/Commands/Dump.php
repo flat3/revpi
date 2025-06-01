@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Flat3\RevPi\Commands;
 
-use Flat3\RevPi\Contracts\ProcessImage;
+use Flat3\RevPi\Interfaces\ProcessImage;
 use Illuminate\Console\Command;
 
 class Dump extends Command

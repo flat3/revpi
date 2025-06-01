@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Flat3\RevPi\Tests;
 
-use Flat3\RevPi\Contracts\PiControl;
-use Flat3\RevPi\Contracts\TerminalDeviceInterface;
 use Flat3\RevPi\Events\PollingEvent;
-use Flat3\RevPi\Hardware\BaseModule;
-use Flat3\RevPi\Hardware\ProcessImage\DataType;
-use Flat3\RevPi\Hardware\ProcessImage\Variable;
-use Flat3\RevPi\Hardware\Virtual;
-use Flat3\RevPi\Hardware\Virtual\VirtualPiControl;
+use Flat3\RevPi\Hardware\Interfaces\PiControlInterface;
+use Flat3\RevPi\Hardware\Interfaces\TerminalInterface;
+use Flat3\RevPi\Hardware\Virtual\VirtualPiControlInterfaceDevice;
 use Flat3\RevPi\Hardware\Virtual\VirtualTerminalDevice;
+use Flat3\RevPi\Modules\Module;
+use Flat3\RevPi\Modules\Virtual;
+use Flat3\RevPi\ProcessImage\DataType;
+use Flat3\RevPi\ProcessImage\Variable;
 use Flat3\RevPi\ServiceProvider;
 use Illuminate\Foundation\Application;
 use Orchestra\Testbench\TestCase as BaseTestCase;
@@ -59,13 +59,13 @@ class TestCase extends BaseTestCase
             return;
         }
 
-        $this->app->singleton(BaseModule::class, Virtual::class);
-        $this->app->singleton(VirtualPiControl::class);
+        $this->app->singleton(VirtualPiControlInterfaceDevice::class);
         $this->app->singleton(VirtualTerminalDevice::class);
-        $this->app->singleton(PiControl::class, VirtualPiControl::class);
-        $this->app->singleton(TerminalDeviceInterface::class, VirtualTerminalDevice::class);
+        $this->app->bind(Module::class, Virtual::class);
+        $this->app->bind(PiControlInterface::class, VirtualPiControlInterfaceDevice::class);
+        $this->app->bind(TerminalInterface::class, VirtualTerminalDevice::class);
 
-        $control = app(VirtualPiControl::class);
+        $control = app(VirtualPiControlInterfaceDevice::class);
 
         $control->createVariable(new Variable('Test_0', DataType::Word));
 
