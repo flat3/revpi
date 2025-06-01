@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Flat3\RevPi\Tests;
 
 use Flat3\RevPi\Events\PollingEvent;
-use Flat3\RevPi\Hardware\Interfaces\PiControlInterface;
-use Flat3\RevPi\Hardware\Interfaces\TerminalInterface;
-use Flat3\RevPi\Hardware\Virtual\VirtualPiControlInterfaceDevice;
+use Flat3\RevPi\Hardware\Interfaces\PiControl;
+use Flat3\RevPi\Hardware\Interfaces\Terminal;
+use Flat3\RevPi\Hardware\Virtual\VirtualPiControlDevice;
 use Flat3\RevPi\Hardware\Virtual\VirtualTerminalDevice;
 use Flat3\RevPi\Modules\Module;
 use Flat3\RevPi\Modules\Virtual;
@@ -59,13 +59,13 @@ class TestCase extends BaseTestCase
             return;
         }
 
-        $this->app->singleton(VirtualPiControlInterfaceDevice::class);
+        $this->app->singleton(VirtualPiControlDevice::class);
         $this->app->singleton(VirtualTerminalDevice::class);
         $this->app->bind(Module::class, Virtual::class);
-        $this->app->bind(PiControlInterface::class, VirtualPiControlInterfaceDevice::class);
-        $this->app->bind(TerminalInterface::class, VirtualTerminalDevice::class);
+        $this->app->bind(PiControl::class, VirtualPiControlDevice::class);
+        $this->app->bind(Terminal::class, VirtualTerminalDevice::class);
 
-        $control = app(VirtualPiControlInterfaceDevice::class);
+        $control = app(VirtualPiControlDevice::class);
 
         $control->createVariable(new Variable('Test_0', DataType::Word));
 

@@ -7,7 +7,7 @@ namespace Flat3\RevPi\SerialPort;
 use Flat3\RevPi\Constants;
 use Flat3\RevPi\Exceptions\NotImplementedException;
 use Flat3\RevPi\Hardware\HasDeviceIoctl;
-use Flat3\RevPi\Hardware\Interfaces\TerminalInterface;
+use Flat3\RevPi\Hardware\Interfaces\Terminal;
 use Flat3\RevPi\Interfaces\SerialPort as SerialPortInterface;
 use Flat3\RevPi\SerialPort\Ioctl\SerialRS485;
 use Flat3\RevPi\SerialPort\Ioctl\Termios;
@@ -17,7 +17,7 @@ class SerialPort implements SerialPortInterface
 {
     use HasDeviceIoctl;
 
-    public function __construct(protected TerminalInterface $device, protected string $devicePath = '/dev/ttyRS485-0')
+    public function __construct(protected Terminal $device, protected string $devicePath = '/dev/ttyRS485-0')
     {
         $device->open($this->devicePath, Constants::O_RDWR | Constants::O_NONBLOCK | Constants::O_NOCTTY);
     }

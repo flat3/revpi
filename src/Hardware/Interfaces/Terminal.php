@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Flat3\RevPi\Hardware\Interfaces;
 
-interface TerminalInterface extends DeviceInterface, IoctlInterface, StreamInterface
+interface Terminal extends Device, Ioctl, Stream
 {
     public function cfgetispeed(string &$buffer): int;
 

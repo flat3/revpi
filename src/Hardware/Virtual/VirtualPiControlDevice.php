@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Flat3\RevPi\Hardware\Virtual;
 
 use Flat3\RevPi\Exceptions\IoctlFailedException;
-use Flat3\RevPi\Hardware\Interfaces\PiControlInterface;
+use Flat3\RevPi\Hardware\Interfaces\PiControl;
 use Flat3\RevPi\Hardware\StructArray;
 use Flat3\RevPi\ProcessImage\Command;
 use Flat3\RevPi\ProcessImage\DataType;
@@ -17,7 +17,7 @@ use Flat3\RevPi\ProcessImage\ModuleType;
 use Flat3\RevPi\ProcessImage\Variable;
 use Illuminate\Support\Collection;
 
-class VirtualPiControlInterfaceDevice extends VirtualBlockDevice implements PiControlInterface
+class VirtualPiControlDevice extends VirtualBlockDevice implements PiControl
 {
     /** @var Collection<int, Device> */
     protected Collection $devices;

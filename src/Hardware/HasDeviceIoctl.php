@@ -6,11 +6,11 @@ namespace Flat3\RevPi\Hardware;
 
 use Flat3\RevPi\Exceptions\IoctlFailedException;
 use Flat3\RevPi\Hardware\Interfaces\IoctlCommand;
-use Flat3\RevPi\Hardware\Interfaces\StructInterface;
+use Flat3\RevPi\Hardware\Interfaces\Struct;
 
 trait HasDeviceIoctl
 {
-    protected function ioctl(IoctlCommand $command, ?StructInterface $message = null): int
+    protected function ioctl(IoctlCommand $command, ?Struct $message = null): int
     {
         assert(is_int($command->value));
 

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Flat3\RevPi\Hardware\Interfaces;
 
-interface DeviceInterface
+interface Device
 {
     public function open(string $pathname, int $flags): int;
 

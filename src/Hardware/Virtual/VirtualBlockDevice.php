@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Flat3\RevPi\Hardware\Virtual;
 
 use Flat3\RevPi\Exceptions\NotImplementedException;
-use Flat3\RevPi\Hardware\Interfaces\DeviceInterface;
-use Flat3\RevPi\Hardware\Interfaces\PosixSeekInterface;
+use Flat3\RevPi\Hardware\Interfaces\Device;
+use Flat3\RevPi\Hardware\Interfaces\Seek;
 
-abstract class VirtualBlockDevice implements DeviceInterface, PosixSeekInterface
+abstract class VirtualBlockDevice implements Device, Seek
 {
     protected string $memory = '';
 

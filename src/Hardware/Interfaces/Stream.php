@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Flat3\RevPi\Hardware\Interfaces;
 
-interface StreamInterface
+interface Stream
 {
     /** @return resource */
     public function fdopen(): mixed;

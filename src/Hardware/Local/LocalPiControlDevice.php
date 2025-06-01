@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Flat3\RevPi\Hardware\Local;
 
 use Flat3\RevPi\Constants;
-use Flat3\RevPi\Hardware\Interfaces\PiControlInterface;
+use Flat3\RevPi\Hardware\Interfaces\PiControl;
 
-class LocalPiControlDevice extends LocalDevice implements PiControlInterface
+class LocalPiControlDevice extends LocalDevice implements PiControl
 {
     public function __construct(protected string $devicePath = '/dev/piControl0')
     {

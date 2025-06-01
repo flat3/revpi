@@ -16,17 +16,17 @@ class ServiceProvider extends BaseServiceProvider
 {
     public function register(): void
     {
-        $this->app->bind(Hardware\Interfaces\PiControlInterface::class, Hardware\Local\LocalPiControlDevice::class);
-        $this->app->bind(Hardware\Interfaces\TerminalInterface::class, Hardware\Local\LocalTerminalDevice::class);
+        $this->app->bind(Hardware\Interfaces\PiControl::class, Hardware\Local\LocalPiControlDevice::class);
+        $this->app->bind(Hardware\Interfaces\Terminal::class, Hardware\Local\LocalTerminalDevice::class);
 
-        $this->app->bind(Flat3\RevPi\Interfaces\ProcessImage::class, ProcessImage\ProcessImage::class);
-        $this->app->bind(Flat3\RevPi\Interfaces\SerialPort::class, SerialPort\SerialPort::class);
+        $this->app->bind(Interfaces\ProcessImage::class, ProcessImage\ProcessImage::class);
+        $this->app->bind(Interfaces\SerialPort::class, SerialPort\SerialPort::class);
 
-        $this->app->bind(Flat3\RevPi\Interfaces\Modules\Connect5::class, Modules\Connect5::class);
-        $this->app->bind(Flat3\RevPi\Interfaces\Modules\Compact::class, Modules\Compact::class);
-        $this->app->bind(Flat3\RevPi\Interfaces\Modules\Virtual::class, Modules\Virtual::class);
+        $this->app->bind(Interfaces\Modules\Connect5::class, Modules\Connect5::class);
+        $this->app->bind(Interfaces\Modules\Compact::class, Modules\Compact::class);
+        $this->app->bind(Interfaces\Modules\Virtual::class, Modules\Virtual::class);
 
-        $this->app->singleton(Flat3\RevPi\Interfaces\Module::class, fn () => app(Flat3\RevPi\Interfaces\ProcessImage::class)->getModule());
+        $this->app->singleton(Interfaces\Module::class, fn () => app(Interfaces\ProcessImage::class)->getModule());
     }
 
     public function boot(): void

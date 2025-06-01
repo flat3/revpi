@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Flat3\RevPi\Hardware\Virtual;
 
 use Flat3\RevPi\Exceptions\IoctlFailedException;
-use Flat3\RevPi\Hardware\Interfaces\TerminalInterface;
+use Flat3\RevPi\Hardware\Interfaces\Terminal;
 use Flat3\RevPi\SerialPort\Command;
 use Flat3\RevPi\SerialPort\Ioctl\SerialRS485;
 use Flat3\RevPi\SerialPort\Ioctl\Termios;
 
-class VirtualTerminalDevice extends VirtualCharacterDevice implements TerminalInterface
+class VirtualTerminalDevice extends VirtualCharacterDevice implements Terminal
 {
     protected Termios $termios;
 

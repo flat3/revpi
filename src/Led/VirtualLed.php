@@ -1,11 +1,8 @@
 <?php
 
-namespace Flat3\RevPi\Hardware\Virtual;
+namespace Flat3\RevPi\Led;
 
 use Flat3\RevPi\Exceptions\HardwareNotFoundException;
-use Flat3\RevPi\Led\Led;
-use Flat3\RevPi\Led\LedColour;
-use Flat3\RevPi\Led\LedPosition;
 
 class VirtualLed extends Led
 {

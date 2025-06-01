@@ -11,7 +11,7 @@ use Flat3\RevPi\Exceptions\ProcessImageException;
 use Flat3\RevPi\Exceptions\UnderflowException;
 use Flat3\RevPi\Exceptions\VariableNotFoundException;
 use Flat3\RevPi\Hardware\HasDeviceIoctl;
-use Flat3\RevPi\Hardware\Interfaces\PiControlInterface;
+use Flat3\RevPi\Hardware\Interfaces\PiControl;
 use Flat3\RevPi\Hardware\StructArray;
 use Flat3\RevPi\Interfaces\Module;
 use Flat3\RevPi\Interfaces\Modules\Compact;
@@ -27,7 +27,7 @@ class ProcessImage implements ProcessImageInterface
 {
     use HasDeviceIoctl;
 
-    public function __construct(protected PiControlInterface $device) {}
+    public function __construct(protected PiControl $device) {}
 
     public function __destruct()
     {

@@ -5,20 +5,20 @@ declare(strict_types=1);
 namespace Flat3\RevPi\Hardware;
 
 use ArrayAccess;
-use Flat3\RevPi\Hardware\Interfaces\StructInterface;
+use Flat3\RevPi\Hardware\Interfaces\Struct;
 
 /**
- * @implements ArrayAccess<int, StructInterface>
+ * @implements ArrayAccess<int, Struct>
  */
-class StructArray implements ArrayAccess, StructInterface
+class StructArray implements ArrayAccess, Struct
 {
     /**
-     * @var array<StructInterface>
+     * @var array<Struct>
      */
     protected array $messages = [];
 
     /**
-     * @param  class-string<StructInterface>  $source
+     * @param  class-string<Struct>  $source
      */
     public function __construct(protected string $source, int $count)
     {
@@ -29,7 +29,7 @@ class StructArray implements ArrayAccess, StructInterface
 
     public function pack(): string
     {
-        return implode('', array_map(fn (StructInterface $message) => $message->pack(), $this->messages));
+        return implode('', array_map(fn (Struct $message) => $message->pack(), $this->messages));
     }
 
     public function unpack(string $buffer): void
@@ -47,7 +47,7 @@ class StructArray implements ArrayAccess, StructInterface
     }
 
     /**
-     * @return StructInterface[]
+     * @return Struct[]
      */
     public function messages(): array
     {
