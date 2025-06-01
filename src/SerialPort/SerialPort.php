@@ -168,4 +168,9 @@ class SerialPort implements SerialPortInterface
 
         return (($message->cflag & Termios::CSTOPB) !== 0) ? StopBits::Two : StopBits::One;
     }
+
+    public function write(string $data): void
+    {
+        $this->device->write($data, strlen($data));
+    }
 }

@@ -32,4 +32,6 @@ interface SerialPort
     public function getStopBits(): StopBits;
 
     public function onReadable(callable $callback): static;
+
+    public function write(string $data): void;
 }

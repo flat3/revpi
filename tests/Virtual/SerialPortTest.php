@@ -16,7 +16,7 @@ class SerialPortTest extends SerialPortBase implements UsesVirtualEnvironment
     {
         $capture = '';
 
-        app(SerialPort::class)
+        $port = app(SerialPort::class)
             ->setSpeed(BaudRate::B9600)
             ->setTermination(false)
             ->onReadable(function ($text) use (&$capture) {
@@ -30,5 +30,8 @@ class SerialPortTest extends SerialPortBase implements UsesVirtualEnvironment
         $this->loop(3);
 
         self::assertEquals('Hello, world!', $capture);
+
+        $port->write('test');
+        self::assertEquals('test', fread($device->getRemoteSocket(), 10));
     }
 }

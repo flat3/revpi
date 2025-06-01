@@ -37,7 +37,9 @@ EOF, 'libc.so.6');
 
         $this->fd = $this->ffi->open($pathname, $flags); // @phpstan-ignore method.notFound
 
-        return 0;
+        assert($this->fd !== null);
+
+        return $this->fd;
     }
 
     public function close(): int
