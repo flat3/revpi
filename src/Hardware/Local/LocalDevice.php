@@ -11,7 +11,7 @@ class LocalDevice implements Device
 {
     protected FFI $ffi;
 
-    protected int $fd;
+    protected ?int $fd = null;
 
     public function __construct()
     {
@@ -31,6 +31,10 @@ EOF, 'libc.so.6');
 
     public function open(string $pathname, int $flags): int
     {
+        if ($this->fd !== null) {
+            return 0;
+        }
+
         $this->fd = $this->ffi->open($pathname, $flags); // @phpstan-ignore method.notFound
 
         return 0;
@@ -38,7 +42,20 @@ EOF, 'libc.so.6');
 
     public function close(): int
     {
-        return $this->ffi->close($this->fd); // @phpstan-ignore method.notFound
+        if ($this->fd === null) {
+            return -1;
+        }
+
+        $result = $this->ffi->close($this->fd); // @phpstan-ignore method.notFound
+
+        $this->fd = null;
+
+        return $result;
+    }
+
+    public function __destruct()
+    {
+        $this->close();
     }
 
     public function read(string &$buffer, int $count): int

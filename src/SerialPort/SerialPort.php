@@ -22,11 +22,6 @@ class SerialPort implements SerialPortInterface
         $device->open($this->devicePath, Constants::O_RDWR | Constants::O_NONBLOCK | Constants::O_NOCTTY);
     }
 
-    public function __destruct()
-    {
-        $this->device->close();
-    }
-
     public function onReadable(callable $callback): static
     {
         $stream = $this->device->fdopen();
