@@ -6,26 +6,46 @@ namespace Flat3\RevPi\Tests\Base;
 
 use Flat3\RevPi\Interfaces\SerialPort;
 use Flat3\RevPi\SerialPort\BaudRate;
+use Flat3\RevPi\SerialPort\ControlFlag;
 use Flat3\RevPi\SerialPort\DataBits;
+use Flat3\RevPi\SerialPort\InputFlag;
+use Flat3\RevPi\SerialPort\LocalFlag;
+use Flat3\RevPi\SerialPort\OutputFlag;
 use Flat3\RevPi\SerialPort\Parity;
+use Flat3\RevPi\SerialPort\QueueSelector;
+use Flat3\RevPi\SerialPort\RS485Flag;
 use Flat3\RevPi\SerialPort\StopBits;
 use Flat3\RevPi\Tests\TestCase;
 
 abstract class SerialPortBase extends TestCase
 {
-    public function test_termination(): void
+    public function test_flags(): void
     {
         $port = app(SerialPort::class);
 
-        $t = $port->getTermination();
+        $flags = collect([
+            ...RS485Flag::cases(),
+            ...InputFlag::cases(),
+            ...OutputFlag::cases(),
+            ...ControlFlag::cases(),
+            ...LocalFlag::cases(),
+        ])->filter(fn ($flag) => ! in_array($flag, [
+            RS485Flag::RtsOnSend,
+            RS485Flag::RtsAfterSend,
+            ControlFlag::EnableHardwareFlowControl,
+        ]));
 
-        $port->setTermination(false);
-        self::assertFalse($port->getTermination());
+        foreach ($flags as $flag) {
+            $original = $port->getFlag($flag);
+            $port->setFlag($flag);
 
-        $port->setTermination(true);
-        self::assertTrue($port->getTermination());
+            self::assertTrue($port->getFlag($flag), $flag->name);
 
-        $port->setTermination($t);
+            $port->clearFlag($flag);
+            self::assertFalse($port->getFlag($flag), $flag->name);
+
+            $original ? $port->setFlag($flag) : $port->clearFlag($flag);
+        }
     }
 
     public function test_speed(): void
@@ -92,5 +112,23 @@ abstract class SerialPortBase extends TestCase
         self::assertEquals(StopBits::Two, $port->getStopBits());
 
         $port->setStopBits($bits);
+    }
+
+    public function test_drain(): void
+    {
+        self::expectNotToPerformAssertions();
+        app(SerialPort::class)->drain();
+    }
+
+    public function test_flush(): void
+    {
+        self::expectNotToPerformAssertions();
+        app(SerialPort::class)->flush(QueueSelector::Both);
+    }
+
+    public function test_break(): void
+    {
+        self::expectNotToPerformAssertions();
+        app(SerialPort::class)->break(10);
     }
 }

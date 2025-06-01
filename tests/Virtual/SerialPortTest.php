@@ -7,6 +7,7 @@ namespace Flat3\RevPi\Tests\Virtual;
 use Flat3\RevPi\Hardware\Virtual\VirtualTerminalDevice;
 use Flat3\RevPi\Interfaces\SerialPort;
 use Flat3\RevPi\SerialPort\BaudRate;
+use Flat3\RevPi\SerialPort\RS485Flag;
 use Flat3\RevPi\Tests\Base\SerialPortBase;
 use Flat3\RevPi\Tests\UsesVirtualEnvironment;
 
@@ -18,10 +19,11 @@ class SerialPortTest extends SerialPortBase implements UsesVirtualEnvironment
 
         $port = app(SerialPort::class)
             ->setSpeed(BaudRate::B9600)
-            ->setTermination(false)
-            ->onReadable(function ($text) use (&$capture) {
-                $capture .= $text;
-            });
+            ->setFlag(RS485Flag::TerminateBus);
+
+        $port->onReadable(function ($text) use (&$capture) {
+            $capture .= $text;
+        });
 
         $device = app(VirtualTerminalDevice::class);
 

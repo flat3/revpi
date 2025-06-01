@@ -10,9 +10,9 @@ enum Command: int implements IoctlCommand
 {
     public const Magic = 0x5400;
 
-    case TCGETS = Command::Magic | 1;
-    case TCSETS = Command::Magic | 2;
+    case TerminalControlGet = Command::Magic | 0x01;
+    case TerminalControlSet = Command::Magic | 0x02;
 
-    case TIOCSRS485 = 0x542F;
-    case TIOCGRS485 = 0x542E;
+    case TerminalControlGetRS485 = Command::Magic | 0x2E;
+    case TerminalControlSetRS485 = Command::Magic | 0x2F;
 }

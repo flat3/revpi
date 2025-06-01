@@ -6,7 +6,7 @@ namespace Flat3\RevPi\SerialPort\Ioctl;
 
 use Flat3\RevPi\Hardware\Struct;
 
-class SerialRS485 extends Struct
+class SerialRS485Struct extends Struct
 {
     public int $flags = 0;
 
@@ -16,8 +16,6 @@ class SerialRS485 extends Struct
 
     /** @var int[] */
     public array $padding = [0, 0, 0, 0, 0];
-
-    public const SER_RS485_TERMINATE_BUS = 1 << 5;
 
     public function definition(): array
     {

@@ -6,7 +6,7 @@ namespace Flat3\RevPi\SerialPort\Ioctl;
 
 use Flat3\RevPi\Hardware\Struct;
 
-class Termios extends Struct
+class TermiosStruct extends Struct
 {
     public int $iflag = 0;
 
@@ -24,14 +24,6 @@ class Termios extends Struct
     public int $ispeed = 0;
 
     public int $ospeed = 0;
-
-    public const CS5 = 0000000;
-
-    public const CS6 = 0000020;
-
-    public const CS7 = 0000040;
-
-    public const CS8 = 0000060;
 
     public const CSIZE = 0000060;
 

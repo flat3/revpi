@@ -48,4 +48,19 @@ class LocalTerminalDevice extends LocalDevice implements Terminal
 
         return $this->ffi->cfgetospeed($buf); // @phpstan-ignore method.notFound
     }
+
+    public function tcflush(int $queue_selector): int
+    {
+        return $this->ffi->tcflush($this->fd, $queue_selector);
+    }
+
+    public function tcdrain(): int
+    {
+        return $this->ffi->tcdrain($this->fd);
+    }
+
+    public function tcsendbreak(int $duration = 0): int
+    {
+        return $this->ffi->tcsendbreak($this->fd, $duration);
+    }
 }

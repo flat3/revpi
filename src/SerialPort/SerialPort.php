@@ -5,13 +5,12 @@ declare(strict_types=1);
 namespace Flat3\RevPi\SerialPort;
 
 use Flat3\RevPi\Constants;
-use Flat3\RevPi\Exceptions\NotImplementedException;
 use Flat3\RevPi\Exceptions\PosixDeviceException;
 use Flat3\RevPi\Hardware\HasDeviceIoctl;
 use Flat3\RevPi\Hardware\Interfaces\Terminal;
 use Flat3\RevPi\Interfaces\SerialPort as SerialPortInterface;
-use Flat3\RevPi\SerialPort\Ioctl\SerialRS485;
-use Flat3\RevPi\SerialPort\Ioctl\Termios;
+use Flat3\RevPi\SerialPort\Ioctl\SerialRS485Struct;
+use Flat3\RevPi\SerialPort\Ioctl\TermiosStruct;
 use Revolt\EventLoop;
 
 class SerialPort implements SerialPortInterface
@@ -32,89 +31,65 @@ class SerialPort implements SerialPortInterface
         return $this->device;
     }
 
-    public function onReadable(callable $callback): static
+    public function onReadable(callable $callback): string
     {
-        EventLoop::onReadable($this->stream, fn () => $callback(fread($this->stream, 1024)));
-
-        return $this;
+        return EventLoop::onReadable($this->stream, function () use ($callback) {
+            $callback(fread($this->stream, 1024));
+        });
     }
 
     public function setSpeed(BaudRate $rate): static
     {
-        $message = new Termios;
-        $this->ioctl(Command::TCGETS, $message);
+        $message = new TermiosStruct;
+        $this->ioctl(Command::TerminalControlGet, $message);
         $buffer = $message->pack();
         $this->device->cfsetispeed($buffer, $rate->value);
         $this->device->cfsetospeed($buffer, $rate->value);
         $message->unpack($buffer);
-        $this->ioctl(Command::TCSETS, $message);
+        $this->ioctl(Command::TerminalControlSet, $message);
 
         return $this;
     }
 
     public function getSpeed(): BaudRate
     {
-        $message = new Termios;
-        $this->ioctl(Command::TCGETS, $message);
+        $message = new TermiosStruct;
+        $this->ioctl(Command::TerminalControlGet, $message);
         $buffer = $message->pack();
         $speed = $this->device->cfgetispeed($buffer);
 
         return BaudRate::from($speed);
     }
 
-    public function setTermination(bool $enabled): static
-    {
-        $rs485Conf = new SerialRS485;
-        $this->ioctl(Command::TIOCGRS485, $rs485Conf);
-
-        if ($enabled) {
-            $rs485Conf->flags |= SerialRS485::SER_RS485_TERMINATE_BUS;
-        } else {
-            $rs485Conf->flags &= ~SerialRS485::SER_RS485_TERMINATE_BUS;
-        }
-
-        $this->ioctl(Command::TIOCSRS485, $rs485Conf);
-
-        return $this;
-    }
-
-    public function getTermination(): bool
-    {
-        $rs485Conf = new SerialRS485;
-        $this->ioctl(Command::TIOCGRS485, $rs485Conf);
-
-        return (bool) ($rs485Conf->flags & SerialRS485::SER_RS485_TERMINATE_BUS);
-    }
-
     public function setParity(Parity $parity): static
     {
-        $message = new Termios;
-        $this->ioctl(Command::TCGETS, $message);
-        $message->cflag &= ~(Termios::PARENB | Termios::PARODD);
+        $message = new TermiosStruct;
+        $this->ioctl(Command::TerminalControlGet, $message);
+        $message->cflag &= ~(TermiosStruct::PARENB | TermiosStruct::PARODD);
 
         if ($parity === Parity::Odd) {
-            $message->cflag |= Termios::PARODD | Termios::PARENB;
+            $message->cflag |= TermiosStruct::PARODD | TermiosStruct::PARENB;
         }
 
         if ($parity === Parity::Even) {
-            $message->cflag |= Termios::PARENB;
+            $message->cflag |= TermiosStruct::PARENB;
         }
 
-        $this->ioctl(Command::TCSETS, $message);
+        $this->ioctl(Command::TerminalControlSet, $message);
 
         return $this;
     }
 
     public function getParity(): Parity
     {
-        $message = new Termios;
-        $this->ioctl(Command::TCGETS, $message);
+        $message = new TermiosStruct;
+        $this->ioctl(Command::TerminalControlGet, $message);
 
-        if (($message->cflag & Termios::PARENB) === 0) {
+        if (($message->cflag & TermiosStruct::PARENB) === 0) {
             return Parity::None;
         }
 
-        if (($message->cflag & Termios::PARODD) !== 0) {
+        if (($message->cflag & TermiosStruct::PARODD) !== 0) {
             return Parity::Odd;
         }
 
@@ -123,59 +98,141 @@ class SerialPort implements SerialPortInterface
 
     public function setDataBits(DataBits $bits): static
     {
-        $message = new Termios;
-        $this->ioctl(Command::TCGETS, $message);
+        $message = new TermiosStruct;
+        $this->ioctl(Command::TerminalControlGet, $message);
 
-        $message->cflag &= ~Termios::CSIZE;
+        $message->cflag &= ~TermiosStruct::CSIZE;
+        $message->cflag |= $bits->value;
 
-        $message->cflag |= match ($bits) {
-            DataBits::CS5 => Termios::CS5,
-            DataBits::CS6 => Termios::CS6,
-            DataBits::CS7 => Termios::CS7,
-            DataBits::CS8 => Termios::CS8,
-        };
-
-        $this->ioctl(Command::TCSETS, $message);
+        $this->ioctl(Command::TerminalControlSet, $message);
 
         return $this;
     }
 
     public function getDataBits(): DataBits
     {
-        $message = new Termios;
-        $this->ioctl(Command::TCGETS, $message);
+        $message = new TermiosStruct;
+        $this->ioctl(Command::TerminalControlGet, $message);
 
-        return match ($message->cflag & Termios::CSIZE) {
-            Termios::CS5 => DataBits::CS5,
-            Termios::CS6 => DataBits::CS6,
-            Termios::CS7 => DataBits::CS7,
-            Termios::CS8 => DataBits::CS8,
-            default => throw new NotImplementedException,
-        };
+        return DataBits::from($message->cflag & TermiosStruct::CSIZE);
     }
 
     public function setStopBits(StopBits $bits): static
     {
-        $message = new Termios;
-        $this->ioctl(Command::TCGETS, $message);
+        $message = new TermiosStruct;
+        $this->ioctl(Command::TerminalControlGet, $message);
 
         if ($bits === StopBits::Two) {
-            $message->cflag |= Termios::CSTOPB;
+            $message->cflag |= TermiosStruct::CSTOPB;
         } else {
-            $message->cflag &= ~Termios::CSTOPB;
+            $message->cflag &= ~TermiosStruct::CSTOPB;
         }
 
-        $this->ioctl(Command::TCSETS, $message);
+        $this->ioctl(Command::TerminalControlSet, $message);
 
         return $this;
     }
 
     public function getStopBits(): StopBits
     {
-        $message = new Termios;
-        $this->ioctl(Command::TCGETS, $message);
+        $message = new TermiosStruct;
+        $this->ioctl(Command::TerminalControlGet, $message);
 
-        return (($message->cflag & Termios::CSTOPB) !== 0) ? StopBits::Two : StopBits::One;
+        return (($message->cflag & TermiosStruct::CSTOPB) !== 0) ? StopBits::Two : StopBits::One;
+    }
+
+    public function setFlag(InputFlag|OutputFlag|ControlFlag|LocalFlag|RS485Flag $flag): static
+    {
+        if ($flag instanceof RS485Flag) {
+            $rs485 = new SerialRS485Struct;
+            $this->ioctl(Command::TerminalControlGetRS485, $rs485);
+            $rs485->flags |= $flag->value;
+            $this->ioctl(Command::TerminalControlSetRS485, $rs485);
+
+            return $this;
+        }
+
+        $termios = new TermiosStruct;
+        $this->ioctl(Command::TerminalControlGet, $termios);
+
+        switch (true) {
+            case $flag instanceof InputFlag:
+                $termios->iflag |= $flag->value;
+                break;
+
+            case $flag instanceof OutputFlag:
+                $termios->oflag |= $flag->value;
+                break;
+
+            case $flag instanceof ControlFlag:
+                $termios->cflag |= $flag->value;
+                break;
+
+            case $flag instanceof LocalFlag: // @phpstan-ignore instanceof.alwaysTrue
+                $termios->lflag |= $flag->value;
+                break;
+        }
+
+        $this->ioctl(Command::TerminalControlSet, $termios);
+
+        return $this;
+    }
+
+    public function clearFlag(InputFlag|OutputFlag|ControlFlag|LocalFlag|RS485Flag $flag): static
+    {
+        if ($flag instanceof RS485Flag) {
+            $rs485 = new SerialRS485Struct;
+            $this->ioctl(Command::TerminalControlGetRS485, $rs485);
+            $rs485->flags &= ~$flag->value;
+            $this->ioctl(Command::TerminalControlSetRS485, $rs485);
+
+            return $this;
+        }
+
+        $termios = new TermiosStruct;
+        $this->ioctl(Command::TerminalControlGet, $termios);
+
+        switch (true) {
+            case $flag instanceof InputFlag:
+                $termios->iflag &= ~$flag->value;
+                break;
+
+            case $flag instanceof OutputFlag:
+                $termios->oflag &= ~$flag->value;
+                break;
+
+            case $flag instanceof ControlFlag:
+                $termios->cflag &= ~$flag->value;
+                break;
+
+            case $flag instanceof LocalFlag: // @phpstan-ignore instanceof.alwaysTrue
+                $termios->lflag &= ~$flag->value;
+                break;
+        }
+
+        $this->ioctl(Command::TerminalControlSet, $termios);
+
+        return $this;
+    }
+
+    public function getFlag(InputFlag|OutputFlag|ControlFlag|LocalFlag|RS485Flag $flag): bool
+    {
+        if ($flag instanceof RS485Flag) {
+            $rs485 = new SerialRS485Struct;
+            $this->ioctl(Command::TerminalControlGetRS485, $rs485);
+
+            return (bool) ($rs485->flags & $flag->value);
+        }
+
+        $termios = new TermiosStruct;
+        $this->ioctl(Command::TerminalControlGet, $termios);
+
+        return match (true) {
+            $flag instanceof InputFlag => (bool) ($termios->iflag & $flag->value),
+            $flag instanceof OutputFlag => (bool) ($termios->oflag & $flag->value),
+            $flag instanceof ControlFlag => (bool) ($termios->cflag & $flag->value),
+            $flag instanceof LocalFlag => (bool) ($termios->lflag & $flag->value),
+        };
     }
 
     public function read(int $count = 1024): string
@@ -193,5 +250,36 @@ class SerialPort implements SerialPortInterface
     public function write(string $data): void
     {
         fwrite($this->stream, $data);
+    }
+
+    public function flush(QueueSelector $selector): void
+    {
+        $result = $this->device->tcflush(match ($selector) {
+            QueueSelector::Input => 0,
+            QueueSelector::Output => 1,
+            QueueSelector::Both => 2,
+        });
+
+        if ($result !== 0) {
+            throw new PosixDeviceException;
+        }
+    }
+
+    public function drain(): void
+    {
+        $result = $this->device->tcdrain();
+
+        if ($result !== 0) {
+            throw new PosixDeviceException;
+        }
+    }
+
+    public function break(int $duration = 0): void
+    {
+        $result = $this->device->tcsendbreak($duration);
+
+        if ($result !== 0) {
+            throw new PosixDeviceException;
+        }
     }
 }

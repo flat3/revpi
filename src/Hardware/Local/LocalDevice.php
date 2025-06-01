@@ -26,6 +26,9 @@ int cfgetospeed(void* argp);
 int cfsetispeed(void* argp, unsigned int speed);
 int cfsetospeed(void* argp, unsigned int speed);
 int close(int fd);
+int tcflush(int fd, int queue_selector);
+int tcdrain(int fd);
+int tcsendbreak(int fd, int duration);
 EOF, 'libc.so.6');
     }
 
