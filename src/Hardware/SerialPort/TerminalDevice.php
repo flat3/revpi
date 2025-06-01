@@ -49,13 +49,4 @@ class TerminalDevice extends HardwarePosixDevice implements TerminalIOContract
 
         return $this->ffi->cfgetospeed($buf); // @phpstan-ignore method.notFound
     }
-
-    public function stream_open(int $fd): mixed
-    {
-        $stream = fopen("php://fd/{$fd}", 'r+b');
-        assert($stream !== false);
-        stream_set_blocking($stream, false);
-
-        return $stream;
-    }
 }

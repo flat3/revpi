@@ -74,4 +74,13 @@ EOF, 'libc.so.6');
 
         return $ret;
     }
+
+    public function stream(int $fd): mixed
+    {
+        $stream = fopen("php://fd/{$fd}", 'r+b');
+        assert($stream !== false);
+        stream_set_blocking($stream, false);
+
+        return $stream;
+    }
 }

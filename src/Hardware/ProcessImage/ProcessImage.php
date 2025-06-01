@@ -32,13 +32,7 @@ class ProcessImage implements ProcessImageContract
 
     public function __construct(protected PiControl $device, protected string $devicePath = '/dev/piControl0')
     {
-        $fd = $this->device->open($this->devicePath, Constants::O_RDWR);
-
-        if ($fd < 0) {
-            throw new PosixDeviceException('open failed');
-        }
-
-        $this->fd = $fd;
+        $this->fd = $this->device->open($this->devicePath, Constants::O_RDWR);
     }
 
     public function __destruct()
@@ -193,7 +187,7 @@ class ProcessImage implements ProcessImageContract
 
         return $deviceMessages
             ->take($count)
-            ->map(fn (SDeviceInfoIoctl $message): Device => Device::fromMessage($message));
+            ->map(fn(SDeviceInfoIoctl $message): Device => Device::fromMessage($message));
     }
 
     public function reset(): void

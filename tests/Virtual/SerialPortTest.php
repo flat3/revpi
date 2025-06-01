@@ -25,9 +25,9 @@ class SerialPortTest extends SerialPortBase implements UsesVirtualEnvironment
 
         $device = app(VirtualTerminalDevice::class);
 
-        fwrite($device->getSocket(), 'Hello, world!');
+        fwrite($device->getRemoteSocket(), 'Hello, world!');
 
-        $this->loop(1);
+        $this->loop(3);
 
         self::assertEquals('Hello, world!', $capture);
     }

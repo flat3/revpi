@@ -17,4 +17,7 @@ interface PosixDevice
     public function lseek(int $fd, int $offset, int $whence): int;
 
     public function ioctl(int $fd, int $request, ?string &$argp = null): int;
+
+    /** @var resource */
+    public function stream(int $fd): mixed;
 }

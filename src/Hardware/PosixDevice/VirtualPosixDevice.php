@@ -25,7 +25,7 @@ abstract class VirtualPosixDevice implements PosixDevice
 
     public function close(int $fd): int
     {
-        if (! array_key_exists($fd, $this->handles)) {
+        if (!array_key_exists($fd, $this->handles)) {
             return -1;
         }
 
@@ -36,7 +36,7 @@ abstract class VirtualPosixDevice implements PosixDevice
 
     public function read(int $fd, string &$buffer, int $count): int
     {
-        if (! array_key_exists($fd, $this->handles)) {
+        if (!array_key_exists($fd, $this->handles)) {
             return -1;
         }
 
@@ -58,7 +58,7 @@ abstract class VirtualPosixDevice implements PosixDevice
 
     public function write(int $fd, string $buffer, int $count): int
     {
-        if (! array_key_exists($fd, $this->handles)) {
+        if (!array_key_exists($fd, $this->handles)) {
             return -1;
         }
 
@@ -90,7 +90,7 @@ abstract class VirtualPosixDevice implements PosixDevice
 
     public function lseek(int $fd, int $offset, int $whence): int
     {
-        if (! array_key_exists($fd, $this->handles)) {
+        if (!array_key_exists($fd, $this->handles)) {
             return -1;
         }
 
@@ -111,5 +111,15 @@ abstract class VirtualPosixDevice implements PosixDevice
         $this->handles[$fd] = $newPos;
 
         return $newPos;
+    }
+
+    public function stream(int $fd): mixed
+    {
+        $stream = fopen('php://memory', 'r+');
+
+        fwrite($stream, $this->memory);
+        rewind($stream);
+
+        return $stream;
     }
 }

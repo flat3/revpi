@@ -8,7 +8,6 @@ use Flat3\RevPi\Constants;
 use Flat3\RevPi\Contracts\SerialPort as SerialPortContract;
 use Flat3\RevPi\Contracts\TerminalDevice as TerminalContract;
 use Flat3\RevPi\Exceptions\NotImplementedException;
-use Flat3\RevPi\Exceptions\PosixDeviceException;
 use Flat3\RevPi\Hardware\PosixDevice\HasIoctl;
 use Flat3\RevPi\Hardware\SerialPort\Ioctl\SerialRS485;
 use Flat3\RevPi\Hardware\SerialPort\Ioctl\TermiosIoctl;
@@ -20,30 +19,20 @@ class SerialPort implements SerialPortContract
 
     protected int $fd;
 
-    /** @var resource */
-    protected mixed $stream;
-
     public function __construct(protected TerminalContract $device, protected string $devicePath = '/dev/ttyRS485-0')
     {
-        $fd = $device->open($this->devicePath, Constants::O_RDWR | Constants::O_NONBLOCK | Constants::O_NOCTTY);
-
-        if ($fd < 0) {
-            throw new PosixDeviceException('open failed');
-        }
-
-        $this->fd = $fd;
-        $this->stream = $device->stream_open($fd);
+        $this->fd = $device->open($this->devicePath, Constants::O_RDWR | Constants::O_NONBLOCK | Constants::O_NOCTTY);
     }
 
     public function __destruct()
     {
-        fclose($this->stream);
         $this->device->close($this->fd);
     }
 
     public function onReadable(callable $callback): static
     {
-        EventLoop::onReadable($this->stream, fn () => $callback(fread($this->stream, 1024)));
+        $stream = $this->device->stream($this->fd);
+        EventLoop::onReadable($stream, fn() => $callback(fread($stream, 1024)));
 
         return $this;
     }

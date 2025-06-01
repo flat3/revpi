@@ -18,12 +18,20 @@ class VirtualTerminalDevice implements TerminalDevice
     protected SerialRS485 $serialRS485;
 
     /** @var resource */
-    protected mixed $socket;
+    protected mixed $localSocket;
+
+    /** @var resource */
+    protected mixed $remoteSocket;
 
     public function __construct()
     {
         $this->termios = new TermiosIoctl;
         $this->serialRS485 = new SerialRS485;
+        $sockets = stream_socket_pair(STREAM_PF_UNIX, STREAM_SOCK_STREAM, STREAM_IPPROTO_IP);
+
+        assert($sockets !== false);
+
+        [$this->localSocket, $this->remoteSocket] = $sockets;
     }
 
     public function ioctl(int $fd, int $request, ?string &$argp = null): int
@@ -93,17 +101,6 @@ class VirtualTerminalDevice implements TerminalDevice
         return $message->ospeed;
     }
 
-    public function stream_open(int $fd): mixed
-    {
-        $sockets = stream_socket_pair(STREAM_PF_UNIX, STREAM_SOCK_STREAM, STREAM_IPPROTO_IP);
-
-        assert($sockets !== false);
-
-        $this->socket = $sockets[0];
-
-        return $sockets[1];
-    }
-
     public function open(string $pathname, int $flags): int
     {
         return 0;
@@ -123,7 +120,7 @@ class VirtualTerminalDevice implements TerminalDevice
         }
 
         assert($count > 0);
-        $result = fread($this->socket, $count);
+        $result = fread($this->localSocket, $count);
 
         if ($result === false) {
             throw new PosixDeviceException;
@@ -138,7 +135,7 @@ class VirtualTerminalDevice implements TerminalDevice
     {
         assert($count > 0);
 
-        $result = fwrite($this->socket, $buffer, $count);
+        $result = fwrite($this->localSocket, $buffer, $count);
 
         if ($result === false) {
             throw new PosixDeviceException;
@@ -155,8 +152,13 @@ class VirtualTerminalDevice implements TerminalDevice
     /**
      * @return resource
      */
-    public function getSocket(): mixed
+    public function getRemoteSocket(): mixed
     {
-        return $this->socket;
+        return $this->remoteSocket;
+    }
+
+    public function stream(int $fd): mixed
+    {
+        return $this->localSocket;
     }
 }
