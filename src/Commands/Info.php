@@ -16,7 +16,7 @@ class Info extends Command
 
     public function handle(): void
     {
-        $devices = app(Module::class)->image()->getDeviceInfoList();
+        $devices = app(Module::class)->getProcessImage()->getDeviceInfoList();
 
         $this->table(['Index', 'Type', 'Address', 'Serial number', 'Version', 'Active', 'State'],
             $devices->map(fn (Device $device, int $index) => [

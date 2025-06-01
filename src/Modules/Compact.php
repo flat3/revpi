@@ -11,7 +11,7 @@ use Flat3\RevPi\Led\LedPosition;
 
 class Compact extends Module implements CompactModuleInterface
 {
-    public function led(LedPosition $position): Led
+    public function getLed(LedPosition $position): Led
     {
         return app(CompactLed::class, ['position' => $position]);
     }

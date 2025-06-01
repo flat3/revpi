@@ -33,7 +33,7 @@ trait RevolutionPi
 
     public function led(LedPosition $position): Led
     {
-        return $this->module()->led($position);
+        return $this->module()->getLed($position);
     }
 
     public function repeat(float $interval, callable $callback): void

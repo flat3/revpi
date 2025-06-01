@@ -24,7 +24,7 @@ class GetLedTest extends TestCase implements UsesVirtualEnvironment
 
     public function test_info_on(): void
     {
-        app(Module::class)->led(LedPosition::A1)->set(LedColour::Blue);
+        app(Module::class)->getLed(LedPosition::A1)->set(LedColour::Blue);
 
         /** @var PendingCommand $test */
         $test = $this->artisan('revpi:led:get a1');

@@ -62,7 +62,7 @@ abstract class ProcessImageBase extends TestCase
     public function test_sizes(): void
     {
         $module = app(Module::class);
-        $image = $module->image();
+        $image = $module->getProcessImage();
 
         foreach (range(1, 48) as $position) {
             foreach ([false, true] as $value) {

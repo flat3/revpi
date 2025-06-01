@@ -17,7 +17,7 @@ abstract class IO
 
     public function get(): int|bool
     {
-        return $this->module->image()->readVariable($this->name);
+        return $this->module->getProcessImage()->readVariable($this->name);
     }
 
     public function monitor(callable $callback): void

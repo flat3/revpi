@@ -19,7 +19,7 @@ class SetLed extends Command
     public function handle(): void
     {
         app(Module::class)
-            ->led(match ($this->argument('position')) {
+            ->getLed(match ($this->argument('position')) {
                 'a1' => LedPosition::A1,
                 'a2' => LedPosition::A2,
                 'a3' => LedPosition::A3,

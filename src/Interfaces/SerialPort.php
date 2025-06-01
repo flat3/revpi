@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Flat3\RevPi\Interfaces;
 
+use Flat3\RevPi\Hardware\Interfaces\Terminal;
 use Flat3\RevPi\SerialPort\BaudRate;
 use Flat3\RevPi\SerialPort\DataBits;
 use Flat3\RevPi\SerialPort\Parity;
@@ -11,6 +12,8 @@ use Flat3\RevPi\SerialPort\StopBits;
 
 interface SerialPort
 {
+    public function getDevice(): Terminal;
+
     public function setSpeed(BaudRate $rate): static;
 
     public function getSpeed(): BaudRate;
@@ -32,6 +35,8 @@ interface SerialPort
     public function getStopBits(): StopBits;
 
     public function onReadable(callable $callback): static;
+
+    public function read(int $count = 1024): string;
 
     public function write(string $data): void;
 }

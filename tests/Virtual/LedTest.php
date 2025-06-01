@@ -18,12 +18,12 @@ class LedTest extends TestCase implements UsesVirtualEnvironment
     {
         $this->app->bind(Module::class, Compact::class);
         $this->expectException(HardwareNotFoundException::class);
-        app(Module::class)->led(LedPosition::A3)->set(LedColour::Blue);
+        app(Module::class)->getLed(LedPosition::A3)->set(LedColour::Blue);
     }
 
     public function test_led_get_set(): void
     {
-        $led = app(Module::class)->led(LedPosition::A3);
+        $led = app(Module::class)->getLed(LedPosition::A3);
         $led->set(LedColour::Blue);
         self::assertEquals(LedColour::Blue, $led->get());
     }

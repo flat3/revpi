@@ -9,9 +9,9 @@ use Flat3\RevPi\Monitors\Trigger;
 
 interface Module
 {
-    public function led(LedPosition $position): Led;
+    public function getLed(LedPosition $position): Led;
 
-    public function image(): ProcessImage;
+    public function getProcessImage(): ProcessImage;
 
     public function resume(): void;
 

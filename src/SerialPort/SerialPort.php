@@ -6,6 +6,7 @@ namespace Flat3\RevPi\SerialPort;
 
 use Flat3\RevPi\Constants;
 use Flat3\RevPi\Exceptions\NotImplementedException;
+use Flat3\RevPi\Exceptions\PosixDeviceException;
 use Flat3\RevPi\Hardware\HasDeviceIoctl;
 use Flat3\RevPi\Hardware\Interfaces\Terminal;
 use Flat3\RevPi\Interfaces\SerialPort as SerialPortInterface;
@@ -17,15 +18,23 @@ class SerialPort implements SerialPortInterface
 {
     use HasDeviceIoctl;
 
+    /** @var resource */
+    protected mixed $stream;
+
     public function __construct(protected Terminal $device, protected string $devicePath = '/dev/ttyRS485-0')
     {
         $device->open($this->devicePath, Constants::O_RDWR | Constants::O_NONBLOCK | Constants::O_NOCTTY);
+        $this->stream = $this->device->fdopen();
+    }
+
+    public function getDevice(): Terminal
+    {
+        return $this->device;
     }
 
     public function onReadable(callable $callback): static
     {
-        $stream = $this->device->fdopen();
-        EventLoop::onReadable($stream, fn () => $callback(fread($stream, 1024)));
+        EventLoop::onReadable($this->stream, fn () => $callback(fread($this->stream, 1024)));
 
         return $this;
     }
@@ -169,8 +178,20 @@ class SerialPort implements SerialPortInterface
         return (($message->cflag & Termios::CSTOPB) !== 0) ? StopBits::Two : StopBits::One;
     }
 
+    public function read(int $count = 1024): string
+    {
+        assert($count >= 1);
+        $result = fread($this->stream, $count);
+
+        if ($result === false) {
+            throw new PosixDeviceException;
+        }
+
+        return $result;
+    }
+
     public function write(string $data): void
     {
-        $this->device->write($data, strlen($data));
+        fwrite($this->stream, $data);
     }
 }

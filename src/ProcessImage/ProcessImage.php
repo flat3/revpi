@@ -29,6 +29,11 @@ class ProcessImage implements ProcessImageInterface
 
     public function __construct(protected PiControl $device) {}
 
+    public function getDevice(): PiControl
+    {
+        return $this->device;
+    }
+
     public function writeVariable(string $variable, int|bool $value): void
     {
         $value = (int) $value;

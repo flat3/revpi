@@ -11,7 +11,7 @@ use Flat3\RevPi\Led\VirtualLed;
 
 class Virtual extends Module implements ModuleInterface
 {
-    public function led(LedPosition $position): Led
+    public function getLed(LedPosition $position): Led
     {
         return app(VirtualLed::class, ['position' => $position]);
     }

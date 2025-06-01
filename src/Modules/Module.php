@@ -20,7 +20,7 @@ abstract class Module implements ModuleInterface
 
     public function __construct(protected ProcessImage $processImage) {}
 
-    public function image(): ProcessImage
+    public function getProcessImage(): ProcessImage
     {
         return $this->processImage;
     }
