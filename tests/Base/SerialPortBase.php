@@ -33,7 +33,7 @@ abstract class SerialPortBase extends TestCase
             RS485Flag::RtsOnSend,
             RS485Flag::RtsAfterSend,
             ControlFlag::EnableHardwareFlowControl,
-        ]));
+        ], true));
 
         foreach ($flags as $flag) {
             $original = $port->getFlag($flag);
