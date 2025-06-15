@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Flat3\RevPi\Hardware;
 
 use Flat3\RevPi\Exceptions\IoctlFailedException;
-use Flat3\RevPi\Hardware\Interfaces\IoctlCommand;
-use Flat3\RevPi\Hardware\Interfaces\Struct;
+use Flat3\RevPi\Interfaces\Hardware\IoctlCommand;
+use Flat3\RevPi\Interfaces\Hardware\Struct;
 
 trait HasDeviceIoctl
 {

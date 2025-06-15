@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Flat3\RevPi\Interfaces;
 
-use Flat3\RevPi\Hardware\Interfaces\PiControl;
+use Flat3\RevPi\Interfaces\Hardware\PiControl;
 use Flat3\RevPi\ProcessImage\Device;
 use Illuminate\Support\Collection;
 

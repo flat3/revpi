@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Flat3\RevPi\Hardware;
 
 use ArrayAccess;
-use Flat3\RevPi\Hardware\Interfaces\Struct;
+use Flat3\RevPi\Interfaces\Hardware\Struct;
 
 /**
  * @implements ArrayAccess<int, Struct>

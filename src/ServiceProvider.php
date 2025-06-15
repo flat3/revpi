@@ -16,8 +16,8 @@ class ServiceProvider extends BaseServiceProvider
 {
     public function register(): void
     {
-        $this->app->bind(Hardware\Interfaces\PiControl::class, Hardware\Local\LocalPiControlDevice::class);
-        $this->app->bind(Hardware\Interfaces\Terminal::class, Hardware\Local\LocalTerminalDevice::class);
+        $this->app->bind(Flat3\RevPi\Hardware\Hardware\PiControl::class, Hardware\Local\LocalPiControlDevice::class);
+        $this->app->bind(Flat3\RevPi\Hardware\Hardware\Terminal::class, Hardware\Local\LocalTerminalDevice::class);
 
         $this->app->bind(Interfaces\ProcessImage::class, ProcessImage\ProcessImage::class);
         $this->app->bind(Interfaces\SerialPort::class, SerialPort\SerialPort::class);

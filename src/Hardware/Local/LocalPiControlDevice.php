@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Flat3\RevPi\Hardware\Local;
 
 use Flat3\RevPi\Constants;
-use Flat3\RevPi\Hardware\Interfaces\PiControl;
+use Flat3\RevPi\Interfaces\Hardware\PiControl;
 
 class LocalPiControlDevice extends LocalDevice implements PiControl
 {

@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Flat3\RevPi\Hardware\Virtual;
 
 use Flat3\RevPi\Exceptions\NotImplementedException;
-use Flat3\RevPi\Hardware\Interfaces\Device;
-use Flat3\RevPi\Hardware\Interfaces\Seek;
+use Flat3\RevPi\Interfaces\Hardware\Device;
+use Flat3\RevPi\Interfaces\Hardware\Seek;
 
 abstract class VirtualBlockDevice implements Device, Seek
 {

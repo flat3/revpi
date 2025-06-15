@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Flat3\RevPi\Hardware\Virtual;
 
 use Flat3\RevPi\Exceptions\IoctlFailedException;
-use Flat3\RevPi\Hardware\Interfaces\PiControl;
 use Flat3\RevPi\Hardware\StructArray;
+use Flat3\RevPi\Interfaces\Hardware\PiControl;
 use Flat3\RevPi\ProcessImage\Command;
 use Flat3\RevPi\ProcessImage\DataType;
 use Flat3\RevPi\ProcessImage\Device;

@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Flat3\RevPi\Hardware\Virtual;
 
 use Flat3\RevPi\Exceptions\PosixDeviceException;
-use Flat3\RevPi\Hardware\Interfaces\Device;
-use Flat3\RevPi\Hardware\Interfaces\Ioctl;
-use Flat3\RevPi\Hardware\Interfaces\Stream;
+use Flat3\RevPi\Interfaces\Hardware\Device;
+use Flat3\RevPi\Interfaces\Hardware\Ioctl;
+use Flat3\RevPi\Interfaces\Hardware\Stream;
 
 abstract class VirtualCharacterDevice implements Device, Ioctl, Stream
 {

@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Flat3\RevPi\Tests;
 
 use Flat3\RevPi;
-use Flat3\RevPi\Hardware\Interfaces\PiControl;
-use Flat3\RevPi\Hardware\Interfaces\Terminal;
+use Flat3\RevPi\Interfaces\Hardware\PiControl;
+use Flat3\RevPi\Interfaces\Hardware\Terminal;
 use Flat3\RevPi\Interfaces\Module;
 use Flat3\RevPi\Interfaces\Modules\Compact;
 use Flat3\RevPi\Interfaces\Modules\Connect5;

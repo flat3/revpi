@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Flat3\RevPi\Hardware\Local;
 
 use FFI;
-use Flat3\RevPi\Hardware\Interfaces\Device;
+use Flat3\RevPi\Interfaces\Hardware\Device;
 
 class LocalDevice implements Device
 {

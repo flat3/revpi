@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Flat3\RevPi\Hardware\Virtual;
 
 use Flat3\RevPi\Exceptions\IoctlFailedException;
-use Flat3\RevPi\Hardware\Interfaces\Terminal;
+use Flat3\RevPi\Interfaces\Hardware\Terminal;
 use Flat3\RevPi\SerialPort\Command;
 use Flat3\RevPi\SerialPort\Ioctl\SerialRS485Struct;
 use Flat3\RevPi\SerialPort\Ioctl\TermiosStruct;

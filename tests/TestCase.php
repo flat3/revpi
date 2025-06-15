@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Flat3\RevPi\Tests;
 
 use Flat3\RevPi\Events\PollingEvent;
-use Flat3\RevPi\Hardware\Interfaces\PiControl;
-use Flat3\RevPi\Hardware\Interfaces\Terminal;
 use Flat3\RevPi\Hardware\Virtual\VirtualPiControlDevice;
 use Flat3\RevPi\Hardware\Virtual\VirtualTerminalDevice;
+use Flat3\RevPi\Interfaces\Hardware\PiControl;
+use Flat3\RevPi\Interfaces\Hardware\Terminal;
 use Flat3\RevPi\Modules\Module;
 use Flat3\RevPi\Modules\Virtual;
 use Flat3\RevPi\ProcessImage\DataType;

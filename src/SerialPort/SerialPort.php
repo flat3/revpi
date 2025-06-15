@@ -7,7 +7,7 @@ namespace Flat3\RevPi\SerialPort;
 use Flat3\RevPi\Constants;
 use Flat3\RevPi\Exceptions\PosixDeviceException;
 use Flat3\RevPi\Hardware\HasDeviceIoctl;
-use Flat3\RevPi\Hardware\Interfaces\Terminal;
+use Flat3\RevPi\Interfaces\Hardware\Terminal;
 use Flat3\RevPi\Interfaces\SerialPort as SerialPortInterface;
 use Flat3\RevPi\SerialPort\Ioctl\SerialRS485Struct;
 use Flat3\RevPi\SerialPort\Ioctl\TermiosStruct;

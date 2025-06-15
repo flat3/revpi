@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Flat3\RevPi\Interfaces;
 
-use Flat3\RevPi\Hardware\Interfaces\Terminal;
+use Flat3\RevPi\Interfaces\Hardware\Terminal;
 use Flat3\RevPi\SerialPort\BaudRate;
 use Flat3\RevPi\SerialPort\ControlFlag;
 use Flat3\RevPi\SerialPort\DataBits;
