@@ -15,12 +15,11 @@ use Flat3\RevPi\Interfaces\Hardware\Seek;
 use Flat3\RevPi\Interfaces\Hardware\Terminal;
 use Flat3\RevPi\JsonRpc\Request as JsonRpcRequest;
 use Flat3\RevPi\JsonRpc\Response as JsonRpcResponse;
+use Throwable;
 
 class JsonRpcServer implements WebsocketClientHandler
 {
-    public function __construct(protected Device $device)
-    {
-    }
+    public function __construct(protected Device $device) {}
 
     /**
      * @param  array<string, int|string|null>  $params
@@ -142,7 +141,12 @@ class JsonRpcServer implements WebsocketClientHandler
             $method = $request->method;
             $params = $request->params;
 
-            $response->result = $this->handle($method, $params);
+            try {
+                $response->result = $this->handle($method, $params);
+            } catch (Throwable $t) {
+                $response->errorCode = $t->getCode();
+                $response->errorMessage = $t->getMessage();
+            }
 
             $client->sendBinary(serialize($response));
         }
