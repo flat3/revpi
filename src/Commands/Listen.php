@@ -10,7 +10,7 @@ use Amp\Http\Server\SocketHttpServer;
 use Amp\Socket\InternetAddress;
 use Amp\Websocket\Server\Rfc6455Acceptor;
 use Amp\Websocket\Server\Websocket;
-use Flat3\RevPi\Hardware\Virtual\VirtualPiControlDevice;
+use Flat3\RevPi\Hardware\Local\LocalPiControlDevice;
 use Flat3\RevPi\JsonRpc\JsonRpcServer;
 use Illuminate\Console\Command;
 use Psr\Log\LoggerInterface;
@@ -41,7 +41,7 @@ class Listen extends Command
                 logger: $logger,
                 acceptor: new Rfc6455Acceptor,
                 clientHandler: app(JsonRpcServer::class, [
-                    'device' => app(VirtualPiControlDevice::class),
+                    'device' => app(LocalPiControlDevice::class),
                 ])
             )
         );

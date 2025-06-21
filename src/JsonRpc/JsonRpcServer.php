@@ -16,9 +16,11 @@ use Flat3\RevPi\Interfaces\Hardware\Terminal;
 use Flat3\RevPi\JsonRpc\Request as JsonRpcRequest;
 use Flat3\RevPi\JsonRpc\Response as JsonRpcResponse;
 
-abstract class JsonRpcServer implements WebsocketClientHandler
+class JsonRpcServer implements WebsocketClientHandler
 {
-    protected Device $device;
+    public function __construct(protected Device $device)
+    {
+    }
 
     /**
      * @param  array<string, int|string|null>  $params
