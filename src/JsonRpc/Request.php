@@ -13,7 +13,7 @@ class Request
     public string $method;
 
     /**
-     * @var array<string, int|string|bool>
+     * @var array<string, int|string|null>
      */
     public array $params = [];
 
@@ -33,11 +33,14 @@ class Request
     }
 
     /**
-     * @param  array<string, string|array<string,mixed>|int|bool>  $data
+     * @param  array<string, string|array<string,int|string>|int|bool>  $data
      */
     public function __unserialize(array $data): void
     {
         assert(is_string($data['id']));
+        assert(is_string($data['method']));
+        assert(is_array($data['params']));
+
         $this->id = $data['id'];
         $this->method = $data['method'];
         $this->params = $data['params'];

@@ -10,8 +10,8 @@ use Amp\Http\Server\SocketHttpServer;
 use Amp\Socket\InternetAddress;
 use Amp\Websocket\Server\Rfc6455Acceptor;
 use Amp\Websocket\Server\Websocket;
-use Flat3\RevPi\Hardware\Remote\RemotePiControlHandler;
 use Flat3\RevPi\Hardware\Virtual\VirtualPiControlDevice;
+use Flat3\RevPi\JsonRpc\JsonRpcServer;
 use Illuminate\Console\Command;
 use Psr\Log\LoggerInterface;
 use Revolt\EventLoop;
@@ -25,13 +25,25 @@ class Listen extends Command
     public function handle(LoggerInterface $logger): void
     {
         $server = SocketHttpServer::createForDirectAccess($logger);
-        $server->expose(new InternetAddress((string) $this->option('address'), (int) $this->option('port')));
+        $address = $this->option('address');
+        assert(is_string($address));
+
+        /** @var int<0, 65535> $port */
+        $port = (int) $this->option('port');
+        $server->expose(new InternetAddress($address, $port));
 
         $router = new Router($server, $logger, new DefaultErrorHandler);
         $router->addRoute(
             method: 'GET',
             uri: '/picontrol',
-            requestHandler: new Websocket($server, $logger, new Rfc6455Acceptor, app(RemotePiControlHandler::class, ['piControl' => app(VirtualPiControlDevice::class)]))
+            requestHandler: new Websocket(
+                httpServer: $server,
+                logger: $logger,
+                acceptor: new Rfc6455Acceptor,
+                clientHandler: app(JsonRpcServer::class, [
+                    'device' => app(VirtualPiControlDevice::class),
+                ])
+            )
         );
 
         $server->start(

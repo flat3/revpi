@@ -12,10 +12,7 @@ class Response
 
     public ?string $errorMessage = null;
 
-    /**
-     * @var array<string, int|bool|array|string>|int|string
-     */
-    public array|int|string $result;
+    public mixed $result;
 
     public function __serialize(): array
     {
@@ -39,15 +36,20 @@ class Response
     }
 
     /**
-     * @param  array<string, string|array|int|bool>  $data
+     * @param  array<string, mixed>  $data
      */
     public function __unserialize(array $data): void
     {
+        assert(is_string($data['id']));
+
         $this->id = $data['id'];
 
         if (isset($data['error'])) {
-            $this->errorCode = $data['errorCode'];
-            $this->errorMessage = $data['errorMessage'];
+            assert(is_int($data['error']['code'])); // @phpstan-ignore offsetAccess.nonOffsetAccessible
+            assert(is_string($data['error']['message']));  // @phpstan-ignore offsetAccess.nonOffsetAccessible
+
+            $this->errorCode = $data['error']['code'];
+            $this->errorMessage = $data['error']['message'];
 
             return;
         }

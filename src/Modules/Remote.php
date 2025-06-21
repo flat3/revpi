@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Flat3\RevPi\Modules;
 
-use Amp\Websocket\Client\WebsocketConnection;
 use Amp\Websocket\Client\WebsocketHandshake;
 use Flat3\RevPi\Exceptions\NotImplementedException;
 use Flat3\RevPi\Hardware\Remote\RemotePiControlDevice;
@@ -22,8 +21,6 @@ use function Amp\Websocket\Client\connect;
 
 class Remote implements RemoteInterface
 {
-    protected WebsocketConnection $websocket;
-
     protected PiControl $piControl;
 
     public function getLed(LedPosition $position): Led

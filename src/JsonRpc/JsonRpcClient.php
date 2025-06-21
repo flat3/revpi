@@ -7,20 +7,21 @@ namespace Flat3\RevPi\JsonRpc;
 use Amp\DeferredFuture;
 use Amp\Future;
 use Amp\Websocket\Client\WebsocketConnection;
-use RuntimeException;
+use Flat3\RevPi\Exceptions\RemoteDeviceException;
+use Throwable;
 
 use function Amp\async;
 
-class JsonRpcWebsocketClient
+class JsonRpcClient
 {
-    protected WebsocketConnection $connection;
+    protected WebsocketConnection $socket;
 
     /**
-     * @var array<string, DeferredFuture>
+     * @var array<string, DeferredFuture<mixed>>
      */
     protected array $pending = [];
 
-    public static function connect($connection): self
+    public static function connect(WebsocketConnection $connection): self
     {
         $client = new self($connection);
         async(fn () => $client->receiveLoop());
@@ -28,16 +29,18 @@ class JsonRpcWebsocketClient
         return $client;
     }
 
-    private function __construct(WebsocketConnection $connection)
+    private function __construct(WebsocketConnection $socket)
     {
-        $this->connection = $connection;
+        $this->socket = $socket;
     }
 
     /**
-     * @return Future<int|string|bool|array<string, int|string|array<string, int|string|bool>|bool>>
+     * @param  array<string, int|string|null>  $params
+     * @return Future<int|string|array<string, int|string|null>>
      */
     public function request(string $method, array $params = []): Future
     {
+        /** @var DeferredFuture<int|string|array<string, int|string|null>> $deferred */
         $deferred = new DeferredFuture;
         $request = new Request;
         $request->method = $method;
@@ -45,8 +48,8 @@ class JsonRpcWebsocketClient
         $this->pending[$request->id] = $deferred;
 
         try {
-            $this->connection->sendBinary(serialize($request));
-        } catch (\Throwable $e) {
+            $this->socket->sendBinary(serialize($request));
+        } catch (Throwable $e) {
             $deferred->error($e);
             unset($this->pending[$request->id]);
         }
@@ -57,7 +60,7 @@ class JsonRpcWebsocketClient
     private function receiveLoop(): void
     {
         try {
-            while ($message = $this->connection->receive()) {
+            while ($message = $this->socket->receive()) {
                 $payload = $message->buffer();
                 $response = unserialize($payload);
 
@@ -76,14 +79,14 @@ class JsonRpcWebsocketClient
 
                 if ($response->errorCode !== null) {
                     assert(is_string($response->errorMessage));
-                    $deferred->error(new RuntimeException($response->errorMessage, $response->errorCode));
+                    $deferred->error(new RemoteDeviceException($response->errorMessage, $response->errorCode));
 
                     return;
                 }
 
                 $deferred->complete($response->result);
             }
-        } catch (\Throwable $t) {
+        } catch (Throwable $t) {
             foreach ($this->pending as $deferred) {
                 $deferred->error($t);
             }
@@ -94,6 +97,6 @@ class JsonRpcWebsocketClient
 
     public function close(): void
     {
-        $this->connection->close();
+        $this->socket->close();
     }
 }
