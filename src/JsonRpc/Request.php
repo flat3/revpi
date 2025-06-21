@@ -34,7 +34,6 @@ class Request
 
     /**
      * @param  array<string, string|array<string,mixed>|int|bool>  $data
-     * @return void
      */
     public function __unserialize(array $data): void
     {

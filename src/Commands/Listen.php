@@ -31,7 +31,7 @@ class Listen extends Command
         $router->addRoute(
             method: 'GET',
             uri: '/picontrol',
-            requestHandler: new Websocket($server, $logger, new Rfc6455Acceptor, app(RemotePiControlHandler::class,['piControl' => app(VirtualPiControlDevice::class)]))
+            requestHandler: new Websocket($server, $logger, new Rfc6455Acceptor, app(RemotePiControlHandler::class, ['piControl' => app(VirtualPiControlDevice::class)]))
         );
 
         $server->start(

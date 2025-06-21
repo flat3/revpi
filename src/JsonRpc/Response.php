@@ -9,10 +9,11 @@ class Response
     public string $id;
 
     public ?int $errorCode = null;
+
     public ?string $errorMessage = null;
 
     /**
-     * @var array<string, int|bool|array|string>|int|string $result
+     * @var array<string, int|bool|array|string>|int|string
      */
     public array|int|string $result;
 
@@ -39,7 +40,6 @@ class Response
 
     /**
      * @param  array<string, string|array|int|bool>  $data
-     * @return void
      */
     public function __unserialize(array $data): void
     {

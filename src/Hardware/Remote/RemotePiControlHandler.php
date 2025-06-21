@@ -12,9 +12,7 @@ use Flat3\RevPi\Interfaces\Hardware\PiControl;
 
 class RemotePiControlHandler implements WebsocketClientHandler
 {
-    public function __construct(protected PiControl $piControl)
-    {
-    }
+    public function __construct(protected PiControl $piControl) {}
 
     public function handleClient(WebsocketClient $client, Request $request, Response $response): void
     {

@@ -10,5 +10,5 @@ use Psr\Http\Message\UriInterface as PsrUri;
 
 interface Remote extends Module
 {
-    public function connect(WebsocketHandshake|PsrUri|string $handshake):void;
+    public function connect(WebsocketHandshake|PsrUri|string $handshake): void;
 }

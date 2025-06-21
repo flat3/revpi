@@ -7,8 +7,8 @@ namespace Flat3\RevPi\JsonRpc;
 use Amp\DeferredFuture;
 use Amp\Future;
 use Amp\Websocket\Client\WebsocketConnection;
-
 use RuntimeException;
+
 use function Amp\async;
 
 class JsonRpcWebsocketClient
