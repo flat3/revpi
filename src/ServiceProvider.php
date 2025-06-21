@@ -26,6 +26,7 @@ class ServiceProvider extends BaseServiceProvider
         $this->app->bind(Interfaces\Modules\Connect5::class, Modules\Connect5::class);
         $this->app->bind(Interfaces\Modules\Compact::class, Modules\Compact::class);
         $this->app->bind(Interfaces\Modules\Virtual::class, Modules\Virtual::class);
+        $this->app->bind(Interfaces\Modules\Remote::class, Modules\Remote::class);
 
         $this->app->singleton(Interfaces\Module::class, fn () => app(Interfaces\ProcessImage::class)->getModule());
     }

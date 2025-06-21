@@ -10,7 +10,8 @@ use Amp\Http\Server\SocketHttpServer;
 use Amp\Socket\InternetAddress;
 use Amp\Websocket\Server\Rfc6455Acceptor;
 use Amp\Websocket\Server\Websocket;
-use Flat3\RevPi\Hardware\Local\LocalPiControlDevice;
+use Flat3\RevPi\Interfaces\Hardware\PiControl;
+use Flat3\RevPi\Interfaces\Hardware\Terminal;
 use Flat3\RevPi\JsonRpc\JsonRpcServer;
 use Illuminate\Console\Command;
 use Psr\Log\LoggerInterface;
@@ -33,18 +34,24 @@ class Listen extends Command
         $server->expose(new InternetAddress($address, $port));
 
         $router = new Router($server, $logger, new DefaultErrorHandler);
-        $router->addRoute(
-            method: 'GET',
-            uri: '/picontrol',
-            requestHandler: new Websocket(
-                httpServer: $server,
-                logger: $logger,
-                acceptor: new Rfc6455Acceptor,
-                clientHandler: app(JsonRpcServer::class, [
-                    'device' => app(LocalPiControlDevice::class),
-                ])
-            )
-        );
+
+        foreach ([
+            'picontrol' => PiControl::class,
+            'terminal' => Terminal::class,
+        ] as $route => $class) {
+            $router->addRoute(
+                method: 'GET',
+                uri: '/'.$route,
+                requestHandler: new Websocket(
+                    httpServer: $server,
+                    logger: $logger,
+                    acceptor: new Rfc6455Acceptor,
+                    clientHandler: app(JsonRpcServer::class, [
+                        'device' => app($class),
+                    ])
+                )
+            );
+        }
 
         $server->start(
             $router,

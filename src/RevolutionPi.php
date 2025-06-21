@@ -4,27 +4,37 @@ declare(strict_types=1);
 
 namespace Flat3\RevPi;
 
+use Amp\Websocket\Client\WebsocketHandshake;
 use Flat3\RevPi\Attributes\Tag;
 use Flat3\RevPi\Exceptions\AttributeNotFoundException;
 use Flat3\RevPi\Interfaces\Led;
 use Flat3\RevPi\Interfaces\Module;
+use Flat3\RevPi\Interfaces\Modules\Remote;
 use Flat3\RevPi\IO\IO;
 use Flat3\RevPi\Led\LedPosition;
 use Illuminate\Support\Facades\App;
+use Psr\Http\Message\UriInterface as PsrUri;
 use ReflectionAttribute;
 use ReflectionClass;
 use Revolt\EventLoop;
 
 trait RevolutionPi
 {
-    protected ?string $address = null;
+    protected WebsocketHandshake|PsrUri|string|null $address;
 
     public function module(): Module
     {
+        if ($this->address) {
+            $module = app(Remote::class);
+            $module->connect($this->address);
+
+            return $module;
+        }
+
         return app(Module::class);
     }
 
-    public function address(string $address): static
+    public function address(WebsocketHandshake|PsrUri|string $address): static
     {
         $this->address = $address;
 
