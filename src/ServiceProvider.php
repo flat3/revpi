@@ -8,6 +8,7 @@ use Flat3\RevPi\Commands\Dump;
 use Flat3\RevPi\Commands\Generate;
 use Flat3\RevPi\Commands\GetLed;
 use Flat3\RevPi\Commands\Info;
+use Flat3\RevPi\Commands\Listen;
 use Flat3\RevPi\Commands\Run;
 use Flat3\RevPi\Commands\SetLed;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
@@ -38,6 +39,7 @@ class ServiceProvider extends BaseServiceProvider
             Info::class,
             Dump::class,
             Generate::class,
+            Listen::class,
         ]);
     }
 }

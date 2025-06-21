@@ -22,7 +22,10 @@
         "illuminate/events": "^11.0|^12.0",
         "illuminate/support": "^11.0|^12.0",
         "nette/php-generator": "^4.1",
-        "revolt/event-loop": "^1.0"
+        "revolt/event-loop": "^1.0",
+        "amphp/websocket-server": "^4.0",
+        "amphp/websocket-client": "^2.0",
+        "amphp/http-server-router": "^2.0"
     },
     "require-dev": {
         "laravel/pint": "^1.22",
