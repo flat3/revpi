@@ -6,5 +6,5 @@ namespace Flat3\RevPi\Interfaces;
 
 interface Monitor
 {
-    public function evaluate(mixed $previous, mixed $next): bool;
+    public function evaluate(int|bool|null $next): bool;
 }

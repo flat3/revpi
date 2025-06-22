@@ -8,8 +8,17 @@ use Flat3\RevPi\Interfaces\Monitor;
 
 class DigitalMonitor implements Monitor
 {
-    public function evaluate(mixed $previous, mixed $next): bool
+    protected int|bool|null $previous = null;
+
+    public function evaluate(int|bool|null $next): bool
     {
-        return $previous !== $next;
+        $previous = $this->previous;
+        $this->previous = $next;
+
+        if ($previous === null || $previous === $next) {
+            return false;
+        }
+
+        return true;
     }
 }
