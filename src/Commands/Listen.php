@@ -12,7 +12,7 @@ use Amp\Websocket\Server\Rfc6455Acceptor;
 use Amp\Websocket\Server\Websocket;
 use Flat3\RevPi\Interfaces\Hardware\PiControl;
 use Flat3\RevPi\Interfaces\Hardware\Terminal;
-use Flat3\RevPi\JsonRpc\JsonRpcServer;
+use Flat3\RevPi\JsonRpc\Peer;
 use Illuminate\Console\Command;
 use Psr\Log\LoggerInterface;
 use Revolt\EventLoop;
@@ -46,9 +46,7 @@ class Listen extends Command
                     httpServer: $server,
                     logger: $logger,
                     acceptor: new Rfc6455Acceptor,
-                    clientHandler: app(JsonRpcServer::class, [
-                        'device' => app($class),
-                    ])
+                    clientHandler: app(Peer::class)->setDevice(app($class))
                 )
             );
         }

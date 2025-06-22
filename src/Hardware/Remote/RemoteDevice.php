@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace Flat3\RevPi\Hardware\Remote;
 
-use Amp\Websocket\Client\WebsocketConnection;
+use Amp\Websocket\WebsocketClient;
 use Flat3\RevPi\Interfaces\Hardware\Device;
 use Flat3\RevPi\Interfaces\Hardware\Ioctl;
-use Flat3\RevPi\JsonRpc\JsonRpcClient;
+use Flat3\RevPi\JsonRpc\Peer;
 
 abstract class RemoteDevice implements Device, Ioctl
 {
-    protected JsonRpcClient $socket;
+    protected Peer $socket;
 
-    public function socket(WebsocketConnection $websocket): void
+    public function socket(WebsocketClient $websocket): void
     {
-        $this->socket = JsonRpcClient::connect($websocket);
+        $this->socket = Peer::initiate($websocket);
     }
 
     public function open(string $pathname, int $flags): int

@@ -29,7 +29,7 @@ class RemoteTerminalDevice extends RemoteCharacterDevice implements Terminal
     public function cfsetispeed(string &$buffer, int $speed): int
     {
         /** @var array{buffer: string, return: int} $response */
-        $response = $this->socket->request('cfsetispeed', ['buffer' => $buffer])->await();
+        $response = $this->socket->request('cfsetispeed', ['buffer' => $buffer, 'speed' => $speed])->await();
         $buffer = $response['buffer'];
 
         return $response['return'];
@@ -38,7 +38,7 @@ class RemoteTerminalDevice extends RemoteCharacterDevice implements Terminal
     public function cfsetospeed(string &$buffer, int $speed): int
     {
         /** @var array{buffer: string, return: int} $response */
-        $response = $this->socket->request('cfsetospeed', ['buffer' => $buffer])->await();
+        $response = $this->socket->request('cfsetospeed', ['buffer' => $buffer, 'speed' => $speed])->await();
         $buffer = $response['buffer'];
 
         return $response['return'];

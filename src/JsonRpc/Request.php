@@ -6,14 +6,20 @@ namespace Flat3\RevPi\JsonRpc;
 
 use Illuminate\Support\Str;
 
+/**
+ * @phpstan-import-type JsonRpcMethodT from Peer
+ * @phpstan-import-type JsonRpcRequestT from Peer
+ * @phpstan-import-type JsonRpcRequestParamsT from Peer
+ */
 class Request
 {
     public string $id;
 
+    /** @var JsonRpcMethodT */
     public string $method;
 
     /**
-     * @var array<string, int|string|null>
+     * @var JsonRpcRequestParamsT
      */
     public array $params = [];
 
@@ -33,14 +39,10 @@ class Request
     }
 
     /**
-     * @param  array<string, string|array<string,int|string>|int|bool>  $data
+     * @param  JsonRpcRequestT  $data
      */
     public function __unserialize(array $data): void
     {
-        assert(is_string($data['id']));
-        assert(is_string($data['method']));
-        assert(is_array($data['params']));
-
         $this->id = $data['id'];
         $this->method = $data['method'];
         $this->params = $data['params'];

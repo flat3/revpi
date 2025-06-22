@@ -24,7 +24,7 @@ trait RevolutionPi
 
     public function module(): Module
     {
-        if ($this->address) {
+        if ($this->address !== null) {
             $module = app(Remote::class);
             $module->connect($this->address);
 
