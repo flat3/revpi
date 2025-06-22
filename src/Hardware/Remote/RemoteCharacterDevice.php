@@ -6,7 +6,6 @@ namespace Flat3\RevPi\Hardware\Remote;
 
 use Flat3\RevPi\Constants;
 use Flat3\RevPi\Interfaces\Hardware\Stream;
-use Flat3\RevPi\JsonRpc\Event;
 use Flat3\RevPi\JsonRpc\JsonRpcDevice;
 use Revolt\EventLoop;
 
@@ -33,10 +32,8 @@ abstract class RemoteCharacterDevice extends RemoteDevice implements Stream
     {
         $this->peer->request('fdopen')->await();
 
-        $this->peer->on(function (Event $event) {
-            if ($event->type === 'readable') {
-                fwrite($this->remote, $event->payload);
-            }
+        $this->peer->on('readable', function (string $payload) {
+            fwrite($this->remote, $payload);
         });
 
         EventLoop::onReadable($this->remote, function ($callbackId, $stream) {

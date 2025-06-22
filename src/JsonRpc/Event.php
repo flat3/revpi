@@ -6,9 +6,13 @@ namespace Flat3\RevPi\JsonRpc;
 
 /**
  * @phpstan-import-type JsonRpcEventT from JsonRpcPeer
+ * @phpstan-import-type JsonRpcEventTypeT from JsonRpcPeer
  */
 class Event
 {
+    /**
+     * @var JsonRpcEventTypeT
+     */
     public string $type;
 
     public string $payload;

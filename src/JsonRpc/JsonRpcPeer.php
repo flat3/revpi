@@ -12,7 +12,6 @@ use Amp\Websocket\Server\WebsocketClientHandler;
 use Amp\Websocket\WebsocketClient;
 use Closure;
 use Flat3\RevPi\Exceptions\RemoteDeviceException;
-use Flat3\RevPi\Interfaces\Hardware\Device;
 use Flat3\RevPi\JsonRpc\Request as JsonRpcRequest;
 use Flat3\RevPi\JsonRpc\Response as JsonRpcResponse;
 use Throwable;
@@ -22,7 +21,8 @@ use function Amp\async;
 /**
  * @phpstan-type JsonRpcDeviceMethodT 'open'|'close'|'lseek'|'ioctl'|'read'|'write'|'cfgetispeed'|'cfgetospeed'|'cfsetispeed'|'cfsetospeed'|'tcflush'|'tcdrain'|'tcsendbreak'|'fdopen'
  * @phpstan-type JsonRpcMethodT JsonRpcDeviceMethodT
- * @phpstan-type JsonRpcEventTypeT 'readable'
+ * @phpstan-type JsonRpcDeviceEventTypeT 'readable'
+ * @phpstan-type JsonRpcEventTypeT JsonRpcDeviceEventTypeT
  * @phpstan-type JsonRpcRequestParamsT array<string, int|string|null>
  * @phpstan-type JsonRpcRequestT array{id: string, method: JsonRpcMethodT, params: JsonRpcRequestParamsT }
  * @phpstan-type JsonRpcResponseResultT int|string|array<string, int|string|null>
@@ -33,17 +33,25 @@ abstract class JsonRpcPeer implements WebsocketClientHandler
 {
     protected WebsocketClient $socket;
 
-    protected Device $device;
-
     /**
-     * @var callable
+     * @var array{readable: array<callable>}
      */
-    protected mixed $eventReceiver;
+    protected array $callbacks = [
+        'readable' => [],
+    ];
 
     /**
      * @var array<DeferredFuture<JsonRpcResponseResultT>>
      */
     protected array $pending = [];
+
+    /**
+     * @param  JsonRpcDeviceEventTypeT  $event
+     */
+    public function on(string $event, Closure $callback): void
+    {
+        $this->callbacks[$event][] = $callback;
+    }
 
     public function withSocket(WebsocketClient $socket): self
     {
@@ -85,7 +93,7 @@ abstract class JsonRpcPeer implements WebsocketClientHandler
                 $response = unserialize($payload);
 
                 if ($response instanceof Event) {
-                    call_user_func($this->eventReceiver, $response);
+                    collect($this->callbacks[$response->type])->each(fn ($callback) => $callback($response->payload));
 
                     continue;
                 }
@@ -119,11 +127,6 @@ abstract class JsonRpcPeer implements WebsocketClientHandler
 
             $this->pending = [];
         }
-    }
-
-    public function on(Closure $callback): void
-    {
-        $this->eventReceiver = $callback;
     }
 
     public function handleClient(WebsocketClient $client, Request $request, Response $response): void
