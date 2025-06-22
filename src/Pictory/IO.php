@@ -31,14 +31,12 @@ class IO
 
         $io->unit = match ($definition[2]) {
             '1' => 'bool',
-            'default' => 'int',
-            default => null,
+            default => 'int',
         };
 
         $io->default = match ($io->unit) {
             'bool' => (bool) ($definition[1]),
-            'int' => (int) $definition[1],
-            default => null,
+            default => (int) $definition[1],
         };
 
         $io->exported = (bool) $definition[4];
