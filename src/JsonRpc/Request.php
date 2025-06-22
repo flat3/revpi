@@ -7,9 +7,9 @@ namespace Flat3\RevPi\JsonRpc;
 use Illuminate\Support\Str;
 
 /**
- * @phpstan-import-type JsonRpcMethodT from JsonRpcPeer
- * @phpstan-import-type JsonRpcRequestT from JsonRpcPeer
- * @phpstan-import-type JsonRpcRequestParamsT from JsonRpcPeer
+ * @phpstan-import-type JsonRpcMethodT from JsonRpcHandler
+ * @phpstan-import-type JsonRpcRequestT from JsonRpcHandler
+ * @phpstan-import-type JsonRpcRequestParamsT from JsonRpcHandler
  */
 class Request
 {

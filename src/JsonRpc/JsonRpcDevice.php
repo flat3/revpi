@@ -4,26 +4,28 @@ declare(strict_types=1);
 
 namespace Flat3\RevPi\JsonRpc;
 
-use Amp\Http\Server\Request;
-use Amp\Http\Server\Response;
-use Amp\Websocket\WebsocketClient;
+use Amp\Websocket\WebsocketClosedException;
 use Flat3\RevPi\Constants;
 use Flat3\RevPi\Exceptions\NotImplementedException;
 use Flat3\RevPi\Interfaces\Hardware\Device;
 use Flat3\RevPi\Interfaces\Hardware\Ioctl;
-use Flat3\RevPi\Interfaces\Hardware\PiControl;
 use Flat3\RevPi\Interfaces\Hardware\Seek;
 use Flat3\RevPi\Interfaces\Hardware\Stream;
 use Flat3\RevPi\Interfaces\Hardware\Terminal;
 use Revolt\EventLoop;
 
 /**
- * @phpstan-import-type JsonRpcDeviceMethodT from JsonRpcPeer
- * @phpstan-import-type JsonRpcResponseResultT from JsonRpcPeer
+ * @phpstan-import-type JsonRpcDeviceMethodT from JsonRpcHandler
+ * @phpstan-import-type JsonRpcResponseResultT from JsonRpcHandler
  */
-class JsonRpcDevice extends JsonRpcPeer
+class JsonRpcDevice extends JsonRpcHandler
 {
     protected Device $device;
+
+    public function setDevice(Device $device): void
+    {
+        $this->device = $device;
+    }
 
     /**
      * @param  JsonRpcDeviceMethodT  $method
@@ -140,11 +142,15 @@ class JsonRpcDevice extends JsonRpcPeer
                     $data = @fread($stream, Constants::BlockSize);
 
                     if (is_string($data) && $data !== '') {
-                        $request = new Event;
-                        $request->type = 'readable';
-                        $request->payload = $data;
+                        $event = new Event;
+                        $event->type = 'readable';
+                        $event->payload = $data;
 
-                        $this->socket->sendBinary(serialize($request));
+                        try {
+                            $this->socket->sendBinary(serialize($event));
+                        } catch (WebsocketClosedException) {
+                            EventLoop::cancel($callbackId);
+                        }
                     } elseif (! is_resource($stream) || @feof($stream)) {
                         EventLoop::cancel($callbackId);
                     }
@@ -154,16 +160,5 @@ class JsonRpcDevice extends JsonRpcPeer
         }
 
         throw new NotImplementedException; // @phpstan-ignore deadCode.unreachable
-    }
-
-    public function handleClient(WebsocketClient $client, Request $request, Response $response): void
-    {
-        $this->device = match ($request->getQueryParameter('device')) {
-            'picontrol' => app(PiControl::class),
-            'terminal' => app(Terminal::class),
-            default => throw new NotImplementedException,
-        };
-
-        parent::handleClient($client, $request, $response);
     }
 }

@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Flat3\RevPi\JsonRpc;
 
 /**
- * @phpstan-import-type JsonRpcResponseT from JsonRpcPeer
- * @phpstan-import-type JsonRpcResponseResultT from JsonRpcPeer
+ * @phpstan-import-type JsonRpcResponseT from JsonRpcHandler
+ * @phpstan-import-type JsonRpcResponseResultT from JsonRpcHandler
  */
 class Response
 {

@@ -30,9 +30,9 @@ abstract class RemoteCharacterDevice extends RemoteDevice implements Stream
 
     public function fdopen(): mixed
     {
-        $this->peer->request('fdopen')->await();
+        $this->device->request('fdopen')->await();
 
-        $this->peer->on('readable', function (string $payload) {
+        $this->device->on('readable', function (string $payload) {
             fwrite($this->remote, $payload);
         });
 

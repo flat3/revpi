@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Flat3\RevPi\JsonRpc;
 
 /**
- * @phpstan-import-type JsonRpcEventT from JsonRpcPeer
- * @phpstan-import-type JsonRpcEventTypeT from JsonRpcPeer
+ * @phpstan-import-type JsonRpcEventT from JsonRpcHandler
+ * @phpstan-import-type JsonRpcEventTypeT from JsonRpcHandler
  */
 class Event
 {

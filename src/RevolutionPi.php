@@ -24,19 +24,23 @@ trait RevolutionPi
 {
     protected ?WebsocketHandshake $handshake = null;
 
+    protected ?Module $module = null;
+
     /**
      * Get the appropriate module instance (local or remote, depending on handshake).
      */
     public function module(): Module
     {
-        if ($this->handshake !== null) {
-            $module = app(Remote::class);
-            $module->handshake($this->handshake);
-
-            return $module;
+        if (! $this->module instanceof Module) {
+            if ($this->handshake !== null) {
+                $this->module = app(Remote::class);
+                $this->module->handshake($this->handshake);
+            } else {
+                $this->module = app(Module::class);
+            }
         }
 
-        return app(Module::class);
+        return $this->module;
     }
 
     /**

@@ -17,12 +17,18 @@ abstract class Module implements ModuleInterface
 {
     protected ?string $pollingCallbackId = null;
 
-    protected float $frequency = Constants::f20Hz;
+    protected float $frequency = Constants::f1Hz;
 
-    public function __construct(protected ProcessImage $processImage) {}
+    protected ?ProcessImage $processImage = null;
 
     public function getProcessImage(): ProcessImage
     {
+        if ($this->processImage instanceof ProcessImage) {
+            return $this->processImage;
+        }
+
+        $this->processImage = app(ProcessImage::class);
+
         return $this->processImage;
     }
 
@@ -59,7 +65,7 @@ abstract class Module implements ModuleInterface
         Event::listen(PollingEvent::class, function () use ($monitor) {
             static $previous = null;
 
-            $next = $this->processImage->readVariable($monitor->name);
+            $next = $this->getProcessImage()->readVariable($monitor->name);
 
             if ($previous !== null && $previous !== $next) {
                 EventLoop::defer(fn () => $monitor->evaluate($previous, $next));

@@ -13,6 +13,8 @@ class LocalDevice implements Device
 
     protected ?int $fd = null;
 
+    protected string $pathname;
+
     public function __construct()
     {
         $this->ffi = FFI::cdef(<<<'EOF'
@@ -34,6 +36,7 @@ EOF, 'libc.so.6');
 
     public function open(string $pathname, int $flags): int
     {
+        $this->pathname = $pathname;
         if ($this->fd !== null) {
             return 0;
         }

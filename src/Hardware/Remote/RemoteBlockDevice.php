@@ -10,6 +10,6 @@ abstract class RemoteBlockDevice extends RemoteDevice implements Seek
 {
     public function lseek(int $offset, int $whence): int
     {
-        return (int) $this->peer->request('lseek', ['offset' => $offset, 'whence' => $whence])->await();
+        return (int) $this->device->request('lseek', ['offset' => $offset, 'whence' => $whence])->await();
     }
 }
