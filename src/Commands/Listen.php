@@ -10,8 +10,6 @@ use Amp\Http\Server\SocketHttpServer;
 use Amp\Socket\InternetAddress;
 use Amp\Websocket\Server\Rfc6455Acceptor;
 use Amp\Websocket\Server\Websocket;
-use Flat3\RevPi\Interfaces\Hardware\PiControl;
-use Flat3\RevPi\Interfaces\Hardware\Terminal;
 use Flat3\RevPi\JsonRpc\JsonRpcPeer;
 use Illuminate\Console\Command;
 use Psr\Log\LoggerInterface;
@@ -35,16 +33,16 @@ class Listen extends Command
 
         $router = new Router($server, $logger, new DefaultErrorHandler);
 
-            $router->addRoute(
-                method: 'GET',
-                uri: '/',
-                requestHandler: new Websocket(
-                    httpServer: $server,
-                    logger: $logger,
-                    acceptor: new Rfc6455Acceptor,
-                    clientHandler: app(JsonRpcPeer::class),
-                )
-            );
+        $router->addRoute(
+            method: 'GET',
+            uri: '/',
+            requestHandler: new Websocket(
+                httpServer: $server,
+                logger: $logger,
+                acceptor: app(Rfc6455Acceptor::class),
+                clientHandler: app(JsonRpcPeer::class),
+            )
+        );
 
         $server->start(
             $router,

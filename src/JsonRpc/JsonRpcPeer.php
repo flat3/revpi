@@ -23,6 +23,7 @@ use Flat3\RevPi\JsonRpc\Request as JsonRpcRequest;
 use Flat3\RevPi\JsonRpc\Response as JsonRpcResponse;
 use Revolt\EventLoop;
 use Throwable;
+
 use function Amp\async;
 
 /**
@@ -53,7 +54,7 @@ class JsonRpcPeer implements WebsocketClientHandler
     public function withSocket(WebsocketClient $socket): self
     {
         $this->socket = $socket;
-        async(fn() => $this->handleResponse());
+        async(fn () => $this->handleResponse());
 
         return $this;
     }
@@ -102,13 +103,13 @@ class JsonRpcPeer implements WebsocketClientHandler
                     continue;
                 }
 
-                if (!$response instanceof JsonRpcResponse) {
+                if (! $response instanceof JsonRpcResponse) {
                     continue;
                 }
 
                 $id = $response->id;
 
-                if (!isset($this->pending[$id])) {
+                if (! isset($this->pending[$id])) {
                     continue;
                 }
 
@@ -263,7 +264,7 @@ class JsonRpcPeer implements WebsocketClientHandler
                         $request->payload = $newData;
 
                         $this->socket->sendBinary(serialize($request));
-                    } elseif (!is_resource($stream) || @feof($stream)) {
+                    } elseif (! is_resource($stream) || @feof($stream)) {
                         EventLoop::cancel($callbackId);
                     }
                 });

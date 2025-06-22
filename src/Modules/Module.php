@@ -19,9 +19,7 @@ abstract class Module implements ModuleInterface
 
     protected float $frequency = Constants::f20Hz;
 
-    public function __construct(protected ProcessImage $processImage)
-    {
-    }
+    public function __construct(protected ProcessImage $processImage) {}
 
     public function getProcessImage(): ProcessImage
     {
@@ -64,7 +62,7 @@ abstract class Module implements ModuleInterface
             $next = $this->processImage->readVariable($monitor->name);
 
             if ($previous !== null && $previous !== $next) {
-                EventLoop::defer(fn() => $monitor->evaluate($previous, $next));
+                EventLoop::defer(fn () => $monitor->evaluate($previous, $next));
             }
 
             $previous = $next;

@@ -16,6 +16,7 @@ use Flat3\RevPi\Led\LedPosition;
 use Flat3\RevPi\Led\RemoteLed;
 use Flat3\RevPi\Monitors\Trigger;
 use Flat3\RevPi\ProcessImage\ProcessImage;
+
 use function Amp\Websocket\Client\connect;
 
 class Remote implements RemoteInterface
