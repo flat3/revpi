@@ -43,7 +43,7 @@ abstract class VirtualCharacterDevice implements Device, Ioctl, Stream
         }
 
         assert($count > 0);
-        $result = fread($this->local, $count);
+        $result = @fread($this->local, $count);
 
         if ($result === false) {
             throw new PosixDeviceException;

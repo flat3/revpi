@@ -34,7 +34,7 @@ class SerialPort implements SerialPortInterface
     public function onReadable(callable $callback): string
     {
         return EventLoop::onReadable($this->stream, function () use ($callback) {
-            $callback(fread($this->stream, 1024));
+            $callback(@fread($this->stream, Constants::BlockSize));
         });
     }
 
@@ -238,7 +238,7 @@ class SerialPort implements SerialPortInterface
     public function read(int $count = 1024): string
     {
         assert($count >= 1);
-        $result = fread($this->stream, $count);
+        $result = @fread($this->stream, $count);
 
         if ($result === false) {
             throw new PosixDeviceException;
