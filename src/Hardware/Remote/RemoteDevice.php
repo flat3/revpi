@@ -11,27 +11,27 @@ use Flat3\RevPi\JsonRpc\Peer;
 
 abstract class RemoteDevice implements Device, Ioctl
 {
-    protected Peer $socket;
+    public function __construct(protected Peer $peer) {}
 
     public function socket(WebsocketClient $websocket): void
     {
-        $this->socket = Peer::initiate($websocket);
+        $this->peer->setSocket($websocket);
     }
 
     public function open(string $pathname, int $flags): int
     {
-        return (int) $this->socket->request('open', ['pathname' => $pathname, 'flags' => $flags])->await();
+        return (int) $this->peer->request('open', ['pathname' => $pathname, 'flags' => $flags])->await();
     }
 
     public function close(): int
     {
-        return (int) $this->socket->request('close')->await();
+        return (int) $this->peer->request('close')->await();
     }
 
     public function read(string &$buffer, int $count): int
     {
         /** @var array{buffer: string, return: int} $response */
-        $response = $this->socket->request('read', ['buffer' => $buffer, 'count' => $count])->await();
+        $response = $this->peer->request('read', ['buffer' => $buffer, 'count' => $count])->await();
         $buffer = $response['buffer'];
 
         return $response['return'];
@@ -39,13 +39,13 @@ abstract class RemoteDevice implements Device, Ioctl
 
     public function write(string $buffer, int $count): int
     {
-        return (int) $this->socket->request('write', ['buffer' => $buffer, 'count' => $count])->await();
+        return (int) $this->peer->request('write', ['buffer' => $buffer, 'count' => $count])->await();
     }
 
     public function ioctl(int $request, ?string &$argp = null): int
     {
         /** @var array{argp: ?string, return: int} $response */
-        $response = $this->socket->request('ioctl', ['request' => $request, 'argp' => $argp])->await();
+        $response = $this->peer->request('ioctl', ['request' => $request, 'argp' => $argp])->await();
 
         $argp = $response['argp'];
 

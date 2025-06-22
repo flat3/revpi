@@ -50,18 +50,10 @@ class Peer implements WebsocketClientHandler
      */
     protected array $pending = [];
 
-    public static function initiate(WebsocketClient $socket): self
-    {
-        $endpoint = new self;
-        $endpoint->setSocket($socket);
-        async(fn () => $endpoint->receiveLoop());
-
-        return $endpoint;
-    }
-
     public function setSocket(WebsocketClient $socket): self
     {
         $this->socket = $socket;
+        async(fn () => $this->receiveLoop());
 
         return $this;
     }
@@ -287,7 +279,7 @@ class Peer implements WebsocketClientHandler
         Request $request,
         Response $response
     ): void {
-        $this->setSocket($client);
+        $this->socket = $client;
 
         while ($message = $client->receive()) {
             $request = $message->read();
