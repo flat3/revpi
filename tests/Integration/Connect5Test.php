@@ -7,7 +7,7 @@ namespace Flat3\RevPi\Tests\Integration;
 use Flat3\RevPi\Interfaces\Module;
 use Flat3\RevPi\Led\LedColour;
 use Flat3\RevPi\Led\LedPosition;
-use Flat3\RevPi\Monitors\DigitalTrigger;
+use Flat3\RevPi\Monitors\DigitalMonitor;
 use Flat3\RevPi\Tests\TestCase;
 
 class Connect5Test extends TestCase
@@ -34,7 +34,7 @@ class Connect5Test extends TestCase
         $module->getProcessImage()->writeVariable('AnalogOutputLogicLevel_1', false);
         $this->loop(2);
 
-        $module->monitor(new DigitalTrigger('AnalogInputLogicLevel_1', function ($next) {
+        $module->monitor(new DigitalMonitor('AnalogInputLogicLevel_1', function ($next) {
             $this->switch = $next;
         }));
 
@@ -67,7 +67,7 @@ class Connect5Test extends TestCase
         $module->getProcessImage()->writeVariable('DigitalOutput_3', false);
         self::assertFalse($module->getProcessImage()->readVariable('DigitalOutput_3'));
 
-        $module->monitor(new DigitalTrigger('DigitalInput_4', function ($next) {
+        $module->monitor(new DigitalMonitor('DigitalInput_4', function ($next) {
             $this->switch = $next;
         }));
 

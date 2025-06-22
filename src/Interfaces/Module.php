@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Flat3\RevPi\Interfaces;
 
 use Flat3\RevPi\Led\LedPosition;
-use Flat3\RevPi\Monitors\Trigger;
+use Flat3\RevPi\Monitors\Monitor;
 
 interface Module
 {
@@ -15,7 +15,7 @@ interface Module
 
     public function resume(): void;
 
-    public function monitor(Trigger $monitor): void;
+    public function monitor(Monitor $monitor): void;
 
     public function getSerialPort(string $devicePath): SerialPort;
 }

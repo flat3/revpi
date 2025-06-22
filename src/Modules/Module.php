@@ -9,7 +9,7 @@ use Flat3\RevPi\Events\PollingEvent;
 use Flat3\RevPi\Interfaces\Module as ModuleInterface;
 use Flat3\RevPi\Interfaces\ProcessImage;
 use Flat3\RevPi\Interfaces\SerialPort;
-use Flat3\RevPi\Monitors\Trigger;
+use Flat3\RevPi\Monitors\Monitor;
 use Illuminate\Support\Facades\Event;
 use Revolt\EventLoop;
 
@@ -54,7 +54,7 @@ abstract class Module implements ModuleInterface
         $this->pollingCallbackId = null;
     }
 
-    public function monitor(Trigger $monitor): void
+    public function monitor(Monitor $monitor): void
     {
         Event::listen(PollingEvent::class, function () use ($monitor) {
             static $previous = null;

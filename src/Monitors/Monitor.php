@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Flat3\RevPi\Monitors;
 
-abstract class Trigger
+abstract class Monitor
 {
     /**
      * @param  callable  $callback

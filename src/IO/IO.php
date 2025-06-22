@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Flat3\RevPi\IO;
 
 use Flat3\RevPi\Interfaces\Module;
-use Flat3\RevPi\Monitors\DigitalTrigger;
+use Flat3\RevPi\Monitors\DigitalMonitor;
 
 abstract class IO
 {
@@ -22,7 +22,7 @@ abstract class IO
 
     public function monitor(callable $callback): void
     {
-        $this->module->monitor(new DigitalTrigger($this->name, $callback));
+        $this->module->monitor(new DigitalMonitor($this->name, $callback));
     }
 
     public function default(): int|bool

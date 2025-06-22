@@ -14,7 +14,7 @@ use Flat3\RevPi\Interfaces\ProcessImage as ProcessImageInterface;
 use Flat3\RevPi\Interfaces\SerialPort;
 use Flat3\RevPi\Led\LedPosition;
 use Flat3\RevPi\Led\RemoteLed;
-use Flat3\RevPi\Monitors\Trigger;
+use Flat3\RevPi\Monitors\Monitor;
 use Flat3\RevPi\ProcessImage\ProcessImage;
 
 use function Amp\Websocket\Client\connect;
@@ -49,7 +49,7 @@ class Remote implements RemoteInterface
         throw new NotImplementedException;
     }
 
-    public function monitor(Trigger $monitor): void
+    public function monitor(Monitor $monitor): void
     {
         throw new NotImplementedException;
     }
