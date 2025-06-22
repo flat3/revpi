@@ -155,7 +155,7 @@ class VirtualPiControlDevice extends VirtualBlockDevice implements PiControl
         throw new IoctlFailedException; // @phpstan-ignore deadCode.unreachable
     }
 
-    protected function reset(): void
+    public function reset(): void
     {
         $this->memory = str_repeat("\0", 4096);
 

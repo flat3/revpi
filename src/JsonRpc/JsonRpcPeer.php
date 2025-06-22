@@ -11,6 +11,7 @@ use Amp\Http\Server\Response;
 use Amp\Websocket\Server\WebsocketClientHandler;
 use Amp\Websocket\WebsocketClient;
 use Closure;
+use Flat3\RevPi\Constants;
 use Flat3\RevPi\Exceptions\NotImplementedException;
 use Flat3\RevPi\Exceptions\RemoteDeviceException;
 use Flat3\RevPi\Interfaces\Hardware\Device;
@@ -55,13 +56,6 @@ class JsonRpcPeer implements WebsocketClientHandler
     {
         $this->socket = $socket;
         async(fn () => $this->handleResponse());
-
-        return $this;
-    }
-
-    public function withDevice(Device $device): self
-    {
-        $this->device = $device;
 
         return $this;
     }
@@ -149,7 +143,7 @@ class JsonRpcPeer implements WebsocketClientHandler
      * @param  array<string, int|string|null>  $params
      * @return JsonRpcResponseResultT
      */
-    public function handle(string $method, array $params): mixed
+    protected function handle(string $method, array $params): mixed
     {
         switch ($method) {
             case 'open':
@@ -256,12 +250,12 @@ class JsonRpcPeer implements WebsocketClientHandler
                 $stream = $this->device->fdopen();
 
                 EventLoop::onReadable($stream, function ($callbackId, $stream) {
-                    $newData = @fread($stream, 8192);
+                    $data = @fread($stream, Constants::BlockSize);
 
-                    if (is_string($newData) && $newData !== '') {
+                    if (is_string($data) && $data !== '') {
                         $request = new Event;
                         $request->type = 'readable';
-                        $request->payload = $newData;
+                        $request->payload = $data;
 
                         $this->socket->sendBinary(serialize($request));
                     } elseif (! is_resource($stream) || @feof($stream)) {

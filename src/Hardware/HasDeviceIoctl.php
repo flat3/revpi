@@ -10,7 +10,7 @@ use Flat3\RevPi\Interfaces\Hardware\Struct;
 
 trait HasDeviceIoctl
 {
-    protected function ioctl(IoctlCommand $command, ?Struct $message = null): int
+    public function ioctl(IoctlCommand $command, ?Struct $message = null): int
     {
         assert(is_int($command->value));
 

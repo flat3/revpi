@@ -6,6 +6,8 @@ namespace Flat3\RevPi;
 
 final class Constants
 {
+    public const BlockSize = 8192;
+
     public const f1Hz = 1;
 
     public const f20Hz = 1 / 20;

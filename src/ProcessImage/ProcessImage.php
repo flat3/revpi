@@ -148,7 +148,7 @@ class ProcessImage implements ProcessImageInterface
         return $buffer;
     }
 
-    protected function findVariable(string $variable): VariableStruct
+    public function findVariable(string $variable): VariableStruct
     {
         $message = new VariableStruct;
         $message->varName = $variable;

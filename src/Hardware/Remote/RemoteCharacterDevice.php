@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Flat3\RevPi\Hardware\Remote;
 
+use Flat3\RevPi\Constants;
 use Flat3\RevPi\Interfaces\Hardware\Stream;
 use Flat3\RevPi\JsonRpc\Event;
 use Flat3\RevPi\JsonRpc\JsonRpcPeer;
@@ -39,9 +40,13 @@ abstract class RemoteCharacterDevice extends RemoteDevice implements Stream
         });
 
         EventLoop::onReadable($this->remote, function ($callbackId, $stream) {
-            $data = @fread($stream, 8192);
-            assert(is_string($data));
-            $this->write($data, strlen($data));
+            $data = @fread($stream, Constants::BlockSize);
+
+            if (is_string($data) && $data !== '') {
+                $this->write($data, strlen($data));
+            } elseif (! is_resource($stream) || @feof($stream)) {
+                EventLoop::cancel($callbackId);
+            }
         });
 
         return $this->local;
