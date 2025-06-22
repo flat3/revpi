@@ -28,7 +28,7 @@ trait RevolutionPi
     {
         if ($this->handshake !== null) {
             $module = app(Remote::class);
-            $module->connection($this->handshake);
+            $module->handshake($this->handshake);
 
             return $module;
         }
@@ -36,7 +36,7 @@ trait RevolutionPi
         return app(Module::class);
     }
 
-    public function address(WebsocketHandshake|PsrUri|string $handshake): static
+    public function remote(WebsocketHandshake|PsrUri|string $handshake): static
     {
         if (! $handshake instanceof WebsocketHandshake) {
             $handshake = new WebsocketHandshake($handshake);

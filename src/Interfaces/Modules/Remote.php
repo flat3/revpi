@@ -9,5 +9,5 @@ use Flat3\RevPi\Interfaces\Module;
 
 interface Remote extends Module
 {
-    public function connection(WebsocketHandshake $socket): void;
+    public function handshake(WebsocketHandshake $handshake): void;
 }

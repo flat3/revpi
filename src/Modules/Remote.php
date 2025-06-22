@@ -54,8 +54,8 @@ class Remote implements RemoteInterface
         throw new NotImplementedException;
     }
 
-    public function connection(WebsocketHandshake $socket): void
+    public function handshake(WebsocketHandshake $handshake): void
     {
-        $this->handshake = $socket;
+        $this->handshake = $handshake;
     }
 }
