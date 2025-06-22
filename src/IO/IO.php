@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Flat3\RevPi\IO;
 
 use Flat3\RevPi\Interfaces\Module;
-use Flat3\RevPi\Monitors\DigitalMonitor;
+use Flat3\RevPi\Interfaces\Monitor;
 
 abstract class IO
 {
@@ -20,9 +20,9 @@ abstract class IO
         return $this->module->getProcessImage()->readVariable($this->name);
     }
 
-    public function monitor(callable $callback): void
+    public function monitor(Monitor $monitor, callable $callback): void
     {
-        $this->module->monitor(new DigitalMonitor($this->name, $callback));
+        $this->module->monitor($this->name, $monitor, $callback);
     }
 
     public function default(): int|bool

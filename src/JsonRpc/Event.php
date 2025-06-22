@@ -20,6 +20,7 @@ class Event
     public function __serialize(): array
     {
         return [
+            'jsonrpc' => '2.0',
             'type' => $this->type,
             'payload' => $this->payload,
         ];

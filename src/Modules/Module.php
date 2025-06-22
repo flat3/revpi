@@ -7,9 +7,9 @@ namespace Flat3\RevPi\Modules;
 use Flat3\RevPi\Constants;
 use Flat3\RevPi\Events\PollingEvent;
 use Flat3\RevPi\Interfaces\Module as ModuleInterface;
+use Flat3\RevPi\Interfaces\Monitor;
 use Flat3\RevPi\Interfaces\ProcessImage;
 use Flat3\RevPi\Interfaces\SerialPort;
-use Flat3\RevPi\Monitors\Monitor;
 use Illuminate\Support\Facades\Event;
 use Revolt\EventLoop;
 
@@ -17,7 +17,7 @@ abstract class Module implements ModuleInterface
 {
     protected ?string $pollingCallbackId = null;
 
-    protected float $frequency = Constants::f1Hz;
+    protected float $frequency = Constants::f25Hz;
 
     protected ?ProcessImage $processImage = null;
 
@@ -60,15 +60,17 @@ abstract class Module implements ModuleInterface
         $this->pollingCallbackId = null;
     }
 
-    public function monitor(Monitor $monitor): void
+    public function monitor(string $variable, Monitor $monitor, callable $callback): void
     {
-        Event::listen(PollingEvent::class, function () use ($monitor) {
+        Event::listen(PollingEvent::class, function () use ($callback, $variable, $monitor) {
             static $previous = null;
 
-            $next = $this->getProcessImage()->readVariable($monitor->name);
+            $next = $this->getProcessImage()->readVariable($variable);
 
             if ($previous !== null && $previous !== $next) {
-                EventLoop::defer(fn () => $monitor->evaluate($previous, $next));
+                if ($monitor->evaluate($previous, $next)) {
+                    $callback($next);
+                }
             }
 
             $previous = $next;

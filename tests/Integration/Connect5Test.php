@@ -34,9 +34,9 @@ class Connect5Test extends TestCase
         $module->getProcessImage()->writeVariable('AnalogOutputLogicLevel_1', false);
         $this->loop(2);
 
-        $module->monitor(new DigitalMonitor('AnalogInputLogicLevel_1', function ($next) {
+        $module->monitor('AnalogInputLogicLevel_1', new DigitalMonitor, function ($next) {
             $this->switch = $next;
-        }));
+        });
 
         $module->getProcessImage()->writeVariable('AnalogOutputLogicLevel_1', true);
         $this->loop(3);
@@ -67,9 +67,9 @@ class Connect5Test extends TestCase
         $module->getProcessImage()->writeVariable('DigitalOutput_3', false);
         self::assertFalse($module->getProcessImage()->readVariable('DigitalOutput_3'));
 
-        $module->monitor(new DigitalMonitor('DigitalInput_4', function ($next) {
+        $module->monitor('DigitalInput_4', new DigitalMonitor, function ($next) {
             $this->switch = $next;
-        }));
+        });
 
         $this->loop(1);
 

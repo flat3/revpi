@@ -22,7 +22,7 @@ use Revolt\EventLoop;
 
 trait RevolutionPi
 {
-    protected ?WebsocketHandshake $handshake = null;
+    protected WebsocketHandshake|PsrUri|string|null $handshake = null;
 
     protected ?Module $module = null;
 
@@ -48,10 +48,6 @@ trait RevolutionPi
      */
     public function remote(WebsocketHandshake|PsrUri|string $handshake): static
     {
-        if (! $handshake instanceof WebsocketHandshake) {
-            $handshake = new WebsocketHandshake($handshake);
-        }
-
         $this->handshake = $handshake;
 
         return $this;

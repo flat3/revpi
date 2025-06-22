@@ -13,6 +13,7 @@ use Flat3\RevPi\Interfaces\ProcessImage;
 use Flat3\RevPi\Interfaces\SerialPort;
 use Flat3\RevPi\Led\LedPosition;
 use Flat3\RevPi\Led\RemoteLed;
+use Psr\Http\Message\UriInterface as PsrUri;
 
 use function Amp\Websocket\Client\connect;
 
@@ -47,8 +48,12 @@ class Remote extends Module implements RemoteInterface
         return app(SerialPort::class, ['devicePath' => $devicePath, 'device' => $terminal]);
     }
 
-    public function handshake(WebsocketHandshake $handshake): void
+    public function handshake(WebsocketHandshake|PsrUri|string $handshake): void
     {
+        if (! $handshake instanceof WebsocketHandshake) {
+            $handshake = new WebsocketHandshake($handshake);
+        }
+
         $this->handshake = $handshake;
     }
 }

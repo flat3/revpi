@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Flat3\RevPi\Interfaces;
 
 use Flat3\RevPi\Led\LedPosition;
-use Flat3\RevPi\Monitors\Monitor;
 
 /**
  * Interface Module
@@ -38,9 +37,11 @@ interface Module
     /**
      * Attach a monitor to the module for status tracking or event watching.
      *
+     * @param  string  $variable  The variable to monitor.
      * @param  Monitor  $monitor  The monitor instance to attach.
+     * @param  callable  $callback  The callback to call.
      */
-    public function monitor(Monitor $monitor): void;
+    public function monitor(string $variable, Monitor $monitor, callable $callback): void;
 
     /**
      * Get a serial port instance for communication on the specified device path.
