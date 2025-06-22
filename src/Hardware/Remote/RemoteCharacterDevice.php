@@ -7,7 +7,7 @@ namespace Flat3\RevPi\Hardware\Remote;
 use Flat3\RevPi\Constants;
 use Flat3\RevPi\Interfaces\Hardware\Stream;
 use Flat3\RevPi\JsonRpc\Event;
-use Flat3\RevPi\JsonRpc\JsonRpcPeer;
+use Flat3\RevPi\JsonRpc\JsonRpcDevice;
 use Revolt\EventLoop;
 
 abstract class RemoteCharacterDevice extends RemoteDevice implements Stream
@@ -18,7 +18,7 @@ abstract class RemoteCharacterDevice extends RemoteDevice implements Stream
     /** @var resource */
     protected mixed $remote;
 
-    public function __construct(JsonRpcPeer $peer)
+    public function __construct(JsonRpcDevice $peer)
     {
         parent::__construct($peer);
 

@@ -11,24 +11,17 @@ use Amp\Http\Server\Response;
 use Amp\Websocket\Server\WebsocketClientHandler;
 use Amp\Websocket\WebsocketClient;
 use Closure;
-use Flat3\RevPi\Constants;
-use Flat3\RevPi\Exceptions\NotImplementedException;
 use Flat3\RevPi\Exceptions\RemoteDeviceException;
 use Flat3\RevPi\Interfaces\Hardware\Device;
-use Flat3\RevPi\Interfaces\Hardware\Ioctl;
-use Flat3\RevPi\Interfaces\Hardware\PiControl;
-use Flat3\RevPi\Interfaces\Hardware\Seek;
-use Flat3\RevPi\Interfaces\Hardware\Stream;
-use Flat3\RevPi\Interfaces\Hardware\Terminal;
 use Flat3\RevPi\JsonRpc\Request as JsonRpcRequest;
 use Flat3\RevPi\JsonRpc\Response as JsonRpcResponse;
-use Revolt\EventLoop;
 use Throwable;
 
 use function Amp\async;
 
 /**
- * @phpstan-type JsonRpcMethodT 'open'|'close'|'lseek'|'ioctl'|'read'|'write'|'cfgetispeed'|'cfgetospeed'|'cfsetispeed'|'cfsetospeed'|'tcflush'|'tcdrain'|'tcsendbreak'|'fdopen'
+ * @phpstan-type JsonRpcDeviceMethodT 'open'|'close'|'lseek'|'ioctl'|'read'|'write'|'cfgetispeed'|'cfgetospeed'|'cfsetispeed'|'cfsetospeed'|'tcflush'|'tcdrain'|'tcsendbreak'|'fdopen'
+ * @phpstan-type JsonRpcMethodT JsonRpcDeviceMethodT
  * @phpstan-type JsonRpcEventTypeT 'readable'
  * @phpstan-type JsonRpcRequestParamsT array<string, int|string|null>
  * @phpstan-type JsonRpcRequestT array{id: string, method: JsonRpcMethodT, params: JsonRpcRequestParamsT }
@@ -36,7 +29,7 @@ use function Amp\async;
  * @phpstan-type JsonRpcResponseT array{id: string, error: ?array{ code: ?int, message: ?string }, result: JsonRpcResponseResultT }
  * @phpstan-type JsonRpcEventT array{type: JsonRpcEventTypeT, payload: string}
  */
-class JsonRpcPeer implements WebsocketClientHandler
+abstract class JsonRpcPeer implements WebsocketClientHandler
 {
     protected WebsocketClient $socket;
 
@@ -128,155 +121,13 @@ class JsonRpcPeer implements WebsocketClientHandler
         }
     }
 
-    public function close(): void
-    {
-        $this->socket->close();
-    }
-
     public function on(Closure $callback): void
     {
         $this->eventReceiver = $callback;
     }
 
-    /**
-     * @param  JsonRpcMethodT  $method
-     * @param  array<string, int|string|null>  $params
-     * @return JsonRpcResponseResultT
-     */
-    protected function handle(string $method, array $params): mixed
-    {
-        switch ($method) {
-            case 'open':
-                /** @var array{pathname: string, flags: int} $params */
-                return $this->device->open($params['pathname'], $params['flags']);
-
-            case 'lseek':
-                assert($this->device instanceof Seek);
-
-                /** @var array{offset: int, whence: int} $params */
-                return $this->device->lseek($params['offset'], $params['whence']);
-
-            case 'ioctl':
-                assert($this->device instanceof Ioctl);
-                /** @var array{request:int, argp: string} $params */
-                $argp = $params['argp'];
-                $ret = $this->device->ioctl($params['request'], $argp);
-
-                return [
-                    'argp' => $argp,
-                    'return' => $ret,
-                ];
-
-            case 'read':
-                /** @var array{buffer: string, count: int} $params */
-                $buffer = $params['buffer'];
-                $ret = $this->device->read($buffer, $params['count']);
-
-                return [
-                    'buffer' => $buffer,
-                    'return' => $ret,
-                ];
-
-            case 'write':
-                /** @var array{buffer: string, count: int} $params */
-                return $this->device->write($params['buffer'], $params['count']);
-
-            case 'close':
-                return $this->device->close();
-
-            case 'cfgetispeed':
-                assert($this->device instanceof Terminal);
-                /** @var array{buffer: string} $params */
-                $buffer = $params['buffer'];
-                $ret = $this->device->cfgetispeed($buffer);
-
-                return [
-                    'buffer' => $buffer,
-                    'return' => $ret,
-                ];
-
-            case 'cfgetospeed':
-                assert($this->device instanceof Terminal);
-                /** @var array{buffer: string} $params */
-                $buffer = $params['buffer'];
-                $ret = $this->device->cfgetospeed($buffer);
-
-                return [
-                    'buffer' => $buffer,
-                    'return' => $ret,
-                ];
-
-            case 'cfsetispeed':
-                assert($this->device instanceof Terminal);
-                /** @var array{buffer: string, speed: int} $params */
-                $buffer = $params['buffer'];
-                $ret = $this->device->cfsetispeed($buffer, $params['speed']);
-
-                return [
-                    'buffer' => $buffer,
-                    'return' => $ret,
-                ];
-
-            case 'cfsetospeed':
-                assert($this->device instanceof Terminal);
-                /** @var array{buffer: string, speed: int} $params */
-                $buffer = $params['buffer'];
-                $ret = $this->device->cfsetospeed($buffer, $params['speed']);
-
-                return [
-                    'buffer' => $buffer,
-                    'return' => $ret,
-                ];
-
-            case 'tcflush':
-                assert($this->device instanceof Terminal);
-
-                /** @var array{queue_selector: int} $params */
-                return $this->device->tcflush($params['queue_selector']);
-
-            case 'tcdrain':
-                assert($this->device instanceof Terminal);
-
-                return $this->device->tcdrain();
-
-            case 'tcsendbreak':
-                assert($this->device instanceof Terminal);
-
-                /** @var array{duration: int} $params */
-                return $this->device->tcsendbreak($params['duration']);
-
-            case 'fdopen':
-                assert($this->device instanceof Stream);
-                $stream = $this->device->fdopen();
-
-                EventLoop::onReadable($stream, function ($callbackId, $stream) {
-                    $data = @fread($stream, Constants::BlockSize);
-
-                    if (is_string($data) && $data !== '') {
-                        $request = new Event;
-                        $request->type = 'readable';
-                        $request->payload = $data;
-
-                        $this->socket->sendBinary(serialize($request));
-                    } elseif (! is_resource($stream) || @feof($stream)) {
-                        EventLoop::cancel($callbackId);
-                    }
-                });
-
-                return 0;
-        }
-
-        throw new NotImplementedException; // @phpstan-ignore deadCode.unreachable
-    }
-
     public function handleClient(WebsocketClient $client, Request $request, Response $response): void
     {
-        $this->device = match ($request->getQueryParameter('device')) {
-            'picontrol' => app(PiControl::class),
-            'terminal' => app(Terminal::class),
-            default => throw new NotImplementedException,
-        };
-
         $this->socket = $client;
 
         while ($message = $client->receive()) {
@@ -293,7 +144,7 @@ class JsonRpcPeer implements WebsocketClientHandler
             $params = $request->params;
 
             try {
-                $response->result = $this->handle($method, $params);
+                $response->result = $this->invoke($method, $params);
             } catch (Throwable $t) {
                 $response->errorCode = $t->getCode();
                 $response->errorMessage = $t->getMessage();
@@ -302,4 +153,11 @@ class JsonRpcPeer implements WebsocketClientHandler
             $client->sendBinary(serialize($response));
         }
     }
+
+    /**
+     * @param  JsonRpcMethodT  $method
+     * @param  array<string, int|string|null>  $params
+     * @return JsonRpcResponseResultT
+     */
+    abstract protected function invoke(string $method, array $params): mixed;
 }
