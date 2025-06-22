@@ -61,33 +61,18 @@ class Pictory
         foreach ($this->configuration->Devices as $device) {
             foreach ($device->inp as $tag) {
                 $io = IO::fromPictory($tag);
-
-                if ($io->unit === null) {
-                    continue;
-                }
-
                 $class->addComment(sprintf('@method InputIO %s()', $io->name));
                 $class->addAttribute(Input::class, $io->attributeArgs());
             }
 
             foreach ($device->out as $tag) {
                 $io = IO::fromPictory($tag);
-
-                if ($io->unit === null) {
-                    continue;
-                }
-
                 $class->addComment(sprintf('@method OutputIO %s()', $io->name));
                 $class->addAttribute(Output::class, $io->attributeArgs());
             }
 
             foreach ($device->mem as $tag) {
                 $io = IO::fromPictory($tag);
-
-                if ($io->unit === null) {
-                    continue;
-                }
-
                 $class->addComment(sprintf('@method MemoryIO %s()', $io->name));
                 $class->addAttribute(Memory::class, $io->attributeArgs());
             }
@@ -96,31 +81,16 @@ class Pictory
         foreach ($this->configuration->Devices as $device) {
             foreach ($device->inp as $tag) {
                 $io = IO::fromPictory($tag);
-
-                if ($io->unit === null) {
-                    continue;
-                }
-
                 $class->addComment(sprintf('@property-read %s %s %s', $io->unit, $io->name, $io->comment));
             }
 
             foreach ($device->out as $tag) {
                 $io = IO::fromPictory($tag);
-
-                if ($io->unit === null) {
-                    continue;
-                }
-
                 $class->addComment(sprintf('@property %s %s %s', $io->unit, $io->name, $io->comment));
             }
 
             foreach ($device->mem as $tag) {
                 $io = IO::fromPictory($tag);
-
-                if ($io->unit === null) {
-                    continue;
-                }
-
                 $class->addComment(sprintf('@property %s %s %s', $io->unit, $io->name, $io->comment));
             }
         }
