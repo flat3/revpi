@@ -52,7 +52,7 @@ trait RevolutionPi
         return $this->module()->getLed($position);
     }
 
-    public function serialPort(string $devicePath): SerialPort
+    public function serialPort(string $devicePath = '/dev/ttyRS485-0'): SerialPort
     {
         return $this->module()->getSerialPort($devicePath);
     }
