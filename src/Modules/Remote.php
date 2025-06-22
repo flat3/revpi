@@ -7,21 +7,20 @@ namespace Flat3\RevPi\Modules;
 use Amp\Websocket\Client\WebsocketHandshake;
 use Flat3\RevPi\Exceptions\NotImplementedException;
 use Flat3\RevPi\Hardware\Remote\RemotePiControlDevice;
-use Flat3\RevPi\Interfaces\Hardware\PiControl;
+use Flat3\RevPi\Hardware\Remote\RemoteTerminalDevice;
 use Flat3\RevPi\Interfaces\Led;
 use Flat3\RevPi\Interfaces\Modules\Remote as RemoteInterface;
 use Flat3\RevPi\Interfaces\ProcessImage as ProcessImageInterface;
+use Flat3\RevPi\Interfaces\SerialPort;
 use Flat3\RevPi\Led\LedPosition;
 use Flat3\RevPi\Led\RemoteLed;
 use Flat3\RevPi\Monitors\Trigger;
 use Flat3\RevPi\ProcessImage\ProcessImage;
-use Psr\Http\Message\UriInterface as PsrUri;
-
 use function Amp\Websocket\Client\connect;
 
 class Remote implements RemoteInterface
 {
-    protected PiControl $piControl;
+    protected WebsocketHandshake $handshake;
 
     public function getLed(LedPosition $position): Led
     {
@@ -30,7 +29,18 @@ class Remote implements RemoteInterface
 
     public function getProcessImage(): ProcessImageInterface
     {
-        return app(ProcessImage::class, ['device' => $this->piControl]);
+        $piControl = app(RemotePiControlDevice::class);
+        $piControl->socket(connect($this->handshake->withQueryParameter('device', 'picontrol')));
+
+        return app(ProcessImage::class, ['device' => $piControl]);
+    }
+
+    public function getSerialPort(string $devicePath): SerialPort
+    {
+        $terminal = app(RemoteTerminalDevice::class);
+        $terminal->socket(connect($this->handshake->withQueryParameter('device', 'terminal')));
+
+        return app(SerialPort::class, ['devicePath' => $devicePath, 'device' => $terminal]);
     }
 
     public function resume(): void
@@ -43,13 +53,8 @@ class Remote implements RemoteInterface
         throw new NotImplementedException;
     }
 
-    public function connect(WebsocketHandshake|PsrUri|string $handshake): void
+    public function connection(WebsocketHandshake $socket): void
     {
-        if (! $handshake instanceof WebsocketHandshake) {
-            $handshake = new WebsocketHandshake($handshake);
-        }
-
-        $this->piControl = app(RemotePiControlDevice::class);
-        $this->piControl->socket(connect($handshake));
+        $this->handshake = $socket;
     }
 }

@@ -8,6 +8,7 @@ use Flat3\RevPi\Constants;
 use Flat3\RevPi\Events\PollingEvent;
 use Flat3\RevPi\Interfaces\Module as ModuleInterface;
 use Flat3\RevPi\Interfaces\ProcessImage;
+use Flat3\RevPi\Interfaces\SerialPort;
 use Flat3\RevPi\Monitors\Trigger;
 use Illuminate\Support\Facades\Event;
 use Revolt\EventLoop;
@@ -18,11 +19,18 @@ abstract class Module implements ModuleInterface
 
     protected float $frequency = Constants::f20Hz;
 
-    public function __construct(protected ProcessImage $processImage) {}
+    public function __construct(protected ProcessImage $processImage)
+    {
+    }
 
     public function getProcessImage(): ProcessImage
     {
         return $this->processImage;
+    }
+
+    public function getSerialPort(string $devicePath): SerialPort
+    {
+        return app(SerialPort::class, ['devicePath' => $devicePath]);
     }
 
     public function resume(float $frequency = Constants::f20Hz): void
@@ -56,7 +64,7 @@ abstract class Module implements ModuleInterface
             $next = $this->processImage->readVariable($monitor->name);
 
             if ($previous !== null && $previous !== $next) {
-                EventLoop::defer(fn () => $monitor->evaluate($previous, $next));
+                EventLoop::defer(fn() => $monitor->evaluate($previous, $next));
             }
 
             $previous = $next;

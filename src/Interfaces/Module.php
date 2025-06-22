@@ -16,4 +16,6 @@ interface Module
     public function resume(): void;
 
     public function monitor(Trigger $monitor): void;
+
+    public function getSerialPort(string $devicePath): SerialPort;
 }

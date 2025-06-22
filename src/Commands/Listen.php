@@ -12,7 +12,7 @@ use Amp\Websocket\Server\Rfc6455Acceptor;
 use Amp\Websocket\Server\Websocket;
 use Flat3\RevPi\Interfaces\Hardware\PiControl;
 use Flat3\RevPi\Interfaces\Hardware\Terminal;
-use Flat3\RevPi\JsonRpc\Peer;
+use Flat3\RevPi\JsonRpc\JsonRpcPeer;
 use Illuminate\Console\Command;
 use Psr\Log\LoggerInterface;
 use Revolt\EventLoop;
@@ -35,21 +35,16 @@ class Listen extends Command
 
         $router = new Router($server, $logger, new DefaultErrorHandler);
 
-        foreach ([
-            'picontrol' => PiControl::class,
-            'terminal' => Terminal::class,
-        ] as $route => $class) {
             $router->addRoute(
                 method: 'GET',
-                uri: '/'.$route,
+                uri: '/',
                 requestHandler: new Websocket(
                     httpServer: $server,
                     logger: $logger,
                     acceptor: new Rfc6455Acceptor,
-                    clientHandler: app(Peer::class)->setDevice(app($class))
+                    clientHandler: app(JsonRpcPeer::class),
                 )
             );
-        }
 
         $server->start(
             $router,

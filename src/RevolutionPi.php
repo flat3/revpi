@@ -10,6 +10,8 @@ use Flat3\RevPi\Exceptions\AttributeNotFoundException;
 use Flat3\RevPi\Interfaces\Led;
 use Flat3\RevPi\Interfaces\Module;
 use Flat3\RevPi\Interfaces\Modules\Remote;
+use Flat3\RevPi\Interfaces\ProcessImage;
+use Flat3\RevPi\Interfaces\SerialPort;
 use Flat3\RevPi\IO\IO;
 use Flat3\RevPi\Led\LedPosition;
 use Illuminate\Support\Facades\App;
@@ -20,13 +22,13 @@ use Revolt\EventLoop;
 
 trait RevolutionPi
 {
-    protected WebsocketHandshake|PsrUri|string|null $address;
+    protected ?WebsocketHandshake $handshake = null;
 
     public function module(): Module
     {
-        if ($this->address !== null) {
+        if ($this->handshake !== null) {
             $module = app(Remote::class);
-            $module->connect($this->address);
+            $module->connection($this->handshake);
 
             return $module;
         }
@@ -34,9 +36,13 @@ trait RevolutionPi
         return app(Module::class);
     }
 
-    public function address(WebsocketHandshake|PsrUri|string $address): static
+    public function address(WebsocketHandshake|PsrUri|string $handshake): static
     {
-        $this->address = $address;
+        if (! $handshake instanceof WebsocketHandshake) {
+            $handshake = new WebsocketHandshake($handshake);
+        }
+
+        $this->handshake = $handshake;
 
         return $this;
     }
@@ -44,6 +50,16 @@ trait RevolutionPi
     public function led(LedPosition $position): Led
     {
         return $this->module()->getLed($position);
+    }
+
+    public function serialPort(string $devicePath): SerialPort
+    {
+        return $this->module()->getSerialPort($devicePath);
+    }
+
+    public function processImage(): ProcessImage
+    {
+        return $this->module()->getProcessImage();
     }
 
     public function repeat(float $interval, callable $callback): void

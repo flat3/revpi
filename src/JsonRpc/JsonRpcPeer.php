@@ -15,6 +15,7 @@ use Flat3\RevPi\Exceptions\NotImplementedException;
 use Flat3\RevPi\Exceptions\RemoteDeviceException;
 use Flat3\RevPi\Interfaces\Hardware\Device;
 use Flat3\RevPi\Interfaces\Hardware\Ioctl;
+use Flat3\RevPi\Interfaces\Hardware\PiControl;
 use Flat3\RevPi\Interfaces\Hardware\Seek;
 use Flat3\RevPi\Interfaces\Hardware\Stream;
 use Flat3\RevPi\Interfaces\Hardware\Terminal;
@@ -22,7 +23,6 @@ use Flat3\RevPi\JsonRpc\Request as JsonRpcRequest;
 use Flat3\RevPi\JsonRpc\Response as JsonRpcResponse;
 use Revolt\EventLoop;
 use Throwable;
-
 use function Amp\async;
 
 /**
@@ -34,7 +34,7 @@ use function Amp\async;
  * @phpstan-type JsonRpcResponseT array{id: string, error: ?array{ code: ?int, message: ?string }, result: JsonRpcResponseResultT }
  * @phpstan-type JsonRpcEventT array{type: JsonRpcEventTypeT, payload: string}
  */
-class Peer implements WebsocketClientHandler
+class JsonRpcPeer implements WebsocketClientHandler
 {
     protected WebsocketClient $socket;
 
@@ -50,15 +50,15 @@ class Peer implements WebsocketClientHandler
      */
     protected array $pending = [];
 
-    public function setSocket(WebsocketClient $socket): self
+    public function withSocket(WebsocketClient $socket): self
     {
         $this->socket = $socket;
-        async(fn () => $this->receiveLoop());
+        async(fn() => $this->handleResponse());
 
         return $this;
     }
 
-    public function setDevice(Device $device): self
+    public function withDevice(Device $device): self
     {
         $this->device = $device;
 
@@ -89,7 +89,7 @@ class Peer implements WebsocketClientHandler
         return $deferred->getFuture();
     }
 
-    private function receiveLoop(): void
+    protected function handleResponse(): void
     {
         try {
             while ($message = $this->socket->receive()) {
@@ -102,13 +102,13 @@ class Peer implements WebsocketClientHandler
                     continue;
                 }
 
-                if (! $response instanceof JsonRpcResponse) {
+                if (!$response instanceof JsonRpcResponse) {
                     continue;
                 }
 
                 $id = $response->id;
 
-                if (! isset($this->pending[$id])) {
+                if (!isset($this->pending[$id])) {
                     continue;
                 }
 
@@ -263,7 +263,7 @@ class Peer implements WebsocketClientHandler
                         $request->payload = $newData;
 
                         $this->socket->sendBinary(serialize($request));
-                    } elseif (! is_resource($stream) || @feof($stream)) {
+                    } elseif (!is_resource($stream) || @feof($stream)) {
                         EventLoop::cancel($callbackId);
                     }
                 });
@@ -274,11 +274,14 @@ class Peer implements WebsocketClientHandler
         throw new NotImplementedException; // @phpstan-ignore deadCode.unreachable
     }
 
-    public function handleClient(
-        WebsocketClient $client,
-        Request $request,
-        Response $response
-    ): void {
+    public function handleClient(WebsocketClient $client, Request $request, Response $response): void
+    {
+        $this->device = match ($request->getQueryParameter('device')) {
+            'picontrol' => app(PiControl::class),
+            'terminal' => app(Terminal::class),
+            default => throw new NotImplementedException,
+        };
+
         $this->socket = $client;
 
         while ($message = $client->receive()) {
