@@ -11,7 +11,7 @@ use Flat3\RevPi\Rpc\RpcDevice;
 
 use function Amp\async;
 
-abstract class RemoteDevice implements Device, Ioctl
+class RemoteDevice implements Device, Ioctl
 {
     public function __construct(protected RpcDevice $device) {}
 

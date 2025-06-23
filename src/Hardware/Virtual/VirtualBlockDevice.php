@@ -8,7 +8,7 @@ use Flat3\RevPi\Exceptions\NotSupportedException;
 use Flat3\RevPi\Interfaces\Hardware\Device;
 use Flat3\RevPi\Interfaces\Hardware\Seek;
 
-abstract class VirtualBlockDevice implements Device, Seek
+class VirtualBlockDevice implements Device, Seek
 {
     protected string $memory = '';
 

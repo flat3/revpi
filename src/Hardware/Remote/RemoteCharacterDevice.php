@@ -9,7 +9,7 @@ use Flat3\RevPi\Interfaces\Hardware\Stream;
 use Flat3\RevPi\Rpc\RpcDevice;
 use Revolt\EventLoop;
 
-abstract class RemoteCharacterDevice extends RemoteDevice implements Stream
+class RemoteCharacterDevice extends RemoteDevice implements Stream
 {
     /** @var resource */
     protected mixed $local;
