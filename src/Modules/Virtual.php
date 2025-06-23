@@ -18,7 +18,7 @@ class Virtual extends Module implements ModuleInterface
         return app(VirtualLed::class, ['position' => $position]);
     }
 
-    public function getSerialPort(string $devicePath): SerialPort
+    public function getSerialPort(string $devicePath = '/dev/ttyRS485'): SerialPort
     {
         return app(SerialPort::class, ['device' => app(VirtualTerminalDevice::class)]);
     }

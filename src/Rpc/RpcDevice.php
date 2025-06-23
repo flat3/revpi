@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Flat3\RevPi\JsonRpc;
+namespace Flat3\RevPi\Rpc;
 
 use Amp\Websocket\WebsocketClosedException;
 use Flat3\RevPi\Constants;
@@ -15,10 +15,10 @@ use Flat3\RevPi\Interfaces\Hardware\Terminal;
 use Revolt\EventLoop;
 
 /**
- * @phpstan-import-type JsonRpcDeviceMethodT from JsonRpcHandler
- * @phpstan-import-type JsonRpcResponseResultT from JsonRpcHandler
+ * @phpstan-import-type RpcDeviceMethodT from RpcHandler
+ * @phpstan-import-type RpcResponseResultT from RpcHandler
  */
-class JsonRpcDevice extends JsonRpcHandler
+class RpcDevice extends RpcHandler
 {
     protected Device $device;
 
@@ -28,9 +28,9 @@ class JsonRpcDevice extends JsonRpcHandler
     }
 
     /**
-     * @param  JsonRpcDeviceMethodT  $method
+     * @param  RpcDeviceMethodT  $method
      * @param  array<string, int|string|null>  $params
-     * @return JsonRpcResponseResultT
+     * @return RpcResponseResultT
      */
     protected function invoke(string $method, array $params): mixed
     {

@@ -2,24 +2,24 @@
 
 declare(strict_types=1);
 
-namespace Flat3\RevPi\JsonRpc;
+namespace Flat3\RevPi\Rpc;
 
 use Illuminate\Support\Str;
 
 /**
- * @phpstan-import-type JsonRpcMethodT from JsonRpcHandler
- * @phpstan-import-type JsonRpcRequestT from JsonRpcHandler
- * @phpstan-import-type JsonRpcRequestParamsT from JsonRpcHandler
+ * @phpstan-import-type RpcMethodT from RpcHandler
+ * @phpstan-import-type RpcRequestT from RpcHandler
+ * @phpstan-import-type RpcRequestParamsT from RpcHandler
  */
 class Request
 {
     public string $id;
 
-    /** @var JsonRpcMethodT */
+    /** @var RpcMethodT */
     public string $method;
 
     /**
-     * @var JsonRpcRequestParamsT
+     * @var RpcRequestParamsT
      */
     public array $params = [];
 
@@ -31,7 +31,6 @@ class Request
     public function __serialize(): array
     {
         return [
-            'jsonrpc' => '2.0',
             'id' => $this->id,
             'method' => $this->method,
             'params' => $this->params,
@@ -39,7 +38,7 @@ class Request
     }
 
     /**
-     * @param  JsonRpcRequestT  $data
+     * @param  RpcRequestT  $data
      */
     public function __unserialize(array $data): void
     {

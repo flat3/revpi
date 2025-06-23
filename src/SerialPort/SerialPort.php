@@ -20,7 +20,7 @@ class SerialPort implements SerialPortInterface
     /** @var resource */
     protected mixed $stream;
 
-    public function __construct(protected Terminal $device, protected string $devicePath = '/dev/ttyRS485-0')
+    public function __construct(protected Terminal $device, protected string $devicePath = '/dev/ttyRS485')
     {
         $device->open($this->devicePath, Constants::O_RDWR | Constants::O_NONBLOCK | Constants::O_NOCTTY);
         $this->stream = $this->device->fdopen();
@@ -252,7 +252,7 @@ class SerialPort implements SerialPortInterface
         fwrite($this->stream, $data);
     }
 
-    public function flush(QueueSelector $selector): void
+    public function flush(QueueSelector $selector = QueueSelector::Both): void
     {
         $result = $this->device->tcflush(match ($selector) {
             QueueSelector::Input => 0,

@@ -64,7 +64,7 @@ trait RevolutionPi
     /**
      * Get the SerialPort object for communication via a specific device path.
      */
-    public function serialPort(string $devicePath = '/dev/ttyRS485-0'): SerialPort
+    public function serialPort(string $devicePath = '/dev/ttyRS485'): SerialPort
     {
         return $this->module()->getSerialPort($devicePath);
     }

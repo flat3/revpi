@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Flat3\RevPi\JsonRpc;
+namespace Flat3\RevPi\Rpc;
 
 use Amp\Http\Server\Request;
 use Amp\Http\Server\Response;
@@ -22,7 +22,7 @@ class ClientHandler implements WebsocketClientHandler
             default => throw new NotSupportedException,
         };
 
-        $handler = app(JsonRpcDevice::class);
+        $handler = app(RpcDevice::class);
         $handler->setDevice($target);
 
         $handler->attachSocket($client);

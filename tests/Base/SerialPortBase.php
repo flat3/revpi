@@ -12,7 +12,6 @@ use Flat3\RevPi\SerialPort\InputFlag;
 use Flat3\RevPi\SerialPort\LocalFlag;
 use Flat3\RevPi\SerialPort\OutputFlag;
 use Flat3\RevPi\SerialPort\Parity;
-use Flat3\RevPi\SerialPort\QueueSelector;
 use Flat3\RevPi\SerialPort\RS485Flag;
 use Flat3\RevPi\SerialPort\StopBits;
 use Flat3\RevPi\Tests\TestCase;
@@ -123,7 +122,7 @@ abstract class SerialPortBase extends TestCase
     public function test_flush(): void
     {
         self::expectNotToPerformAssertions();
-        app(SerialPort::class)->flush(QueueSelector::Both);
+        app(SerialPort::class)->flush();
     }
 
     public function test_break(): void

@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Flat3\RevPi\JsonRpc;
+namespace Flat3\RevPi\Rpc;
 
 /**
- * @phpstan-import-type JsonRpcEventT from JsonRpcHandler
- * @phpstan-import-type JsonRpcEventTypeT from JsonRpcHandler
+ * @phpstan-import-type RpcEventT from RpcHandler
+ * @phpstan-import-type RpcEventTypeT from RpcHandler
  */
 class Event
 {
     /**
-     * @var JsonRpcEventTypeT
+     * @var RpcEventTypeT
      */
     public string $type;
 
@@ -20,14 +20,13 @@ class Event
     public function __serialize(): array
     {
         return [
-            'jsonrpc' => '2.0',
             'type' => $this->type,
             'payload' => $this->payload,
         ];
     }
 
     /**
-     * @param  JsonRpcEventT  $data
+     * @param  RpcEventT  $data
      */
     public function __unserialize(array $data): void
     {

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Flat3\RevPi\JsonRpc;
+namespace Flat3\RevPi\Rpc;
 
 /**
- * @phpstan-import-type JsonRpcResponseT from JsonRpcHandler
- * @phpstan-import-type JsonRpcResponseResultT from JsonRpcHandler
+ * @phpstan-import-type RpcResponseT from RpcHandler
+ * @phpstan-import-type RpcResponseResultT from RpcHandler
  */
 class Response
 {
@@ -17,14 +17,13 @@ class Response
     public ?string $errorMessage = null;
 
     /**
-     * @var JsonRpcResponseResultT
+     * @var RpcResponseResultT
      */
     public mixed $result;
 
     public function __serialize(): array
     {
         $response = [
-            'jsonrpc' => '2.0',
             'id' => $this->id,
         ];
 
@@ -43,7 +42,7 @@ class Response
     }
 
     /**
-     * @param  JsonRpcResponseT  $data
+     * @param  RpcResponseT  $data
      */
     public function __unserialize(array $data): void
     {

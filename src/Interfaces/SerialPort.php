@@ -137,7 +137,7 @@ interface SerialPort
      *
      * @param  QueueSelector  $selector  Selector specifying which buffers to flush.
      */
-    public function flush(QueueSelector $selector): void;
+    public function flush(QueueSelector $selector = QueueSelector::Both): void;
 
     /**
      * Wait until all output written to the serial port has been transmitted.

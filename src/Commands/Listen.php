@@ -9,7 +9,7 @@ use Amp\Http\Server\SocketHttpServer;
 use Amp\Socket\InternetAddress;
 use Amp\Websocket\Server\Rfc6455Acceptor;
 use Amp\Websocket\Server\Websocket;
-use Flat3\RevPi\JsonRpc\ClientHandler;
+use Flat3\RevPi\Rpc\ClientHandler;
 use Illuminate\Console\Command;
 use Psr\Log\LoggerInterface;
 use Revolt\EventLoop;

@@ -7,13 +7,13 @@ namespace Flat3\RevPi\Hardware\Remote;
 use Amp\Websocket\WebsocketClient;
 use Flat3\RevPi\Interfaces\Hardware\Device;
 use Flat3\RevPi\Interfaces\Hardware\Ioctl;
-use Flat3\RevPi\JsonRpc\JsonRpcDevice;
+use Flat3\RevPi\Rpc\RpcDevice;
 
 use function Amp\async;
 
 abstract class RemoteDevice implements Device, Ioctl
 {
-    public function __construct(protected JsonRpcDevice $device) {}
+    public function __construct(protected RpcDevice $device) {}
 
     public function socket(WebsocketClient $websocket): void
     {

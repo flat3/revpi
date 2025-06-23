@@ -40,7 +40,7 @@ class Remote extends Module implements RemoteInterface
         return $this->processImage;
     }
 
-    public function getSerialPort(string $devicePath): SerialPort
+    public function getSerialPort(string $devicePath = '/dev/ttyRS485'): SerialPort
     {
         $terminal = app(RemoteTerminalDevice::class);
         $terminal->socket(connect($this->handshake->withQueryParameter('device', 'terminal')));

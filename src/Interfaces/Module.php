@@ -46,8 +46,8 @@ interface Module
     /**
      * Get a serial port instance for communication on the specified device path.
      *
-     * @param  string  $devicePath  The path to the serial device (e.g. "/dev/ttyS0").
+     * @param  string  $devicePath  The path to the serial device (e.g. "/dev/ttyRS485").
      * @return SerialPort The serial port instance.
      */
-    public function getSerialPort(string $devicePath): SerialPort;
+    public function getSerialPort(string $devicePath = '/dev/ttyRS485'): SerialPort;
 }

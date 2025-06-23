@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Flat3\RevPi\JsonRpc;
+namespace Flat3\RevPi\Rpc;
 
 use Amp\DeferredFuture;
 use Amp\Future;
@@ -12,17 +12,17 @@ use Flat3\RevPi\Exceptions\RemoteDeviceException;
 use Throwable;
 
 /**
- * @phpstan-type JsonRpcDeviceMethodT 'open'|'close'|'lseek'|'ioctl'|'read'|'write'|'cfgetispeed'|'cfgetospeed'|'cfsetispeed'|'cfsetospeed'|'tcflush'|'tcdrain'|'tcsendbreak'|'fdopen'
- * @phpstan-type JsonRpcMethodT JsonRpcDeviceMethodT
- * @phpstan-type JsonRpcDeviceEventTypeT 'readable'
- * @phpstan-type JsonRpcEventTypeT JsonRpcDeviceEventTypeT
- * @phpstan-type JsonRpcRequestParamsT array<string, int|string|null>
- * @phpstan-type JsonRpcRequestT array{id: string, method: JsonRpcMethodT, params: JsonRpcRequestParamsT }
- * @phpstan-type JsonRpcResponseResultT int|string|array<string, int|string|null>
- * @phpstan-type JsonRpcResponseT array{id: string, error: ?array{ code: ?int, message: ?string }, result: JsonRpcResponseResultT }
- * @phpstan-type JsonRpcEventT array{type: JsonRpcEventTypeT, payload: string}
+ * @phpstan-type RpcDeviceMethodT 'open'|'close'|'lseek'|'ioctl'|'read'|'write'|'cfgetispeed'|'cfgetospeed'|'cfsetispeed'|'cfsetospeed'|'tcflush'|'tcdrain'|'tcsendbreak'|'fdopen'
+ * @phpstan-type RpcMethodT RpcDeviceMethodT
+ * @phpstan-type RpcDeviceEventTypeT 'readable'
+ * @phpstan-type RpcEventTypeT RpcDeviceEventTypeT
+ * @phpstan-type RpcRequestParamsT array<string, int|string|null>
+ * @phpstan-type RpcRequestT array{id: string, method: RpcMethodT, params: RpcRequestParamsT }
+ * @phpstan-type RpcResponseResultT int|string|array<string, int|string|null>
+ * @phpstan-type RpcResponseT array{id: string, error: ?array{ code: ?int, message: ?string }, result: RpcResponseResultT }
+ * @phpstan-type RpcEventT array{type: RpcEventTypeT, payload: string}
  */
-abstract class JsonRpcHandler
+abstract class RpcHandler
 {
     protected WebsocketClient $socket;
 
@@ -34,12 +34,12 @@ abstract class JsonRpcHandler
     ];
 
     /**
-     * @var array<DeferredFuture<JsonRpcResponseResultT>>
+     * @var array<DeferredFuture<RpcResponseResultT>>
      */
     protected array $pending = [];
 
     /**
-     * @param  JsonRpcDeviceEventTypeT  $event
+     * @param  RpcDeviceEventTypeT  $event
      */
     public function on(string $event, Closure $callback): void
     {
@@ -54,13 +54,13 @@ abstract class JsonRpcHandler
     }
 
     /**
-     * @param  JsonRpcMethodT  $method
-     * @param  JsonRpcRequestParamsT  $params
-     * @return Future<JsonRpcResponseResultT>
+     * @param  RpcMethodT  $method
+     * @param  RpcRequestParamsT  $params
+     * @return Future<RpcResponseResultT>
      */
     public function request(string $method, array $params = []): Future
     {
-        /** @var DeferredFuture<JsonRpcResponseResultT> $deferred */
+        /** @var DeferredFuture<RpcResponseResultT> $deferred */
         $deferred = new DeferredFuture;
         $request = new Request;
         $request->method = $method;
@@ -137,9 +137,9 @@ abstract class JsonRpcHandler
     }
 
     /**
-     * @param  JsonRpcMethodT  $method
+     * @param  RpcMethodT  $method
      * @param  array<string, int|string|null>  $params
-     * @return JsonRpcResponseResultT
+     * @return RpcResponseResultT
      */
     abstract protected function invoke(string $method, array $params): mixed;
 }

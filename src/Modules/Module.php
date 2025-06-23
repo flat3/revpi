@@ -32,7 +32,7 @@ abstract class Module implements ModuleInterface
         return $this->processImage;
     }
 
-    public function getSerialPort(string $devicePath): SerialPort
+    public function getSerialPort(string $devicePath = '/dev/ttyRS485'): SerialPort
     {
         return app(SerialPort::class, ['devicePath' => $devicePath]);
     }
