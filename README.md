@@ -74,6 +74,9 @@ composer require amphp/websocket-server amphp/websocket-client
 interfaces. Code should either be run *on* the RevolutionPi device, or via an IDE that can run code remotely like
 PhpStorm.
 
+Note that Laravel Zero does not use package auto-discovery. You will need to add this package's service provider to your
+`config/app.php`.
+
 ```php
   use Flat3\RevPi\Interfaces\Module;
   use Flat3\RevPi\Led\LedColour;
@@ -321,9 +324,10 @@ code can be modified to support encryption and authentication.
 
 ## Deployment
 
-The package has been specifically designed to work with [Laravel Zero](https://laravel-zero.com). Using this technique
-will convert your RevolutionPi project into a single executable file that can be started automatically when the base
-module boots up.
+The package has been specifically designed to work with [Laravel Zero](https://laravel-zero.com). Using
+the [standalone application](https://laravel-zero.com/docs/build-a-standalone-application)
+feature will convert your RevolutionPi project into a single executable file that can be started automatically when the
+base module boots up.
 
 ---
 
