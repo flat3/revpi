@@ -2,7 +2,10 @@
     "name": "flat3/revpi",
     "description": "Control package for the Revolution Pi",
     "keywords": [
-        "revolutionpi"
+        "revolutionpi",
+        "revpi",
+        "kunbus",
+        "laravel"
     ],
     "homepage": "https://github.com/flat3/revpi",
     "license": "MIT",
@@ -22,11 +25,11 @@
         "illuminate/events": "^11.0|^12.0",
         "illuminate/support": "^11.0|^12.0",
         "nette/php-generator": "^4.1",
-        "revolt/event-loop": "^1.0",
-        "amphp/websocket-server": "^4.0",
-        "amphp/websocket-client": "^2.0"
+        "revolt/event-loop": "^1.0"
     },
     "require-dev": {
+        "amphp/websocket-server": "^4.0",
+        "amphp/websocket-client": "^2.0",
         "laravel/pint": "^1.22",
         "orchestra/testbench": "^10.0",
         "phpstan/phpstan": "^2.1",
@@ -34,6 +37,10 @@
         "phpstan/extension-installer": "^1.4",
         "phpstan/phpstan-phpunit": "^2.0",
         "phpstan/phpstan-strict-rules": "^2.0"
+    },
+    "suggest": {
+        "amphp/websocket-server": "To use the websocket implementation",
+        "amphp/websocket-client": "To use the websocket implementation"
     },
     "autoload": {
         "psr-4": {
