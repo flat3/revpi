@@ -24,12 +24,12 @@
         "illuminate/container": "^11.0|^12.0",
         "illuminate/events": "^11.0|^12.0",
         "illuminate/support": "^11.0|^12.0",
-        "nette/php-generator": "^4.1",
         "revolt/event-loop": "^1.0"
     },
     "require-dev": {
         "amphp/websocket-server": "^4.0",
         "amphp/websocket-client": "^2.0",
+        "nette/php-generator": "^4.1",
         "laravel/pint": "^1.22",
         "orchestra/testbench": "^10.0",
         "phpstan/phpstan": "^2.1",
@@ -40,7 +40,8 @@
     },
     "suggest": {
         "amphp/websocket-server": "To use the websocket implementation",
-        "amphp/websocket-client": "To use the websocket implementation"
+        "amphp/websocket-client": "To use the websocket implementation",
+        "nette/php-generator": "To automatically generate classes from Pictory configuration"
     },
     "autoload": {
         "psr-4": {
