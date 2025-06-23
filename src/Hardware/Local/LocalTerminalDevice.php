@@ -7,7 +7,7 @@ namespace Flat3\RevPi\Hardware\Local;
 use FFI;
 use Flat3\RevPi\Interfaces\Hardware\Terminal;
 
-class LocalTerminalDevice extends LocalDevice implements Terminal
+class LocalTerminalDevice extends LocalCharacterDevice implements Terminal
 {
     public function cfsetispeed(string &$buffer, int $speed): int
     {
