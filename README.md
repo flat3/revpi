@@ -301,7 +301,9 @@ You can communicate with a *remote* RevPi device via a WebSocket.
 use Flat3\RevPi\RevolutionPi;
 
 $pi = new \App\MyPi;
-$pi->remote('ws://10.1.2.3:12873'); // Adding the remote call creates a connection to a device
+
+// Adding the remote call creates a connection to a device
+$pi->remote('ws://10.1.2.3:12873'); 
 
 // From now, other methods act remotely:
 $pi->output1 = 1;
