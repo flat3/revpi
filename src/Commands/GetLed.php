@@ -11,7 +11,7 @@ use Symfony\Component\Console\Exception\InvalidArgumentException;
 
 class GetLed extends Command
 {
-    protected $description = 'Get the colour of the specified LED';
+    protected $description = 'Get an LED colour';
 
     protected $signature = 'revpi:led:get {position}';
 

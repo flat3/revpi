@@ -6,7 +6,7 @@ namespace Flat3\RevPi\JsonRpc;
 
 use Amp\Websocket\WebsocketClosedException;
 use Flat3\RevPi\Constants;
-use Flat3\RevPi\Exceptions\NotImplementedException;
+use Flat3\RevPi\Exceptions\NotSupportedException;
 use Flat3\RevPi\Interfaces\Hardware\Device;
 use Flat3\RevPi\Interfaces\Hardware\Ioctl;
 use Flat3\RevPi\Interfaces\Hardware\Seek;
@@ -159,6 +159,6 @@ class JsonRpcDevice extends JsonRpcHandler
                 return 0;
         }
 
-        throw new NotImplementedException; // @phpstan-ignore deadCode.unreachable
+        throw new NotSupportedException; // @phpstan-ignore deadCode.unreachable
     }
 }

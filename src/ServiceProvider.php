@@ -23,8 +23,12 @@ class ServiceProvider extends BaseServiceProvider
         $this->app->bind(Interfaces\ProcessImage::class, ProcessImage\ProcessImage::class);
         $this->app->bind(Interfaces\SerialPort::class, SerialPort\SerialPort::class);
 
+        $this->app->bind(Interfaces\Modules\Connect::class, Modules\Connect::class);
+        $this->app->bind(Interfaces\Modules\Connect4::class, Modules\Connect4::class);
         $this->app->bind(Interfaces\Modules\Connect5::class, Modules\Connect5::class);
         $this->app->bind(Interfaces\Modules\Compact::class, Modules\Compact::class);
+        $this->app->bind(Interfaces\Modules\Core::class, Modules\Core::class);
+        $this->app->bind(Interfaces\Modules\Flat::class, Modules\Flat::class);
         $this->app->bind(Interfaces\Modules\Virtual::class, Modules\Virtual::class);
         $this->app->bind(Interfaces\Modules\Remote::class, Modules\Remote::class);
 

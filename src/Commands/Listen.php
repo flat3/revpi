@@ -16,7 +16,7 @@ use Revolt\EventLoop;
 
 class Listen extends Command
 {
-    protected $description = 'Start the server';
+    protected $description = 'Listen for incoming websocket requests';
 
     protected $signature = 'revpi:listen {--address=0.0.0.0} {--port=12873}';
 

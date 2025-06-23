@@ -8,7 +8,7 @@ use Amp\Http\Server\Request;
 use Amp\Http\Server\Response;
 use Amp\Websocket\Server\WebsocketClientHandler;
 use Amp\Websocket\WebsocketClient;
-use Flat3\RevPi\Exceptions\NotImplementedException;
+use Flat3\RevPi\Exceptions\NotSupportedException;
 use Flat3\RevPi\Interfaces\Hardware\PiControl;
 use Flat3\RevPi\Interfaces\Hardware\Terminal;
 
@@ -19,7 +19,7 @@ class ClientHandler implements WebsocketClientHandler
         $target = match ($request->getQueryParameter('device')) {
             'picontrol' => app(PiControl::class),
             'terminal' => app(Terminal::class),
-            default => throw new NotImplementedException,
+            default => throw new NotSupportedException,
         };
 
         $handler = app(JsonRpcDevice::class);

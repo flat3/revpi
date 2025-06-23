@@ -10,7 +10,7 @@ use Revolt\EventLoop;
 
 class Run extends Command
 {
-    protected $description = 'Run the program';
+    protected $description = 'Start the event loop';
 
     protected $signature = 'revpi:run';
 

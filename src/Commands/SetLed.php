@@ -12,7 +12,7 @@ use Symfony\Component\Console\Exception\InvalidArgumentException;
 
 class SetLed extends Command
 {
-    protected $description = 'Set the specified LED to the specified colour';
+    protected $description = 'Set an LED colour';
 
     protected $signature = 'revpi:led:set {position} {colour}';
 

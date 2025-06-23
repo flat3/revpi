@@ -10,7 +10,7 @@ use Illuminate\Console\Command;
 
 class Info extends Command
 {
-    protected $description = 'Display device list information';
+    protected $description = 'Display device information';
 
     protected $signature = 'revpi:info';
 

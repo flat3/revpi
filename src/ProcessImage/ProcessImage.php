@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Flat3\RevPi\ProcessImage;
 
-use Flat3\RevPi\Exceptions\NotImplementedException;
+use Flat3\RevPi\Exceptions\NotSupportedException;
 use Flat3\RevPi\Exceptions\OverflowException;
 use Flat3\RevPi\Exceptions\PosixDeviceException;
 use Flat3\RevPi\Exceptions\ProcessImageException;
@@ -15,7 +15,11 @@ use Flat3\RevPi\Hardware\StructArray;
 use Flat3\RevPi\Interfaces\Hardware\PiControl;
 use Flat3\RevPi\Interfaces\Module;
 use Flat3\RevPi\Interfaces\Modules\Compact;
+use Flat3\RevPi\Interfaces\Modules\Connect;
+use Flat3\RevPi\Interfaces\Modules\Connect4;
 use Flat3\RevPi\Interfaces\Modules\Connect5;
+use Flat3\RevPi\Interfaces\Modules\Core;
+use Flat3\RevPi\Interfaces\Modules\Flat;
 use Flat3\RevPi\Interfaces\Modules\Virtual;
 use Flat3\RevPi\Interfaces\ProcessImage as ProcessImageInterface;
 use Flat3\RevPi\ProcessImage\Ioctl\DeviceInfoStruct;
@@ -192,10 +196,14 @@ class ProcessImage implements ProcessImageInterface
     public function getModule(): Module
     {
         return match ($this->getDeviceInfo()->moduleType) {
+            ModuleType::KUNBUS_FW_DESCR_TYP_PI_CORE => app(Core::class),
+            ModuleType::KUNBUS_FW_DESCR_TYP_PI_FLAT => app(Flat::class),
             ModuleType::KUNBUS_FW_DESCR_TYP_PI_COMPACT => app(Compact::class),
+            ModuleType::KUNBUS_FW_DESCR_TYP_PI_CONNECT => app(Connect::class),
+            ModuleType::KUNBUS_FW_DESCR_TYP_PI_CONNECT_4 => app(Connect4::class),
             ModuleType::KUNBUS_FW_DESCR_TYP_PI_CONNECT_5 => app(Connect5::class),
             ModuleType::VIRTUAL => app(Virtual::class),
-            default => throw new NotImplementedException,
+            default => throw new NotSupportedException,
         };
     }
 }
