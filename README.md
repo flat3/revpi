@@ -277,10 +277,10 @@ $port = app(\Flat3\RevPi\Interfaces\SerialPort::class); // Usually you want $pi-
 If you want to create a custom monitor (beyond DigitalMonitor):
 
 ```php
-use Flat3\RevPi\Monitors\Monitor;
+use Flat3\RevPi\Interfaces\Monitor;
 
-class MyMonitor extends Monitor {
-    public function evaluate(mixed $next): bool {
+class MyMonitor implements Monitor {
+    public function evaluate(int|bool|null $next): bool {
         // Implement custom transition/action logic here
         // e.g. if crossing a threshold, fire webhook
         // Return true if the monitor has detected sufficient change
