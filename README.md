@@ -31,12 +31,12 @@ extensions or configuration changes are required.
     - [Process image](#process-image-low-level)
     - [LED control](#led-control)
     - [Serial port access](#serial-port-access)
+- [Remote interface](#remote-interface)
 - [Low-level interface](#low-level-interface)
     - [Hardware devices (PiControl, Terminal)](#hardware-devices-picontrol-terminal)
     - [ProcessImage interface](#processimage-interface)
     - [SerialPort interface](#serialport-interface)
     - [Monitoring with custom monitors](#monitoring-with-custom-monitors)
-    - [Remote module usage](#remote-module-usage)
 - [Deployment](#deployment)
 - [Example: Polling and running the event loop](#example-polling-and-running-the-event-loop)
 - [CLI Commands](#cli-commands)
@@ -244,6 +244,37 @@ $port->break();
 
 ---
 
+## Remote interface
+
+You can communicate with a *remote* RevPi device via a WebSocket by calling the `remote` method on the client before
+using the module.
+
+```php
+use Flat3\RevPi\RevolutionPi;
+
+$pi = new \App\MyPi;
+
+// Adding the remote call creates a connection to a device
+$pi->remote('ws://10.1.2.3:12873'); 
+
+// From now, other methods act remotely:
+$pi->output1 = 1;
+$status = $pi->input2;
+$pi->led(LedPosition::A1)->set(LedColour::Cyan);
+```
+
+The remote device should listen for incoming connections, use `php artisan revpi:listen` to start the server on the
+device.
+
+Remote devices support the same features that local devices do, including reading and writing to the process image,
+using the serial ports and setting up change monitors.
+
+Out of the box the package does not provide for authentication or encryption. These can be added by creating a more
+complex websocket handshake object and passing it to the `remote` method. On the server-side, the basic `revpi:listen`
+code can be modified to support encryption and authentication.
+
+---
+
 ## Low-level interface
 
 ### Hardware Devices (PiControl, Terminal)
@@ -295,30 +326,6 @@ $pi->module()->monitor('input1', new MyMonitor, function($newValue) {
     // Callback logic
 });
 ```
-
-### Remote Module Usage
-
-You can communicate with a *remote* RevPi device via a WebSocket.
-
-```php
-use Flat3\RevPi\RevolutionPi;
-
-$pi = new \App\MyPi;
-
-// Adding the remote call creates a connection to a device
-$pi->remote('ws://10.1.2.3:12873'); 
-
-// From now, other methods act remotely:
-$pi->output1 = 1;
-$status = $pi->input2;
-$pi->led(LedPosition::A1)->set(LedColour::Cyan);
-```
-
-The remote device should listen for incoming connections, use `php artisan revpi:listen` to start the server.
-
-Out of the box the package does not provide for authentication, or encryption. These can be added by creating a more
-complex websocket handshake object and passing it to the `remote` method. On the server-side, the basic `revpi:listen`
-code can be modified to support encryption and authentication.
 
 ---
 
