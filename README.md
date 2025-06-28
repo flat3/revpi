@@ -234,8 +234,8 @@ $port->write("Hello, RevPi!");
 $response = $port->read(128); // up to 128 bytes
 
 // Register event handler for readable data
-$port->onReadable(function($data) {
-    echo "Serial received: $data\n";
+$port->onReadable(function (SerialPort $port) {
+    echo "Serial received: " . $port->read(1024) . "\n";
 });
 
 // Flush or break
