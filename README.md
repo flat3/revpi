@@ -170,7 +170,7 @@ $pi->output1()->reset();
 
 ### Monitoring IO Variables
 
-The `DigitalMonitor` will cause the callback to be called whenever the monitored value changes.
+The monitor will cause the callback to be called whenever the monitored value changes.
 
 ```php
 use Flat3\RevPi\Monitors\DigitalMonitor;
@@ -182,6 +182,27 @@ $pi->input1()->monitor(new DigitalMonitor, function($newValue) {
     logger("input1 changed: $newValue");
 });
 ```
+
+#### Monitor::debounce
+
+Wraps a callback to fire **only after changes stop** for the given interval (in milliseconds).
+
+```php
+$pi->input1()->monitor(new DigitalMonitor, Monitor::debounce(function($value) {
+    // Handle change after quiet period
+}, 200));
+```
+
+#### Monitor::throttle
+
+Wraps a callback to fire **at most once per interval** (in milliseconds).
+
+```php
+$pi->input1()->monitor(new DigitalMonitor, Monitor::throttle(function($value) {
+    // Handle change no more than every 200ms
+}, 200));
+```
+
 
 ### Process Image (Low-Level)
 
@@ -309,13 +330,13 @@ $port = app(\Flat3\RevPi\Interfaces\SerialPort::class); // Usually you want $pi-
 
 ### Monitoring with Custom Monitors
 
-If you want to create a custom monitor (beyond DigitalMonitor):
+If you want to create a custom monitor:
 
 ```php
-use Flat3\RevPi\Interfaces\Monitor;
+use Flat3\RevPi\Monitors\Monitor;
 
-class MyMonitor implements Monitor {
-    public function evaluate(int|bool|null $next): bool {
+class MyMonitor extends Monitor {
+    public function evaluate(int|bool $next): bool {
         // Implement custom transition/action logic here
         // e.g. if crossing a threshold
         // Return true if the monitor has detected sufficient change

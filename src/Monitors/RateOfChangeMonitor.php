@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace Flat3\RevPi\Monitors;
 
 use Flat3\RevPi\Exceptions\NotSupportedException;
-use Flat3\RevPi\Interfaces\Monitor;
 
-class RateOfChangeMonitor implements Monitor
+class RateOfChangeMonitor extends Monitor
 {
     protected ?int $previous = null;
 

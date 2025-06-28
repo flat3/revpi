@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Flat3\RevPi\Monitors;
 
-use Flat3\RevPi\Interfaces\Monitor;
-
-class TrendMonitor implements Monitor
+class TrendMonitor extends Monitor
 {
     /**
      * @var array<int|bool>

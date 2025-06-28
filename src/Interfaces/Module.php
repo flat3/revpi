@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Flat3\RevPi\Interfaces;
 
 use Flat3\RevPi\Led\LedPosition;
+use Flat3\RevPi\Monitors\Monitor;
 
 /**
  * Interface Module

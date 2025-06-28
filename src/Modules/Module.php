@@ -7,9 +7,9 @@ namespace Flat3\RevPi\Modules;
 use Flat3\RevPi\Constants;
 use Flat3\RevPi\Events\PollingEvent;
 use Flat3\RevPi\Interfaces\Module as ModuleInterface;
-use Flat3\RevPi\Interfaces\Monitor;
 use Flat3\RevPi\Interfaces\ProcessImage;
 use Flat3\RevPi\Interfaces\SerialPort;
+use Flat3\RevPi\Monitors\Monitor;
 use Illuminate\Support\Facades\Event;
 use Revolt\EventLoop;
 

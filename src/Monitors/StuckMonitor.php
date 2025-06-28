@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Flat3\RevPi\Monitors;
 
-use Flat3\RevPi\Interfaces\Monitor;
-
-class StuckMonitor implements Monitor
+class StuckMonitor extends Monitor
 {
     protected int|bool|null $previous = null;
 

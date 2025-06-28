@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace Flat3\RevPi\Monitors;
 
 use Flat3\RevPi\Exceptions\NotSupportedException;
-use Flat3\RevPi\Interfaces\Monitor;
 
-class DeadbandMonitor implements Monitor
+class DeadbandMonitor extends Monitor
 {
     protected bool $wasOutside = false;
 

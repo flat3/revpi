@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Flat3\RevPi\Monitors;
 
-use Flat3\RevPi\Interfaces\Monitor;
-
-class MovingAverageMonitor implements Monitor
+class MovingAverageMonitor extends Monitor
 {
     /**
      * @var array<int|bool>

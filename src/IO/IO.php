@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Flat3\RevPi\IO;
 
 use Flat3\RevPi\Interfaces\Module;
-use Flat3\RevPi\Interfaces\Monitor;
+use Flat3\RevPi\Monitors\Monitor;
 
 abstract class IO
 {

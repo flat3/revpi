@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Flat3\RevPi\Monitors;
 
-use Flat3\RevPi\Interfaces\Monitor;
-
-class DigitalMonitor implements Monitor
+class DigitalMonitor extends Monitor
 {
     protected int|bool|null $previous = null;
 

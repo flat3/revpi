@@ -2,9 +2,7 @@
 
 namespace Flat3\RevPi\Monitors;
 
-use Flat3\RevPi\Interfaces\Monitor;
-
-class RangeMonitor implements Monitor
+class RangeMonitor extends Monitor
 {
     public function __construct(protected int|float $min, protected int|float $max) {}
 
