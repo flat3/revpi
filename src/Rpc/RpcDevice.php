@@ -142,7 +142,7 @@ class RpcDevice extends RpcHandler
                     while (true) {
                         $data = @fread($stream, Constants::BlockSize);
 
-                        if (!is_string($data) || $data === '') {
+                        if (! is_string($data) || $data === '') {
                             break;
                         }
 
@@ -162,7 +162,7 @@ class RpcDevice extends RpcHandler
                         }
                     }
 
-                    if (!is_resource($stream) || @feof($stream)) {
+                    if (! is_resource($stream) || @feof($stream)) {
                         EventLoop::cancel($callbackId);
                     }
                 });

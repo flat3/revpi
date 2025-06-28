@@ -317,7 +317,7 @@ use Flat3\RevPi\Interfaces\Monitor;
 class MyMonitor implements Monitor {
     public function evaluate(int|bool|null $next): bool {
         // Implement custom transition/action logic here
-        // e.g. if crossing a threshold, fire webhook
+        // e.g. if crossing a threshold
         // Return true if the monitor has detected sufficient change
     }
 }

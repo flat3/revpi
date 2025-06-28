@@ -10,7 +10,7 @@ class DigitalMonitor implements Monitor
 {
     protected int|bool|null $previous = null;
 
-    public function evaluate(int|bool|null $next): bool
+    public function evaluate(int|bool $next): bool
     {
         $previous = $this->previous;
         $this->previous = $next;

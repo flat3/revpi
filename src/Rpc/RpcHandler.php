@@ -14,7 +14,7 @@ use Throwable;
 /**
  * @phpstan-type RpcDeviceMethodT 'open'|'close'|'lseek'|'ioctl'|'read'|'write'|'cfgetispeed'|'cfgetospeed'|'cfsetispeed'|'cfsetospeed'|'tcflush'|'tcdrain'|'tcsendbreak'|'fdopen'
  * @phpstan-type RpcMethodT RpcDeviceMethodT
- * @phpstan-type RpcDeviceEventTypeT 'readable'
+ * @phpstan-type RpcDeviceEventTypeT 'data'
  * @phpstan-type RpcEventTypeT RpcDeviceEventTypeT
  * @phpstan-type RpcRequestParamsT array<string, int|string|null>
  * @phpstan-type RpcRequestT array{id: string, method: RpcMethodT, params: RpcRequestParamsT }
