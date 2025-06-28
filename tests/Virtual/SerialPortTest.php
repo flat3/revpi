@@ -21,8 +21,8 @@ class SerialPortTest extends SerialPortBase implements UsesVirtualEnvironment
             ->setSpeed(BaudRate::B9600)
             ->setFlag(RS485Flag::TerminateBus);
 
-        $port->onReadable(function ($text) use (&$capture) {
-            $capture .= $text;
+        $port->onReadable(function (SerialPort $port) use (&$capture) {
+            $capture .= $port->read(8192);
         });
 
         $device = app(VirtualTerminalDevice::class);

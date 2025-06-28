@@ -27,10 +27,10 @@ abstract class RpcHandler
     protected WebsocketClient $socket;
 
     /**
-     * @var array{readable: array<callable>}
+     * @var array{data: array<callable>}
      */
     protected array $callbacks = [
-        'readable' => [],
+        'data' => [],
     ];
 
     /**

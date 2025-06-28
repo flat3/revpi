@@ -34,7 +34,7 @@ class SerialPort implements SerialPortInterface
     public function onReadable(callable $callback): string
     {
         return EventLoop::onReadable($this->stream, function () use ($callback) {
-            $callback(@fread($this->stream, Constants::BlockSize));
+            $callback($this);
         });
     }
 

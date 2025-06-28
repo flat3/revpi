@@ -139,19 +139,30 @@ class RpcDevice extends RpcHandler
                 $stream = $this->device->fdopen();
 
                 EventLoop::onReadable($stream, function ($callbackId, $stream) {
-                    $data = @fread($stream, Constants::BlockSize);
+                    while (true) {
+                        $data = @fread($stream, Constants::BlockSize);
 
-                    if (is_string($data) && $data !== '') {
+                        if (!is_string($data) || $data === '') {
+                            break;
+                        }
+
                         $event = new Event;
-                        $event->type = 'readable';
+                        $event->type = 'data';
                         $event->payload = $data;
 
                         try {
                             $this->socket->sendBinary(serialize($event));
                         } catch (WebsocketClosedException) {
                             EventLoop::cancel($callbackId);
+                            break;
                         }
-                    } elseif (! is_resource($stream) || @feof($stream)) {
+
+                        if (strlen($data) < Constants::BlockSize) {
+                            break;
+                        }
+                    }
+
+                    if (!is_resource($stream) || @feof($stream)) {
                         EventLoop::cancel($callbackId);
                     }
                 });

@@ -112,7 +112,7 @@ interface SerialPort
     /**
      * Register a callback to be invoked when the port is readable.
      *
-     * @param  callable  $callback  Callback to invoke on readable event.
+     * @param  callable(SerialPort $port): void  $callback  Callback to invoke on readable event.
      * @return string An ID or reference for the registered callback.
      */
     public function onReadable(callable $callback): string;

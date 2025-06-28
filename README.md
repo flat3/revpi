@@ -110,6 +110,7 @@ This creates `app/MyPi.php`.
 
 ```php
   use Flat3\RevPi\Interfaces\Module;
+  use Flat3\RevPi\Interfaces\SerialPort;
   use Flat3\RevPi\Led\LedColour;
   use Flat3\RevPi\Led\LedPosition;
   use Flat3\RevPi\Monitors\DigitalMonitor;
@@ -124,8 +125,8 @@ This creates `app/MyPi.php`.
   $port = $pi->serialPort();
   $port->setSpeed(BaudRate::B576000);
   $port->clearFlag(LocalFlag::CanonicalInput);
-  $port->onReadable(function (string $data) use ($port) {
-      $port->write($data);
+  $port->onReadable(function (SerialPort $port) {
+      $port->write($port->read(1024));
   });
 
   // Monitor the core temperature, writing updated values to the serial port

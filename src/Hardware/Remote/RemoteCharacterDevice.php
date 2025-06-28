@@ -40,16 +40,26 @@ class RemoteCharacterDevice extends RemoteDevice implements Stream
     {
         $this->device->request('fdopen')->await();
 
-        $this->device->on('readable', function (string $payload) {
+        $this->device->on('data', function (string $payload) {
             fwrite($this->remote, $payload);
         });
 
         EventLoop::onReadable($this->remote, function ($callbackId, $stream) {
-            $data = @fread($stream, Constants::BlockSize);
+            while (true) {
+                $data = @fread($stream, Constants::BlockSize);
 
-            if (is_string($data) && $data !== '') {
+                if ($data === false || $data === '') {
+                    break;
+                }
+
                 $this->write($data, strlen($data));
-            } elseif (! is_resource($stream) || @feof($stream)) {
+
+                if (strlen($data) < Constants::BlockSize) {
+                    break;
+                }
+            }
+
+            if (! is_resource($stream) || @feof($stream)) {
                 EventLoop::cancel($callbackId);
             }
         });
