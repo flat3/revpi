@@ -62,11 +62,13 @@ abstract class Module implements ModuleInterface
 
     public function monitor(string $variable, Monitor $monitor, callable $callback): void
     {
-        Event::listen(PollingEvent::class, function () use ($callback, $variable, $monitor) {
+        $wrapped = $monitor->wrap($callback);
+
+        Event::listen(PollingEvent::class, function () use ($wrapped, $variable, $monitor) {
             $next = $this->getProcessImage()->readVariable($variable);
 
             if ($monitor->evaluate($next)) {
-                $callback($next);
+                $wrapped($next);
             }
         });
     }

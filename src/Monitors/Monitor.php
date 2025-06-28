@@ -8,9 +8,40 @@ use Revolt\EventLoop;
 
 abstract class Monitor
 {
+    protected ?int $rateLimit = null;
+
+    protected RateLimit $rateLimitType = RateLimit::None;
+
+    public function debounce(int $milliseconds): static
+    {
+        $this->rateLimit = $milliseconds;
+        $this->rateLimitType = RateLimit::Debounce;
+
+        return $this;
+    }
+
+    public function throttle(int $milliseconds): static
+    {
+        $this->rateLimit = $milliseconds;
+        $this->rateLimitType = RateLimit::Throttle;
+
+        return $this;
+    }
+
+    public function wrap(callable $callback): callable
+    {
+        assert($this->rateLimitType === RateLimit::None || is_int($this->rateLimit));
+
+        return match ($this->rateLimitType) {
+            RateLimit::None => $callback,
+            RateLimit::Debounce => $this->_debouncer($callback, (int) $this->rateLimit),
+            RateLimit::Throttle => $this->_throttler($callback, (int) $this->rateLimit),
+        };
+    }
+
     abstract public function evaluate(int|bool $next): bool;
 
-    public static function debounce(callable $callback, int $milliseconds): callable
+    protected function _debouncer(callable $callback, int $milliseconds): callable
     {
         $timerId = null;
 
@@ -26,7 +57,7 @@ abstract class Monitor
         };
     }
 
-    public static function throttle(callable $callback, int $milliseconds): callable
+    protected function _throttler(callable $callback, int $milliseconds): callable
     {
         $throttling = false;
 

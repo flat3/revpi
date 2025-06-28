@@ -185,24 +185,23 @@ $pi->input1()->monitor(new DigitalMonitor, function($newValue) {
 
 #### Monitor::debounce
 
-Wraps a callback to fire **only after changes stop** for the given interval (in milliseconds).
+Configures the monitor to fire **only after changes stop** for the given interval (in milliseconds).
 
 ```php
-$pi->input1()->monitor(new DigitalMonitor, Monitor::debounce(function($value) {
+$pi->input1()->monitor((new DigitalMonitor)->debounce(200), function($value) {
     // Handle change after quiet period
-}, 200));
+});
 ```
 
 #### Monitor::throttle
 
-Wraps a callback to fire **at most once per interval** (in milliseconds).
+Configures the monitor to fire **at most once per interval** (in milliseconds).
 
 ```php
-$pi->input1()->monitor(new DigitalMonitor, Monitor::throttle(function($value) {
+$pi->input1()->monitor((new DigitalMonitor)->throttle(200), function($value) {
     // Handle change no more than every 200ms
-}, 200));
+});
 ```
-
 
 ### Process Image (Low-Level)
 
